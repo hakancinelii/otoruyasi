@@ -59,7 +59,8 @@ a:hover {
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
-  mix-blend-mode: screen; /* Siyah arkaplanı şeffaf yapar */
+  mix-blend-mode: screen;
+  /* Siyah arkaplanı şeffaf yapar */
 }
 
 .logo-img:hover {
