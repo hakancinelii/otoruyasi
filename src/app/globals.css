@@ -42,7 +42,7 @@ a:hover {
 }
 
 .header {
-  padding: 24px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border-color);
   background: rgba(13, 17, 23, 0.8);
   backdrop-filter: blur(10px);
