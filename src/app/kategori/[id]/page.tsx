@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-export default function Home() {
+export default function KategoriPage({ params }: { params: { id: string } }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -11,12 +11,10 @@ export default function Home() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchRealData = async (pageNum: number, isLoadMore = false) => {
+  const fetchCategoryData = async (pageNum: number, isLoadMore = false) => {
     try {
       if (isLoadMore) setLoadingMore(true);
-      
-      const limit = isLoadMore ? 30 : 31; // İlk sayfada hero alanı için 1 fazlalık çekiliyor
-      const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts?_embed&per_page=${limit}&page=${pageNum}`);
+      const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts?categories=${params.id}&_embed&per_page=30&page=${pageNum}`);
       
       if (!res.ok) {
         if (res.status === 400) setHasMore(false);
@@ -25,7 +23,7 @@ export default function Home() {
       
       const data = await res.json();
       
-      if (data.length < limit) setHasMore(false);
+      if (data.length < 30) setHasMore(false);
 
       if (isLoadMore) {
         setPosts(prev => [...prev, ...data]);
@@ -42,20 +40,25 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchRealData(1);
-  }, []);
+    fetchCategoryData(1);
+  }, [params.id]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    fetchRealData(nextPage, true);
+    fetchCategoryData(nextPage, true);
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getImageUrl = (post: any) => {
+    return post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
   };
 
   if (loading) {
     return (
       <main className="container">
         <div style={{ textAlign: 'center', padding: '150px 20px', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '24px', marginBottom: '10px' }}>Gerçek OTO RÜYASI Haberleri Çekiliyor...</div>
+          <div style={{ fontSize: '24px', marginBottom: '10px' }}>Kategori Haberleri Çekiliyor...</div>
           <p>Lütfen bekleyin, veritabanına doğrudan bağlanılıyor.</p>
         </div>
       </main>
@@ -66,43 +69,21 @@ export default function Home() {
     return (
       <main className="container">
         <div style={{ textAlign: 'center', padding: '150px 20px', color: '#ff5722' }}>
-          <div style={{ fontSize: '24px', marginBottom: '10px' }}>Haberler Yüklenemedi</div>
-          <p>Görünüşe göre sitenizin güvenlik ayarları REST API dış bağlantılarını (CORS) tamamen kısıtlıyor.</p>
+          <div style={{ fontSize: '24px', marginBottom: '10px' }}>Bu Kategoride Haber Bulunamadı</div>
         </div>
       </main>
     );
   }
 
-  const heroPost = posts[0];
-  const gridPosts = posts.slice(1);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getImageUrl = (post: any) => {
-    return post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
-  };
-
   return (
     <main className="container">
-      {/* Hero Section */}
-      <Link href={`/haber/${heroPost.id}`} className="hero" style={{ display: 'block', textDecoration: 'none' }}>
-        <img className="hero-img" src={getImageUrl(heroPost)} alt={heroPost.title.rendered} />
-        <div className="hero-overlay"></div>
-        <div className="hero-content">
-          <span className="hero-badge">Öne Çıkan Gerçek Haber</span>
-          <h1 className="hero-title" dangerouslySetInnerHTML={{ __html: heroPost.title.rendered }}></h1>
-          <p className="hero-excerpt" dangerouslySetInnerHTML={{ __html: heroPost.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 150) + '...' }}></p>
-        </div>
-      </Link>
-
-      <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '60px' }}>
-        <h2 style={{ fontSize: '28px', margin: 0 }}>Son Haberler</h2>
+      <div style={{ marginBottom: '30px', marginTop: '40px' }}>
+        <h1 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>Kategori İçerikleri</h1>
       </div>
 
-      {/* Grid Posts */}
       <section className="grid">
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {gridPosts.map((post: any) => {
-          return (
+        {posts.map((post: any) => (
           <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
             <div className="card-img-wrapper">
               <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
@@ -116,11 +97,9 @@ export default function Home() {
               </div>
             </div>
           </Link>
-          );
-        })}
+        ))}
       </section>
 
-      {/* Pagination Load More */}
       {hasMore && (
         <div style={{ textAlign: 'center', marginTop: '50px', paddingBottom: '30px' }}>
           <button 
