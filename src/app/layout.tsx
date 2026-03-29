@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
+import SearchBar from '../components/SearchBar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
           <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '15px' }}>
             <Link href="/" className="logo">OTO RÜYASI</Link>
             <nav className="nav-links" style={{ alignItems: 'center', gap: '20px' }}>
+              <SearchBar />
               <Link href="/" className="nav-link">Ana Sayfa</Link>
               <Link href="/kategori/5" className="nav-link">Test Sürüşleri</Link>
               <Link href="/kategori/16714" className="nav-link">Elektrikli</Link>
