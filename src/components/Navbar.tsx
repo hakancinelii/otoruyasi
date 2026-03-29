@@ -11,7 +11,13 @@ export default function Navbar() {
   return (
     <header className="header">
       <div className="container nav-container">
-        <Link href="/" className="logo" onClick={() => setIsOpen(false)}>OTO RÜYASI</Link>
+        <Link href="/" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center' }}>
+          <img 
+            src="https://otoruyasi.com/wp-content/uploads/2023/02/oto-ruyasi-yeni-logo.jpg" 
+            alt="Oto Rüyası Logo" 
+            className="logo-img" 
+          />
+        </Link>
         
         {/* Desktop Navigation */}
         <nav className={`nav-links ${isOpen ? 'mobile-open' : ''}`}>

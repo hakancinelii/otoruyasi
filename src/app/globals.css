@@ -53,14 +53,16 @@ a:hover {
   align-items: center;
 }
 
-.logo {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  background: linear-gradient(90deg, #fff, var(--accent-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  white-space: nowrap;
+.logo-img {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+  /* Resim siyah arkaplanlı veya uyumsuz ise mix-blend-mode eklenebilir. */
+  border-radius: 4px;
+}
+.logo-img:hover {
+  transform: scale(1.05);
 }
 
 .nav-links {
