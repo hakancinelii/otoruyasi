@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../context/AuthContext';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -11,8 +12,9 @@ export default function LoginPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { login } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -23,18 +25,17 @@ export default function LoginPage() {
       return;
     }
 
-    // Backend Auth Simülasyonu (JWT, NextAuth vb. ekleneceği nokta)
-    setTimeout(() => {
-      setLoading(false);
-      if (email === 'admin@otoruyasi.com' || password.length >= 6) {
-        setIsSuccess(true);
-        setTimeout(() => {
-          router.push('/');
-        }, 1500);
-      } else {
-        setError('E-posta veya şifre hatalı.');
-      }
-    }, 1500);
+    const success = await login(email, password);
+    
+    if (success) {
+      setIsSuccess(true);
+      setTimeout(() => {
+        router.push('/');
+      }, 1500);
+    } else {
+      setError('E-posta/Kullanıcı adı veya şifre hatalı.');
+    }
+    setLoading(false);
   };
 
   return (
@@ -59,13 +60,13 @@ export default function LoginPage() {
             {error && <div style={{ background: 'rgba(255,87,34,0.1)', border: '1px solid #ff5722', color: '#ff5722', padding: '12px', borderRadius: '8px', fontSize: '14px', textAlign: 'center' }}>{error}</div>}
             
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>E-posta Adresiniz</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>E-posta veya Kullanıcı Adı</label>
               <input 
-                type="email" 
+                type="text" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ornek@otoruyasi.com" 
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', background: '#0d1117', border: '1px solid var(--border-color)', color: '#fff', outline: 'none' }} 
+                placeholder="kullanici adi veya e-posta" 
+                style={{ width: '100%', padding: '14px', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--border-color)', color: 'var(--text-color)', outline: 'none' }} 
               />
             </div>
             
@@ -76,7 +77,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••" 
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', background: '#0d1117', border: '1px solid var(--border-color)', color: '#fff', outline: 'none' }} 
+                style={{ width: '100%', padding: '14px', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--border-color)', color: 'var(--text-color)', outline: 'none' }} 
               />
             </div>
 

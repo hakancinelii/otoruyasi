@@ -565,7 +565,14 @@ a:hover {
   }
 }
 
-body, .header, .card, .article-content, .paywall-box, .dropdown-menu, .nav-link, .hero-title {
+body,
+.header,
+.card,
+.article-content,
+.paywall-box,
+.dropdown-menu,
+.nav-link,
+.hero-title {
   transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, backdrop-filter 0.4s ease;
 }
 
@@ -594,11 +601,11 @@ body, .header, .card, .article-content, .paywall-box, .dropdown-menu, .nav-link,
 }
 
 [data-theme='light'] .article-featured-img {
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme='light'] .hero-overlay {
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
 }
 
 [data-theme='light'] .dropdown-menu {

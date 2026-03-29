@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { AuthProvider } from '../context/AuthContext';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 
@@ -19,9 +20,10 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={inter.className}>
-        <Navbar />
-
-        {children}
+        <AuthProvider>
+          <Navbar />
+          {children}
+        </AuthProvider>
 
         <footer style={{ background: '#111315', padding: '60px 0', marginTop: '60px', borderTop: '1px solid var(--border-color)' }}>
           <div className="container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '40px' }}>
