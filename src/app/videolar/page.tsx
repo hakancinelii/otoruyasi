@@ -68,7 +68,7 @@ export default async function VideolarPage() {
 
       <section className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
         {sortedVideos.map((video) => (
-          <a href={video.link} target="_blank" rel="noopener noreferrer" key={video.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', background: '#161b22', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', transition: 'transform 0.2s, background 0.2s' }}>
+          <a href={video.link} key={video.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', background: '#161b22', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', transition: 'transform 0.2s, background 0.2s' }}>
             <div className="card-img-wrapper" style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
               <img 
                 className="card-img" 
