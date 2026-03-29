@@ -13,7 +13,7 @@ export default function Navbar() {
       <div className="container nav-container">
         <Link href="/" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center' }}>
           <img 
-            src="https://otoruyasi.com/wp-content/uploads/2023/02/oto-ruyasi-yeni-logo.jpg" 
+            src="/logo.png" 
             alt="Oto Rüyası Logo" 
             className="logo-img" 
           />
