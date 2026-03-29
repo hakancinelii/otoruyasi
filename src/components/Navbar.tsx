@@ -26,7 +26,7 @@ export default function Navbar() {
           <Link href="/kategori/16714" className="nav-link" onClick={() => setIsOpen(false)}>Elektrikli</Link>
           <Link href="/kategori/4" className="nav-link" onClick={() => setIsOpen(false)}>Haberler</Link>
           <Link href="/abonelik" className="nav-link" onClick={() => setIsOpen(false)}>Dergi Aboneliği</Link>
-          <Link href="/abonelik" className="btn-primary" onClick={() => setIsOpen(false)}>Kayıt / Üye Girişi</Link>
+          <Link href="/giris" className="btn-primary" onClick={() => setIsOpen(false)}>Kayıt / Üye Girişi</Link>
         </nav>
 
         {/* Mobile Toggle Button */}

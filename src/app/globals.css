@@ -60,6 +60,7 @@ a:hover {
   background: linear-gradient(90deg, #fff, var(--accent-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  white-space: nowrap;
 }
 
 .nav-links {
@@ -72,6 +73,7 @@ a:hover {
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 /* Hero Section */
@@ -250,6 +252,7 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .btn-primary:hover {
