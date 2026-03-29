@@ -1,4 +1,5 @@
 import Parser from 'rss-parser';
+import VideoList from '../../components/VideoList';
 
 export const revalidate = 3600; // Her 1 saatte bir arka planda feed'i yeniden çek
 
@@ -66,30 +67,7 @@ export default async function VideolarPage() {
         </a>
       </div>
 
-      <section className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
-        {sortedVideos.map((video) => (
-          <a href={video.link} key={video.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', background: '#161b22', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', transition: 'transform 0.2s, background 0.2s' }}>
-            <div className="card-img-wrapper" style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
-              <img 
-                className="card-img" 
-                src={video.thumbnail} 
-                alt={video.title} 
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(255,0,0,0.8)', borderRadius: '50%', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-            <div className="card-content" style={{ padding: '20px' }}>
-              <h3 className="card-title" style={{ fontSize: '18px', marginBottom: '15px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '44px' }}>{video.title}</h3>
-              <div className="card-footer" style={{ borderTop: 'none', padding: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{new Date(video.pubDate).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                <span style={{ color: '#ff2d2d', fontWeight: 600, fontSize: '14px' }}>YouTube'da İzle &rarr;</span>
-              </div>
-            </div>
-          </a>
-        ))}
-      </section>
+      <VideoList videos={sortedVideos} />
     </main>
   );
 }
