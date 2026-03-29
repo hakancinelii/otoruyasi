@@ -558,4 +558,49 @@ a:hover {
     font-size: 16px;
     padding: 8px 10px;
   }
+
+  .theme-toggle {
+    margin-right: 0;
+    order: -1;
+  }
+}
+
+body, .header, .card, .article-content, .paywall-box, .dropdown-menu, .nav-link, .hero-title {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  margin-right: 15px;
+}
+
+.theme-toggle:hover {
+  background: rgba(252, 163, 17, 0.1);
+  transform: rotate(20deg) scale(1.1);
+}
+
+.mobile-menu-btn svg {
+  stroke: var(--text-color) !important;
+}
+
+/* Specific article readability tweak */
+[data-theme='light'] .article-content {
+  color: #333333;
+}
+
+[data-theme='light'] .article-featured-img {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+[data-theme='light'] .hero-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+
+[data-theme='light'] .dropdown-menu {
+  background: rgba(255, 255, 255, 0.95);
 }
