@@ -48,7 +48,7 @@ export default function Abonelik() {
         {/* Aylık Plan */}
         <div className="card" style={{ width: '350px', padding: '40px', borderRadius: '24px', position: 'relative' }}>
           <h2 style={{ fontSize: '24px', color: 'var(--text-muted)', marginBottom: '10px' }}>Aylık Dijital</h2>
-          <div style={{ fontSize: '48px', fontWeight: 800, color: '#fff' }}>99₺<span style={{ fontSize: '18px', color: 'var(--text-muted)' }}>/ay</span></div>
+          <div style={{ fontSize: '48px', fontWeight: 800, color: 'var(--text-color)' }}>99₺<span style={{ fontSize: '18px', color: 'var(--text-muted)' }}>/ay</span></div>
           <p style={{ color: 'var(--text-muted)', margin: '20px 0', minHeight: '60px' }}>Esnek abonelik, her an iptal edilebilir e-dergi erişimi.</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px', textAlign: 'left', lineHeight: '2.5' }}>
             <li>✓ Sınırsız Haber Okuma</li><li>✓ 0 Reklam Görüntüleme</li><li>✓ Aylık PDF Dergi İndirme</li>
@@ -60,10 +60,10 @@ export default function Abonelik() {
         <div className="card" style={{ width: '350px', padding: '40px', borderRadius: '24px', borderColor: 'var(--accent-color)', zIndex: 1, position: 'relative', boxShadow: '0 20px 50px rgba(252,163,17,0.15)', transform: 'scale(1.05)' }}>
           <div style={{ position: 'absolute', top: '-15px', right: '50px', background: 'var(--accent-color)', color: '#000', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 800 }}>EN ÇOK TERCİH EDİLEN</div>
           <h2 style={{ fontSize: '24px', color: 'var(--accent-color)', marginBottom: '10px' }}>VIP Yıllık</h2>
-          <div style={{ fontSize: '48px', fontWeight: 800, color: '#fff' }}>890₺<span style={{ fontSize: '18px', color: 'var(--text-muted)' }}>/yıl</span></div>
+          <div style={{ fontSize: '48px', fontWeight: 800, color: 'var(--text-color)' }}>890₺<span style={{ fontSize: '18px', color: 'var(--text-muted)' }}>/yıl</span></div>
           <p style={{ color: 'var(--text-muted)', margin: '20px 0', minHeight: '60px' }}>2 ay bizden hediye. Gerçek bir otomobil tutkunu için nihai ve prestijli paket.</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px', textAlign: 'left', lineHeight: '2.5' }}>
-            <li style={{ color: '#fff' }}>✓ Sınırsız Haber & Arşiv Erişimi</li><li style={{ color: '#fff' }}>✓ 0 Reklam Kesintisi</li><li style={{ color: '#fff' }}>✓ VIP Lansman Duyuruları</li><li style={{ color: '#fff' }}>✓ OTO RÜYASI Club Avantajları</li>
+            <li style={{ color: 'var(--text-color)' }}>✓ Sınırsız Haber & Arşiv Erişimi</li><li style={{ color: 'var(--text-color)' }}>✓ 0 Reklam Kesintisi</li><li style={{ color: 'var(--text-color)' }}>✓ VIP Lansman Duyuruları</li><li style={{ color: 'var(--text-color)' }}>✓ OTO RÜYASI Club Avantajları</li>
           </ul>
           <button onClick={() => handleSubscribeClick('VIP Yıllık')} className="btn-primary" style={{ width: '100%', padding: '16px', background: 'linear-gradient(45deg, var(--accent-color), #ff5722)', color: '#fff', fontSize: '16px' }}>Yıllık Abone Ol</button>
         </div>

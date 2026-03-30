@@ -19,21 +19,21 @@ export default function VideoList({ videos }: { videos: Video[] }) {
     <>
       <section className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
         {videos.map((video) => (
-          <div 
-            key={video.id} 
-            className="card" 
+          <div
+            key={video.id}
+            className="card"
             onClick={() => setActiveVideoId(video.id)}
-            style={{ display: 'block', cursor: 'pointer', background: '#161b22', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', transition: 'transform 0.2s, background 0.2s' }}
+            style={{ display: 'block', cursor: 'pointer', background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', transition: 'transform 0.2s, background 0.2s' }}
           >
             <div className="card-img-wrapper" style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
-              <img 
-                className="card-img" 
-                src={video.thumbnail} 
-                alt={video.title} 
+              <img
+                className="card-img"
+                src={video.thumbnail}
+                alt={video.title}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
               />
               <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(255,0,0,0.8)', borderRadius: '50%', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z" /></svg>
               </div>
             </div>
             <div className="card-content" style={{ padding: '20px' }}>
@@ -49,7 +49,7 @@ export default function VideoList({ videos }: { videos: Video[] }) {
 
       {/* Video İzleme Modalı */}
       {activeVideoId && (
-        <div 
+        <div
           onClick={closeModal}
           style={{
             position: 'fixed',
@@ -66,8 +66,8 @@ export default function VideoList({ videos }: { videos: Video[] }) {
             padding: '20px'
           }}
         >
-          <div 
-            onClick={(e) => e.stopPropagation()} 
+          <div
+            onClick={(e) => e.stopPropagation()}
             style={{
               position: 'relative',
               width: '100%',
@@ -79,7 +79,7 @@ export default function VideoList({ videos }: { videos: Video[] }) {
               boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
             }}
           >
-            <button 
+            <button
               onClick={closeModal}
               style={{
                 position: 'absolute',
@@ -95,13 +95,13 @@ export default function VideoList({ videos }: { videos: Video[] }) {
             >
               &times;
             </button>
-            <iframe 
-              width="100%" 
-              height="100%" 
-              src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=1`} 
-              title="YouTube video player" 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            <iframe
+              width="100%"
+              height="100%"
+              src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=1`}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             ></iframe>
           </div>
