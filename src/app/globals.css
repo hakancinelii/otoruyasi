@@ -77,12 +77,14 @@ a:hover {
   padding: 12px 0;
   border-bottom: 1px solid var(--border-color);
   background: var(--header-bg);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px); /* Slightly stronger blur for premium look */
+  -webkit-backdrop-filter: blur(14px);
   position: sticky;
   top: 0;
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
+  width: 100%;
+  z-index: 1000;
+  display: flex !important; /* Ensure visibility */
+  justify-content: center;
   align-items: center;
 }
 
@@ -460,16 +462,17 @@ a:hover {
 
   .nav-right {
     justify-content: flex-end;
-    gap: 10px;
+    gap: 15px; /* Increased from 10px */
   }
 
   /* This will ensure the middle links are truly centered relative to the header */
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px; /* Reduced slightly to fit centered */
     justify-content: center;
-    flex: 2; /* Center area gets more space */
+    flex: 2;
+    padding: 0 40px; /* Force gap from logo and search bar */
   }
 }
 
