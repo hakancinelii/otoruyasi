@@ -21,7 +21,7 @@ export default function SearchBar() {
         placeholder="Haber Ara..." 
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        style={{ background: 'transparent', border: 'none', color: '#fff', outline: 'none', width: '150px', fontSize: '14px' }}
+        style={{ background: 'transparent', border: 'none', color: '#fff', outline: 'none', width: '100px', fontSize: '13px' }}
       />
       <button type="submit" style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0 5px' }}>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

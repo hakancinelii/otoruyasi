@@ -87,12 +87,11 @@ a:hover {
 }
 
 .logo-img {
-  height: 90px;
+  height: 70px; /* Reduced from 90px to fit everything on desktop */
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
   mix-blend-mode: var(--logo-blend);
-  /* Siyah arkaplanı şeffaf yapar */
 }
 
 .logo-img:hover {
@@ -446,37 +445,31 @@ a:hover {
 
 @media (min-width: 1025px) {
   .nav-container {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 15px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
+    max-width: 1400px; /* More space for desktop items */
   }
 
   .nav-left, .nav-right {
+    flex: 1;
     display: flex;
     align-items: center;
   }
 
   .nav-right {
     justify-content: flex-end;
-    gap: 15px;
+    gap: 10px;
   }
 
-  /* This will align the logo to the left specifically for the grid */
-  .nav-container > *:first-child {
-    justify-self: start;
-  }
-
-  /* Right Side Controls */
-  .nav-container > *:last-child {
-    justify-self: end;
-  }
-
+  /* This will ensure the middle links are truly centered relative to the header */
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 14px;
+    justify-content: center;
+    flex: 2; /* Center area gets more space */
   }
 }
 
