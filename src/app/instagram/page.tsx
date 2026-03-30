@@ -18,7 +18,7 @@ export default function InstagramPage() {
 
       {/* Widget Container */}
       <div style={{ minHeight: '600px', width: '100%', paddingBottom: '40px' }}>
-        <Script src="https://static.elfsight.com/platform/platform.js" strategy="lazyOnload" />
+        <Script src="https://elfsightcdn.com/platform.js" strategy="lazyOnload" />
         <div className="elfsight-app-c6568d4c-fc7b-43b8-af37-9d78601ab39b" data-elfsight-app-lazy></div>
       </div>
 
