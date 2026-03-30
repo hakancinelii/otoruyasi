@@ -427,6 +427,26 @@ a:hover {
   position: relative;
 }
 
+@media (min-width: 1025px) {
+  .nav-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* This will align the logo to the left specifically for the grid */
+  .nav-container > *:first-child {
+    justify-self: start;
+  }
+
+  /* Right Side Controls */
+  .nav-container > *:last-child {
+    justify-self: end;
+  }
+}
+
 .mobile-menu-btn {
   display: none;
   background: transparent;
@@ -442,7 +462,6 @@ a:hover {
     display: flex;
     align-items: center;
     gap: 8px; /* reduced from 15px to fit everything */
-    margin: 0 auto;
   }
 }
 
