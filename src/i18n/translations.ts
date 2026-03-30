@@ -34,7 +34,17 @@ export const translations = {
     compare_btn: 'Kıyasıya Karşılaştır!',
     ai_is_analyzing: 'Yapay Zeka Analiz Ediyor...',
     ai_result_title: 'Yapay Zeka Analiz Sonucu',
-    ai_score: 'AI Puanı'
+    ai_score: 'AI Puanı',
+    subscription_title: 'Otomobil Tutkusunu Bir Üst Seviyeye Taşıyın',
+    subscription_desc: 'Sektörün nabzını tutan özel incelemeler, VIP test sürüşleri ve aylık e-dergiye reklamsız erişim.',
+    monthly_plan: 'Aylık Dijital',
+    annual_plan: 'VIP Yıllık',
+    best_value: 'EN ÇOK TERCİH EDİLEN',
+    subscribe_now: 'Abone Ol',
+    payment_secure: 'Ödemeler 256-bit SSL güvencesi altındadır.',
+    congrats: 'Tebrikler, Hoş Geldiniz!',
+    success_desc: 'Ödemeniz başarıyla alındı. Artık bir üyesiniz.',
+    search_results: 'İçin Arama Sonuçları'
   },
   en: {
     home: 'Home',
@@ -69,7 +79,17 @@ export const translations = {
     compare_btn: 'Compare Now!',
     ai_is_analyzing: 'AI is Analyzing...',
     ai_result_title: 'AI Analysis Result',
-    ai_score: 'AI Score'
+    ai_score: 'AI Score',
+    subscription_title: 'Take Your Car Passion to Next Level',
+    subscription_desc: 'Exclusive reviews, VIP test drives, and ad-free access to monthly e-magazine.',
+    monthly_plan: 'Monthly Digital',
+    annual_plan: 'VIP Annual',
+    best_value: 'MOST POPULAR',
+    subscribe_now: 'Subscribe',
+    payment_secure: 'Payments are secured with 256-bit SSL.',
+    congrats: 'Congratulations, Welcome!',
+    success_desc: 'Payment successful. You are now a member.',
+    search_results: 'Search Results'
   },
   ru: {
     home: 'Главная',
@@ -104,7 +124,17 @@ export const translations = {
     compare_btn: 'Сравнить!',
     ai_is_analyzing: 'ИИ анализирует...',
     ai_result_title: 'Результат анализа ИИ',
-    ai_score: 'AI Оценка'
+    ai_score: 'AI Оценка',
+    subscription_title: 'Поднимите свою страсть на новый уровень',
+    subscription_desc: 'Эксклюзивные обзоры, VIP-тест-драйвы и доступ к ежемесячному журналу без рекламы.',
+    monthly_plan: 'Ежемесячный цифровой',
+    annual_plan: 'VIP Годовой',
+    best_value: 'САМЫЙ ПОПУЛЯРНЫЙ',
+    subscribe_now: 'Подписаться',
+    payment_secure: 'Платежи защищены 256-битным SSL.',
+    congrats: 'Поздравляем, добро пожаловать!',
+    success_desc: 'Оплата прошла успешно. Теперь вы участник.',
+    search_results: 'Результаты поиска'
   },
   de: {
     home: 'Startseite',
@@ -139,6 +169,16 @@ export const translations = {
     compare_btn: 'Jetzt vergleichen!',
     ai_is_analyzing: 'KI analysiert...',
     ai_result_title: 'KI-Analyseergebnis',
-    ai_score: 'KI-Punktzahl'
+    ai_score: 'KI-Punktzahl',
+    subscription_title: 'Auto-Leidenschaft auf die nächste Stufe',
+    subscription_desc: 'Exklusive Testberichte, VIP-Testfahrten und werbefreier Zugang zum monatlichen E-Magazin.',
+    monthly_plan: 'Monatlich Digital',
+    annual_plan: 'VIP Jährlich',
+    best_value: 'AM BELIEBTESTEN',
+    subscribe_now: 'Abonnieren',
+    payment_secure: 'Zahlungen sind mit 256-Bit-SSL gesichert.',
+    congrats: 'Herzlichen Glückwunsch, Willkommen!',
+    success_desc: 'Zahlung erfolgreich. Sie sind jetzt Mitglied.',
+    search_results: 'Suchergebnisse'
   }
 };
