@@ -42,6 +42,7 @@ body {
   color: var(--text-color);
   margin: 0;
   padding: 0;
+  padding-top: 100px !important; /* Fixed header gap */
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -92,11 +93,11 @@ a:hover {
 }
 
 .header-hidden {
-  transform: translateY(-100%);
+  transform: translateY(-100%) !important;
 }
 
 .header-visible {
-  transform: translateY(0);
+  transform: translateY(0) !important;
 }
 
 /* Sayfa içeriğinin header altında kalmaması için body'e üst boşluk ekliyoruz */
@@ -438,10 +439,13 @@ body {
 
 /* Navbar Responsive CSS */
 .nav-container {
-  display: flex;
-  justify-content: space-between;
+  display: flex !important;
+  justify-content: space-between !important;
   align-items: center;
   position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .desktop-only {

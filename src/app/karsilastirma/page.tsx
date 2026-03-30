@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-// Popüler Türkiye Pazarı Araç Veritabanı (Örnek)
+// Popüler Türkiye Pazarı Araç Veritabanı
 const CAR_DATABASE: Record<string, string[]> = {
   'Peugeot': ['208', '308', '2008', '3008', '408', '5008'],
   'Nissan': ['Micra', 'Juke', 'Qashqai', 'X-Trail'],
@@ -20,6 +20,18 @@ const CAR_DATABASE: Record<string, string[]> = {
   'Opel': ['Corsa', 'Astra', 'Crossland', 'Mokka', 'Grandland'],
 };
 
+interface CompareResult {
+  car1: {
+    score: number;
+    points: string[];
+  };
+  car2: {
+    score: number;
+    points: string[];
+  };
+  analysis: string;
+}
+
 export default function KarsilastirmaPage() {
   const [car1Brand, setCar1Brand] = useState('');
   const [car1Model, setCar1Model] = useState('');
@@ -27,20 +39,36 @@ export default function KarsilastirmaPage() {
   const [car2Model, setCar2Model] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState<CompareResult | null>(null);
 
-  const startComparison = () => {
+  const startComparison = async () => {
     if (!car1Brand || !car1Model || !car2Brand || !car2Model) {
       alert("Lütfen karşılaştırmak için iki aracı da tam olarak seçin.");
       return;
     }
 
     setIsLoading(true);
-    // Şimdilik 2 saniyelik bir bekletme efekti, buraya yapay zeka entegre edilecek
-    setTimeout(() => {
+    setResults(null);
+
+    try {
+      const response = await fetch('/api/compare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          car1: `${car1Brand} ${car1Model}`,
+          car2: `${car2Brand} ${car2Model}`
+        })
+      });
+
+      if (!response.ok) throw new Error("API hatası");
+      const data = await response.json();
+      setResults(data);
+    } catch (error) {
+      console.error(error);
+      alert("Yapay zeka yanıtı alınamadı. Lütfen tekrar deneyin.");
+    } finally {
       setIsLoading(false);
-      setResults(true as any); // Yer tutucu
-    }, 2500);
+    }
   };
 
   return (
@@ -128,49 +156,41 @@ export default function KarsilastirmaPage() {
         </div>
       </div>
 
-      {/* SONUÇ ALANI TEMPLATESİ */}
+      {/* SONUÇ ALANI */}
       {results && (
-        <div style={{ marginTop: '60px', opacity: isLoading ? 0.5 : 1, transition: 'opacity 0.3s' }}>
+        <div style={{ marginTop: '60px', transition: 'all 0.3s' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Yapay Zeka Analiz Sonucu</h2>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>
             <div className="card" style={{ flex: '1', minWidth: '300px', padding: '30px', textAlign: 'center' }}>
               <h3 style={{ fontSize: '24px', margin: '0 0 10px' }}>{car1Brand} {car1Model}</h3>
-              <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--accent-color)' }}>8.4<span style={{ fontSize: '16px', color: 'var(--text-muted)'}}>/10</span></div>
-              <p style={{ color: 'var(--text-muted)' }}>Fiyat / Performans Puanı</p>
+              <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--accent-color)' }}>{results.car1.score}<span style={{ fontSize: '16px', color: 'var(--text-muted)'}}>/10</span></div>
+              <p style={{ color: 'var(--text-muted)' }}>AI Puanı</p>
               
-              <ul style={{ textAlign: 'left', marginTop: '20px', paddingLeft: '20px' }}>
-                <li style={{ marginBottom: '10px' }}>✅ Yüksek bagaj hacmi</li>
-                <li style={{ marginBottom: '10px' }}>✅ Düşük yakıt tüketimi</li>
-                <li style={{ marginBottom: '10px' }}>❌ Arka diz mesafesi dar</li>
+              <ul style={{ textAlign: 'left', marginTop: '20px', paddingLeft: '20px', listStyle: 'none' }}>
+                {results.car1.points.map((p: string, i: number) => <li key={i} style={{ marginBottom: '8px' }}>• {p}</li>)}
               </ul>
             </div>
+            
             <div className="card" style={{ flex: '1', minWidth: '300px', padding: '30px', textAlign: 'center' }}>
               <h3 style={{ fontSize: '24px', margin: '0 0 10px' }}>{car2Brand} {car2Model}</h3>
-              <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--accent-color)' }}>8.7<span style={{ fontSize: '16px', color: 'var(--text-muted)'}}>/10</span></div>
-              <p style={{ color: 'var(--text-muted)' }}>Fiyat / Performans Puanı</p>
+              <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--accent-color)' }}>{results.car2.score}<span style={{ fontSize: '16px', color: 'var(--text-muted)'}}>/10</span></div>
+              <p style={{ color: 'var(--text-muted)' }}>AI Puanı</p>
               
-              <ul style={{ textAlign: 'left', marginTop: '20px', paddingLeft: '20px' }}>
-                <li style={{ marginBottom: '10px' }}>✅ Premium iç mekan kalitesi</li>
-                <li style={{ marginBottom: '10px' }}>✅ Etkileyici güvenlik donanımları</li>
-                <li style={{ marginBottom: '10px' }}>❌ Yüksek yedek parça maliyeti</li>
+              <ul style={{ textAlign: 'left', marginTop: '20px', paddingLeft: '20px', listStyle: 'none' }}>
+                {results.car2.points.map((p: string, i: number) => <li key={i} style={{ marginBottom: '8px' }}>• {p}</li>)}
               </ul>
             </div>
           </div>
           
           {/* AI Uzman Yorumu */}
           <div className="card" style={{ marginTop: '30px', padding: '30px', textAlign: 'left', maxWidth: '920px', margin: '30px auto 0', border: '1px solid var(--accent-color)' }}>
-            <h3 style={{ fontSize: '22px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              Yapay Zeka Uzman Görüşü
-            </h3>
-            <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)' }}>
-              <strong>{car1Brand} {car1Model}</strong> ile <strong>{car2Brand} {car2Model}</strong> karşılaştırmasında, <em>{car1Brand}</em> modeli iç hacim ve pratiklik konusunda segmentinin yıldızı olurken, <em>{car2Brand}</em> modeli sunduğu premium sürüş hissiyatı ve gelişmiş güvenlik donanımlarıyla öne çıkıyor. 
-              <br/><br/>
-              Eğer önceliğiniz fiyat avantajıyla fonksiyonel bir araç satın almaksa {car1Brand} {car1Model} mantıklı bir tercih olacaktır. Ancak malzeme kalitesi ve ikinci el değerinden ödün vermek istemiyorsanız {car2Brand} {car2Model} kesinlikle bu rekabette bir adım önde konumlanıyor.
-            </p>
+              <h3 style={{ fontSize: '22px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                ⚡ Yapay Zeka Uzman Görüşü
+              </h3>
+              <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)' }}>
+                {results.analysis}
+              </p>
           </div>
-
-          <p style={{ textAlign: 'center', marginTop: '30px', color: 'var(--text-muted)', fontSize: '13px' }}>* Bu bir test (demo) verisidir. Yakında gerçek yapay zeka entegrasyonu ile metinler anlık üretilecektir.</p>
         </div>
       )}
     </main>
