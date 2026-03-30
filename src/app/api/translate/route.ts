@@ -25,8 +25,8 @@ async function callGeminiAPI(text: string, lang: string, model: string) {
         }]
       }],
       generationConfig: {
-        temperature: 0.1, // Lower temperature for more literal translation
-        maxOutputTokens: 8192 // Increased for longer content
+        temperature: 0.1,
+        maxOutputTokens: 8192
       }
     })
   });
@@ -65,23 +65,15 @@ export async function POST(req: Request) {
     };
     const target = langNames[targetLang] || targetLang;
 
-    // March 2026: gemini-2.0-flash supports up to 8k output tokens.
+    // Use "-latest" aliases to ensure we always use the current stable version
+    // This prevents "no longer available to new users" errors.
     let translatedText: string | undefined;
-    const models = ["gemini-2.0-flash", "gemini-2.5-flash"];
+    const models = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-pro-latest"];
 
-    // Try a direct full translation first with ultra-clear prompts
     for (const model of models) {
       try {
         translatedText = await callGeminiAPI(text, target, model);
-        if (translatedText) {
-          // Verify if it's suspiciously short compared to original
-          if (translatedText.length < text.length * 0.3 && text.length > 1000) {
-             console.warn("Translation seems too short, might be truncated.");
-             // We could implement chunking here if needed, but let's try 
-             // the low-temperature + strict prompt fix first.
-          }
-          break;
-        }
+        if (translatedText) break;
       } catch (e: any) {
         console.warn(`Model ${model} failed:`, e.message);
       }
