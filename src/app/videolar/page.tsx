@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import VideoList from '../../components/VideoList';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 type Video = {
   id: string;

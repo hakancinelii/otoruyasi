@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import '../globals.css';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function Abonelik() {
   const [showCheckout, setShowCheckout] = useState(false);
