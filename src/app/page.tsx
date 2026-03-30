@@ -54,10 +54,29 @@ export default function Home() {
   if (loading) {
     return (
       <main className="container">
-        <div style={{ textAlign: 'center', padding: '150px 20px', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '24px', marginBottom: '10px' }}>Gerçek OTO RÜYASI Haberleri Çekiliyor...</div>
-          <p>Lütfen bekleyin, veritabanına doğrudan bağlanılıyor.</p>
+        {/* Hero Skeleton */}
+        <div style={{ width: '100%', height: '500px', background: 'var(--border-color)', borderRadius: '24px', marginBottom: '60px', animation: 'pulse 1.5s infinite' }}></div>
+        
+        {/* Grid Skeleton */}
+        <div className="grid">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="card" style={{ height: '400px', opacity: 0.5 }}>
+              <div style={{ width: '100%', height: '200px', background: 'var(--border-color)', animation: 'pulse 1.5s infinite' }}></div>
+              <div style={{ padding: '20px' }}>
+                <div style={{ width: '80%', height: '24px', background: 'var(--border-color)', marginBottom: '10px', animation: 'pulse 1.5s infinite' }}></div>
+                <div style={{ width: '100%', height: '16px', background: 'var(--border-color)', animation: 'pulse 1.5s infinite' }}></div>
+              </div>
+            </div>
+          ))}
         </div>
+
+        <style jsx>{`
+          @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+            100% { opacity: 0.3; }
+          }
+        `}</style>
       </main>
     );
   }
@@ -65,9 +84,9 @@ export default function Home() {
   if (!posts || posts.length === 0) {
     return (
       <main className="container">
-        <div style={{ textAlign: 'center', padding: '150px 20px', color: '#ff5722' }}>
-          <div style={{ fontSize: '24px', marginBottom: '10px' }}>Haberler Yüklenemedi</div>
-          <p>Görünüşe göre sitenizin güvenlik ayarları REST API dış bağlantılarını (CORS) tamamen kısıtlıyor.</p>
+        <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
+          <div style={{ fontSize: '20px', fontWeight: 600 }}>Maalesef şu an içeriklere ulaşılamıyor.</div>
+          <p>Lütfen daha sonra tekrar deneyiniz.</p>
         </div>
       </main>
     );
