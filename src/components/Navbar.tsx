@@ -71,7 +71,7 @@ export default function Navbar() {
     { label: t('test_drives'), href: '/kategori/5' },
     { label: t('compare'), href: '/karsilastirma', color: 'var(--accent-color)', bold: true },
     { label: t('videos'), href: '/videolar', color: '#ff2d2d' },
-    { label: t('instagram'), href: '/instagram' } // This was probably news categories before, but keeping standard
+    { label: t('instagram'), href: '/instagram' }
   ];
 
   const newsCategories = [
@@ -83,6 +83,25 @@ export default function Navbar() {
     { id: '18326', label: language === 'tr' ? 'Otobüs' : 'Bus' },
     { id: '4', label: language === 'tr' ? 'Tüm Haberler' : 'All News', accent: true }
   ];
+
+  // Shared language dropdown renderer
+  const renderLangDropdown = (isMobile: boolean) => (
+    <div className={`lang-dropdown-menu ${isMobile ? 'lang-dropdown-mobile' : ''}`}>
+      {(['tr', 'en', 'ru', 'de'] as Language[]).map((lang) => (
+        <button
+          key={lang}
+          onClick={() => { setLanguage(lang); setIsLangOpen(false); if (isMobile) setIsOpen(false); }}
+          className={`lang-item ${language === lang ? 'active' : ''}`}
+        >
+          <span style={{ fontSize: '20px' }}>{flags[lang]}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600 }}>{langNames[lang]}</span>
+            <span style={{ fontSize: '10px', opacity: 0.5, textTransform: 'uppercase' }}>{lang}</span>
+          </div>
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <header className={`header ${isVisible ? 'header-visible' : 'header-hidden'}`}>
@@ -135,6 +154,31 @@ export default function Navbar() {
           </div>
           
           <Link href="/abonelik" className="nav-link" onClick={() => setIsOpen(false)}>{t('subscription')}</Link>
+
+          {/* Mobile-only: Language selector + Theme toggle */}
+          <div className="mobile-only" style={{ marginTop: '12px', borderTop: '1px solid var(--border-color)', paddingTop: '20px', width: '100%' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '12px', letterSpacing: '1px' }}>
+              {language === 'tr' ? 'Dil Seçimi' : 'Language'}
+            </div>
+            <div className="mobile-lang-grid">
+              {(['tr', 'en', 'ru', 'de'] as Language[]).map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => { setLanguage(lang); setIsOpen(false); }}
+                  className={`mobile-lang-btn ${language === lang ? 'active' : ''}`}
+                >
+                  <span style={{ fontSize: '22px' }}>{flags[lang]}</span>
+                  <span className="mobile-lang-name">{langNames[lang]}</span>
+                </button>
+              ))}
+            </div>
+            <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button onClick={toggleTheme} className="mobile-theme-btn">
+                {theme === 'light' ? '🌙' : '☀️'}
+                <span>{theme === 'light' ? (language === 'tr' ? 'Koyu Mod' : 'Dark Mode') : (language === 'tr' ? 'Açık Mod' : 'Light Mode')}</span>
+              </button>
+            </div>
+          </div>
         </nav>
 
         <div className="nav-right">
@@ -150,31 +194,13 @@ export default function Navbar() {
               <button 
                 className="lang-btn" 
                 onClick={() => setIsLangOpen(!isLangOpen)}
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: 'inherit' }}
               >
                 <span style={{ fontSize: '18px' }}>{flags[language]}</span>
                 <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>{language}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" style={{ transform: isLangOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }}><path d="M6 9l6 6 6-6"/></svg>
               </button>
               
-              {isLangOpen && (
-                <div className="lang-dropdown-menu" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '12px', background: 'rgba(22, 27, 34, 0.98)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '8px', minWidth: '160px', boxShadow: '0 20px 40px rgba(0,0,0,0.6)', zIndex: 1000, backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  {(['tr', 'en', 'ru', 'de'] as Language[]).map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => { setLanguage(lang); setIsLangOpen(false); }}
-                      className={`lang-item ${language === lang ? 'active' : ''}`}
-                      style={{ width: '100%', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '12px', background: language === lang ? 'rgba(252,163,17,0.1)' : 'none', border: 'none', borderRadius: '8px', cursor: 'pointer', color: language === lang ? 'var(--accent-color)' : 'var(--text-color)', transition: '0.2s' }}
-                    >
-                      <span style={{ fontSize: '20px' }}>{flags[lang]}</span>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                        <span style={{ fontSize: '13px', fontWeight: 600 }}>{langNames[lang]}</span>
-                        <span style={{ fontSize: '10px', opacity: 0.5, textTransform: 'uppercase' }}>{lang}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+              {isLangOpen && renderLangDropdown(false)}
             </div>
 
             <button className="theme-toggle" onClick={toggleTheme} style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme === 'light' ? '#f1c40f' : '#fff' }}>
