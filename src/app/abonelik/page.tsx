@@ -26,7 +26,7 @@ export default function Abonelik() {
 
   return (
     <main className="container" style={{ padding: '80px 20px', textAlign: 'center', position: 'relative' }}>
-      <h1 style={{ fontSize: '48px', fontWeight: 800, marginBottom: '20px', background: 'linear-gradient(90deg, #fff, var(--accent-color))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Otomobil Tutkusunu Bir Üst Seviyeye Taşıyın.</h1>
+      <h1 style={{ fontSize: '48px', fontWeight: 800, marginBottom: '20px', background: 'linear-gradient(90deg, var(--text-color), var(--accent-color))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Otomobil Tutkusunu Bir Üst Seviyeye Taşıyın.</h1>
 
       {!isSuccess ? (
         <p style={{ fontSize: '20px', color: 'var(--text-muted)', maxWidth: '700px', margin: '0 auto 60px' }}>
