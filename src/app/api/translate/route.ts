@@ -1,10 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-// Hardcoding user's key for immediate stability
 const API_KEY = "AIzaSyAxg5oVFAlO1EoKmsZqnrv46zXeIOvqlTI";
 const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+// Switching to 'gemini-pro' for better stability and to avoid 404 on some accounts
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 export async function POST(req: Request) {
   let body: any = null;
@@ -25,10 +25,10 @@ export async function POST(req: Request) {
 
     const target = langNames[targetLang as keyof typeof langNames] || targetLang;
 
-    // Direct translation prompt
     const prompt = `
       Translate the following automotive text into ${target}. 
-      Keep HTML tags exactly. Brand names stay same. Only return translated text.
+      Only return translated text. Do not add any explanation. 
+      Keep HTML tags and brand names same.
       TEXT: ${text}
     `;
 
@@ -38,8 +38,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ translatedText });
   } catch (error: any) {
-    console.error("Gemini Translation API Error:", error.message || error);
-    // Safe fallback using the body we captured
+    console.error("Gemini Error:", error.message || error);
     return NextResponse.json({ translatedText: body?.text || "" });
   }
 }
