@@ -65,7 +65,7 @@ export default function Navbar() {
               src="/logo.png"
               alt="Oto Rüyası Logo"
               className="logo-img"
-              style={{ filter: theme === 'dark' ? 'brightness(0) invert(1)' : 'none' }}
+              style={{ maxHeight: '90px', padding: '5px' }}
             />
           </Link>
         </div>
@@ -111,19 +111,19 @@ export default function Navbar() {
             </span>
 
             <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-              <Link href="/kategori/5801" className="dropdown-item" onClick={() => setIsOpen(false)}>Kampanyalar</Link>
-              <Link href="/kategori/3" className="dropdown-item" onClick={() => setIsOpen(false)}>Motor Sporları</Link>
-              <Link href="/kategori/12" className="dropdown-item" onClick={() => setIsOpen(false)}>Röportajlar</Link>
-              <Link href="/kategori/7368" className="dropdown-item" onClick={() => setIsOpen(false)}>Ticari Araçlar</Link>
-              <Link href="/kategori/16714" className="dropdown-item" onClick={() => setIsOpen(false)}>Elektrikli Araçlar</Link>
-              <Link href="/kategori/5802" className="dropdown-item" onClick={() => setIsOpen(false)}>Konsept</Link>
-              <Link href="/kategori/7369" className="dropdown-item" onClick={() => setIsOpen(false)}>Motobike</Link>
-              <Link href="/kategori/3356" className="dropdown-item" onClick={() => setIsOpen(false)}>Teknoloji</Link>
-              <Link href="/arama?q=lastik" className="dropdown-item" onClick={() => setIsOpen(false)}>Lastik</Link>
-              <Link href="/arama?q=akaryakıt" className="dropdown-item" onClick={() => setIsOpen(false)}>Akaryakıt</Link>
-              <Link href="/kategori/18326" className="dropdown-item" onClick={() => setIsOpen(false)}>Lansman</Link>
+              <Link href="/kategori/5801" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Kampanyalar' : (language === 'en' ? 'Campaigns' : (language === 'de' ? 'Kampagnen' : 'Акции'))}</Link>
+              <Link href="/kategori/3" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Motor Sporları' : (language === 'en' ? 'Motorsports' : (language === 'de' ? 'Motorsport' : 'Мотоспорт'))}</Link>
+              <Link href="/kategori/12" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Röportajlar' : (language === 'en' ? 'Interviews' : (language === 'de' ? 'Interviews' : 'Интервью'))}</Link>
+              <Link href="/kategori/7368" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Ticari Araçlar' : (language === 'en' ? 'Commercial Vehicles' : (language === 'de' ? 'Nutzfahrzeuge' : 'Коммерческий транспорт'))}</Link>
+              <Link href="/kategori/16714" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Elektrikli Araçlar' : (language === 'en' ? 'Electric Vehicles' : (language === 'de' ? 'Elektrofahrzeuge' : 'Электромобили'))}</Link>
+              <Link href="/kategori/5802" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Konsept' : (language === 'en' ? 'Concept' : (language === 'de' ? 'Konzept' : 'Концепт'))}</Link>
+              <Link href="/kategori/7369" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Motobike' : (language === 'en' ? 'Motobike' : (language === 'de' ? 'Motobike' : 'Мотоциклы'))}</Link>
+              <Link href="/kategori/3356" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Teknoloji' : (language === 'en' ? 'Technology' : (language === 'de' ? 'Technologie' : 'Технологии'))}</Link>
+              <Link href="/arama?q=lastik" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Lastik' : (language === 'en' ? 'Tire' : (language === 'de' ? 'Reifen' : 'Шины'))}</Link>
+              <Link href="/arama?q=akaryakıt" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Akaryakıt' : (language === 'en' ? 'Fuel' : (language === 'de' ? 'Kraftstoff' : 'Топливо'))}</Link>
+              <Link href="/kategori/18326" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Lansman' : (language === 'en' ? 'Launch' : (language === 'de' ? 'Vorstellung' : 'Ланч'))}</Link>
               <hr style={{ borderColor: 'var(--border-color)', margin: '4px 0', opacity: 0.5 }} />
-              <Link href="/kategori/4" className="dropdown-item" style={{ color: 'var(--accent-color)', fontWeight: 'bold' }} onClick={() => setIsOpen(false)}>Tüm Haberler</Link>
+              <Link href="/kategori/4" className="dropdown-item" style={{ color: 'var(--accent-color)', fontWeight: 'bold' }} onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Tüm Haberler' : (language === 'en' ? 'All News' : (language === 'de' ? 'Alle Nachrichten' : 'Все новости'))}</Link>
             </div>
           </div>
 

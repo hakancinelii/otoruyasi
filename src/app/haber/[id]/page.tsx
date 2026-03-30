@@ -12,7 +12,7 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
   const [translatedTitle, setTranslatedTitle] = useState('');
   const [translatedContent, setTranslatedContent] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
-  const [translationError, setTranslationError] = useState(false);
+  const [translationError, setTranslationError] = useState('');
 
   useEffect(() => {
     async function fetchRealPost() {
@@ -22,12 +22,10 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
         const data = await res.json();
         setPost(data);
         
-        // İlk yükleme
         if (language === 'tr') {
           setTranslatedTitle(data.title.rendered);
           setTranslatedContent(data.content.rendered);
         } else {
-          // Dil zaten farklıysa direkt çeviriye git
           translateContent(data, language);
         }
       } catch (error) {
@@ -46,16 +44,16 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
       } else {
         setTranslatedTitle(post.title.rendered);
         setTranslatedContent(post.content.rendered);
-        setTranslationError(false);
+        setTranslationError('');
       }
     }
   }, [language]);
 
   const translateContent = async (data: any, lang: string) => {
-    setTranslatedTitle(''); // Temizle ki eski/TR metin görünmesin
+    setTranslatedTitle('');
     setTranslatedContent('');
     setIsTranslating(true);
-    setTranslationError(false);
+    setTranslationError('');
 
     try {
       const res = await fetch('/api/translate', {
@@ -71,7 +69,6 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
       
       if (resData.translatedText) {
         const fullText = resData.translatedText;
-        // Basit ayırma mantığı
         const titleMatch = fullText.match(/TITLE:([\s\S]*?)CONTENT:/i);
         const contentMatch = fullText.match(/CONTENT:([\s\S]*)/i);
         
@@ -79,17 +76,17 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
           setTranslatedTitle(titleMatch[1].trim());
           setTranslatedContent(contentMatch[1].trim());
         } else {
-          // Eğer AI formatı bozarsa düz ayır veya tamamını bas
-          setTranslatedContent(fullText);
+          setTranslatedContent(fullText.replace(/TITLE:.*?\n/i, ''));
           setTranslatedTitle(data.title.rendered); 
         }
+      } else if (resData.error) {
+        throw new Error(resData.error);
       } else {
-        throw new Error("Translation data empty");
+        throw new Error("Çeviri yanıtı boş geldi.");
       }
-    } catch (e) {
-      console.error("Çeviri hatası:", e);
-      setTranslationError(true);
-      // Hata durumunda orijinale dön
+    } catch (e: any) {
+      console.error("Çeviri hatası:", e.message);
+      setTranslationError(e.message || "Çeviri başarısız oldu.");
       setTranslatedTitle(data.title.rendered);
       setTranslatedContent(data.content.rendered);
     } finally {
@@ -102,7 +99,6 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
       <article className="container" style={{ paddingTop: '40px', paddingBottom: '40px', maxWidth: '860px', margin: '0 auto' }}>
         <div style={{ width: '60%', height: '36px', background: 'var(--border-color)', marginBottom: '20px', borderRadius: '8px' }}></div>
         <div style={{ width: '100%', height: '420px', background: 'var(--border-color)', borderRadius: '16px', marginBottom: '30px', animation: 'pulse 1.5s infinite' }}></div>
-        <style jsx global>{`@keyframes pulse { 0%{opacity:.3} 50%{opacity:.6} 100%{opacity:.3} }`}</style>
       </article>
     );
   }
@@ -122,7 +118,7 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
     <article className="container" style={{ padding: '60px 20px', maxWidth: '860px', margin: '0 auto' }}>
       <div style={{ marginBottom: '40px' }}>
         <Link href="/" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontSize: '14px', marginBottom: '20px', display: 'inline-block' }}>
-          ← {t('home')}
+          ← {language === 'tr' ? 'Ana Sayfa' : (language === 'en' ? 'Back Home' : (language === 'de' ? 'Startseite' : 'Назад'))}
         </Link>
         
         {isTranslating && !translatedTitle ? (
@@ -138,14 +134,16 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: 'var(--text-muted)', fontSize: '14px' }}>
           <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}</span>
           <span>•</span>
-          <span>Oto Rüyası Editoryal</span>
+          <span>Editoryal</span>
           {isTranslating && (
             <span style={{ color: 'var(--accent-color)', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}>
                <div className="spinner-mini"></div> {language === 'tr' ? 'Çevriliyor...' : 'AI Translating...'}
             </span>
           )}
           {translationError && (
-            <span style={{ color: '#ff5722', marginLeft: 'auto' }}>Translation Failed (Original TR)</span>
+            <span style={{ color: '#ff5722', marginLeft: 'auto', fontWeight: 600 }}>
+              AI Hata: {translationError}
+            </span>
           )}
         </div>
       </div>

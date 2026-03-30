@@ -106,11 +106,12 @@ body {
 }
 
 .logo-img {
-  height: 70px; /* Reduced from 90px to fit everything on desktop */
+  height: 90px;
+  max-width: 240px;
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
-  mix-blend-mode: var(--logo-blend);
+  display: block;
 }
 
 .logo-img:hover {
@@ -475,9 +476,14 @@ body {
   }
 
   .nav-left, .nav-right {
-    flex: 1;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
+  }
+  
+  .nav-left {
+    min-width: 250px;
+    justify-content: flex-start;
   }
 
   .nav-right {
