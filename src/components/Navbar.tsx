@@ -66,26 +66,49 @@ export default function Navbar() {
     de: 'Deutsch'
   };
 
+  const menuItems = [
+    { label: t('home'), href: '/' },
+    { label: t('test_drives'), href: '/kategori/5' },
+    { label: t('compare'), href: '/karsilastirma', color: 'var(--accent-color)', bold: true },
+    { label: t('videos'), href: '/videolar', color: '#ff2d2d' },
+    { label: t('instagram'), href: '/instagram' } // This was probably news categories before, but keeping standard
+  ];
+
+  const newsCategories = [
+    { id: '5801', label: language === 'tr' ? 'Kampanyalar' : 'Campaigns' },
+    { id: '5802', label: language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles' },
+    { id: '3', label: language === 'tr' ? 'Gündem' : 'Agenda' },
+    { id: '16714', label: language === 'tr' ? 'Modifikasyon' : 'Modification' },
+    { id: '7368', label: language === 'tr' ? 'Motor Sporları' : 'Motorsports' },
+    { id: '18326', label: language === 'tr' ? 'Otobüs' : 'Bus' },
+    { id: '4', label: language === 'tr' ? 'Tüm Haberler' : 'All News', accent: true }
+  ];
+
   return (
     <header className={`header ${isVisible ? 'header-visible' : 'header-hidden'}`}>
       <div className="container nav-container">
-        {/* Left: Logo */}
         <div className="nav-left">
           <Link href="/" onClick={() => setIsOpen(false)}>
             <img src="/logo.png" alt="Oto Rüyası" className="logo-img" />
           </Link>
         </div>
 
-        {/* Center: Navigation Links */}
         <nav className={`nav-links ${isOpen ? 'mobile-open' : ''}`}>
           <div className="mobile-only" style={{ marginBottom: '20px', width: '100%' }}>
             <SearchBar />
           </div>
-          <Link href="/" className="nav-link" onClick={() => setIsOpen(false)}>{t('home')}</Link>
-          {/* ... existing links ... */}
-          <Link href="/kategori/5" className="nav-link" onClick={() => setIsOpen(false)}>{t('test_drives')}</Link>
-          <Link href="/karsilastirma" className="nav-link" onClick={() => setIsOpen(false)} style={{ color: 'var(--accent-color)', fontWeight: 700 }}>{t('compare')}</Link>
-          <Link href="/videolar" className="nav-link" onClick={() => setIsOpen(false)} style={{ color: '#ff2d2d' }}>{t('videos')}</Link>
+          
+          {menuItems.map((item) => (
+            <Link 
+              key={item.href} 
+              href={item.href} 
+              className="nav-link" 
+              onClick={() => setIsOpen(false)}
+              style={{ color: item.color, fontWeight: item.bold ? 700 : 400 }}
+            >
+              {item.label}
+            </Link>
+          ))}
           
           <div 
             className="nav-dropdown" 
@@ -97,27 +120,33 @@ export default function Navbar() {
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M6 9l6 6 6-6"/></svg>
             </span>
             <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-               {/* Categories... simplified for brevity, in real file it has 12 items */}
-               <Link href="/kategori/5801" className="dropdown-item" onClick={() => setIsOpen(false)}>{language === 'tr' ? 'Kampanyalar' : 'Campaigns'}</Link>
-               <Link href="/kategori/4" className="dropdown-item" style={{ color: 'var(--accent-color)' }} onClick={() => setIsOpen(false)}>{t('all_news')}</Link>
+               {newsCategories.map((cat) => (
+                 <Link 
+                   key={cat.id} 
+                   href={`/kategori/${cat.id}`} 
+                   className="dropdown-item" 
+                   onClick={() => setIsOpen(false)}
+                   style={{ color: cat.accent ? 'var(--accent-color)' : 'inherit' }}
+                 >
+                   {cat.label}
+                 </Link>
+               ))}
             </div>
           </div>
           
           <Link href="/abonelik" className="nav-link" onClick={() => setIsOpen(false)}>{t('subscription')}</Link>
         </nav>
 
-        {/* Right: Search, Auth, Theme, Language */}
         <div className="nav-right">
-          <div className="desktop-only" style={{ gap: '12px', alignItems: 'center' }}>
+          <div className="desktop-only" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <SearchBar />
             {user ? (
-               <button onClick={logout} className="btn-outline">{t('logout')}</button>
+               <button onClick={logout} className="btn-outline" style={{ background: 'none', border: '1px solid var(--border-color)', padding: '6px 14px', borderRadius: '8px', color: 'inherit', fontSize: '13px', cursor: 'pointer' }}>{t('logout')}</button>
             ) : (
                <Link href="/giris" className="btn-primary" style={{ padding: '8px 16px', fontSize: '12px' }}>{t('login')}</Link>
             )}
             
-            {/* Language Dropdown */}
-            <div className="lang-switcher" ref={langRef}>
+            <div className="lang-switcher" ref={langRef} style={{ position: 'relative' }}>
               <button 
                 className="lang-btn" 
                 onClick={() => setIsLangOpen(!isLangOpen)}
@@ -129,12 +158,13 @@ export default function Navbar() {
               </button>
               
               {isLangOpen && (
-                <div className="lang-dropdown-menu">
+                <div className="lang-dropdown-menu" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '12px', background: 'rgba(22, 27, 34, 0.98)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '8px', minWidth: '160px', boxShadow: '0 20px 40px rgba(0,0,0,0.6)', zIndex: 1000, backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   {(['tr', 'en', 'ru', 'de'] as Language[]).map((lang) => (
                     <button
                       key={lang}
                       onClick={() => { setLanguage(lang); setIsLangOpen(false); }}
                       className={`lang-item ${language === lang ? 'active' : ''}`}
+                      style={{ width: '100%', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '12px', background: language === lang ? 'rgba(252,163,17,0.1)' : 'none', border: 'none', borderRadius: '8px', cursor: 'pointer', color: language === lang ? 'var(--accent-color)' : 'var(--text-color)', transition: '0.2s' }}
                     >
                       <span style={{ fontSize: '20px' }}>{flags[lang]}</span>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -147,61 +177,16 @@ export default function Navbar() {
               )}
             </div>
 
-            <button className="theme-toggle" onClick={toggleTheme} style={{ color: theme === 'light' ? '#f1c40f' : '#fff' }}>
+            <button className="theme-toggle" onClick={toggleTheme} style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme === 'light' ? '#f1c40f' : '#fff' }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 19.07l1.41-1.41M17.66 6.34l1.41-1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" /></svg>
             </button>
           </div>
 
-          <button className="mobile-menu-btn" onClick={() => setIsOpen(!isOpen)}>
+          <button className="mobile-menu-btn" onClick={() => setIsOpen(!isOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
         </div>
       </div>
-      
-      <style jsx>{`
-        .lang-switcher { position: relative; }
-        .lang-dropdown-menu {
-          position: absolute;
-          top: 100%;
-          right: 0;
-          margin-top: 12px;
-          background: rgba(22, 27, 34, 0.98);
-          border: 1px solid var(--border-color);
-          border-radius: 12px;
-          padding: 8px;
-          min-width: 160px;
-          box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-          z-index: 1000;
-          backdrop-filter: blur(20px);
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-        .lang-item {
-          width: 100%;
-          padding: 10px 14px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          background: none;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          color: var(--text-color);
-          transition: 0.2s;
-        }
-        .lang-item:hover { background: rgba(255,255,255,0.05); }
-        .lang-item.active { background: rgba(252,163,17,0.1); color: var(--accent-color); }
-        .btn-outline {
-          background: none;
-          border: 1px solid var(--border-color);
-          padding: 6px 14px;
-          border-radius: 8px;
-          color: inherit;
-          font-size: 13px;
-          cursor: pointer;
-        }
-      `}</style>
     </header>
   );
 }
