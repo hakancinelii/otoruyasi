@@ -1,30 +1,31 @@
 import { NextResponse } from "next/server";
 
-// CRITICAL SECURITY UPDATE:
-// We removed all hardcoded keys to avoid Google's "Leaked Key" automatic disabling.
-// You MUST add GEMINI_API_KEY to your Vercel Dashboard Environment Variables.
 const API_KEY = process.env.GEMINI_API_KEY;
 
-async function callGeminiAPI(text: string, lang: string, model: string, apiVersion: string = "v1beta") {
-  if (!API_KEY) throw new Error("API_KEY_MISSING");
+async function callGeminiAPI(text: string, lang: string, model: string) {
+  if (!API_KEY) throw new Error("GEMINI_API_KEY is not set in Vercel");
 
-  const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${API_KEY}`;
-  
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       contents: [{
         parts: [{
-          text: `Translate the following automotive text into ${lang}. Only return translated text. Keep HTML tags. CONTENT: ${text}`
+          text: `Translate the following text into ${lang}. Return ONLY the translated text. Preserve all HTML tags exactly. Do not add any explanation.\n\n${text}`
         }]
-      }]
+      }],
+      generationConfig: {
+        temperature: 0.3,
+        maxOutputTokens: 4096
+      }
     })
   });
 
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error?.message || `Gemini ${model} Error`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error?.message || `HTTP ${response.status}`);
   }
 
   const data = await response.json();
@@ -38,11 +39,11 @@ export async function POST(req: Request) {
     const { text, targetLang } = body;
 
     if (!API_KEY) {
-      console.error("Vercel'de GEMINI_API_KEY eksik!");
-      return NextResponse.json({ translatedText: text || "", error: "API Key is missing in Vercel. Please add GEMINI_API_KEY first." });
+      console.error("GEMINI_API_KEY missing from environment");
+      return NextResponse.json({ translatedText: text || "", error: "API key not configured" });
     }
 
-    if (!text || !targetLang || targetLang === 'tr') {
+    if (!text || !targetLang || targetLang === "tr") {
       return NextResponse.json({ translatedText: text || "" });
     }
 
@@ -51,24 +52,25 @@ export async function POST(req: Request) {
       ru: "Russian",
       de: "German"
     };
-    const target = langNames[targetLang as keyof typeof langNames] || targetLang;
+    const target = langNames[targetLang] || targetLang;
 
-    let translatedText;
-    try {
-      // First try 1.5 Flash (Modern standard)
-      translatedText = await callGeminiAPI(text, target, "gemini-1.5-flash", "v1beta");
-    } catch (e: any) {
-      console.warn("Retrying with fallback model due to:", e.message);
-      // Fallback
-      translatedText = await callGeminiAPI(text, target, "gemini-pro", "v1beta");
+    // March 2026: Only gemini-2.x models are available.
+    // gemini-1.5-flash and gemini-pro have been retired by Google.
+    let translatedText: string | undefined;
+    const models = ["gemini-2.0-flash", "gemini-2.5-flash"];
+
+    for (const model of models) {
+      try {
+        translatedText = await callGeminiAPI(text, target, model);
+        if (translatedText) break;
+      } catch (e: any) {
+        console.warn(`Model ${model} failed:`, e.message);
+      }
     }
 
     return NextResponse.json({ translatedText: translatedText || text });
   } catch (error: any) {
-    console.error("All Gemini Models Failed:", error.message || error);
-    return NextResponse.json({ 
-      translatedText: body?.text || "",
-      error: error.message === "API_KEY_MISSING" ? "Vercel üzerinde GEMINI_API_KEY tanımlanmamış!" : error.message
-    });
+    console.error("Translation error:", error.message || error);
+    return NextResponse.json({ translatedText: body?.text || "" });
   }
 }
