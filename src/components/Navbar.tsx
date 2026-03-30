@@ -7,9 +7,31 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [theme, setTheme] = useState('dark');
   const { user, logout } = useAuth();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Aşağı kayıyorsan ve başlık yüksekliğini geçtiysen gizle
+      if (currentScrollY > lastScrollY && currentScrollY > 150) {
+        setIsVisible(false);
+      } 
+      // Yukarı kayıyorsan (herhangi bir miktar) hemen göster
+      else {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -25,7 +47,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="header">
+    <header className={`header ${isVisible ? 'header-visible' : 'header-hidden'}`}>
       <div className="container nav-container">
         <div className="nav-left">
           <Link href="/" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center' }}>

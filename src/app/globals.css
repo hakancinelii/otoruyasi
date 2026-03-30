@@ -77,15 +77,31 @@ a:hover {
   padding: 12px 0;
   border-bottom: 1px solid var(--border-color);
   background: var(--header-bg);
-  backdrop-filter: blur(14px); /* Slightly stronger blur for premium look */
+  backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  position: sticky;
+  position: fixed; /* Fixed prevents jumps on scroll reveal */
   top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
   z-index: 1000;
-  display: flex !important; /* Ensure visibility */
+  display: flex !important;
   justify-content: center;
   align-items: center;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.header-hidden {
+  transform: translateY(-100%);
+}
+
+.header-visible {
+  transform: translateY(0);
+}
+
+/* Sayfa içeriğinin header altında kalmaması için body'e üst boşluk ekliyoruz */
+body {
+  padding-top: 100px; /* Header yüksekliği kadar boşluk */
 }
 
 .logo-img {
