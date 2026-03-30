@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useLanguage } from '../context/LanguageContext';
 
 // Popüler Türkiye Pazarı Araç Veritabanı
 const CAR_DATABASE: Record<string, string[]> = {
@@ -37,18 +38,22 @@ export default function KarsilastirmaPage() {
   const [car1Model, setCar1Model] = useState('');
   const [car2Brand, setCar2Brand] = useState('');
   const [car2Model, setCar2Model] = useState('');
+  const { language, t } = useLanguage();
 
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<CompareResult | null>(null);
+  const [translatedResults, setTranslatedResults] = useState<CompareResult | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const startComparison = async () => {
     if (!car1Brand || !car1Model || !car2Brand || !car2Model) {
-      alert("Lütfen karşılaştırmak için iki aracı da tam olarak seçin.");
+      alert(language === 'tr' ? "Lütfen iki aracı da seçin." : "Please select both vehicles.");
       return;
     }
 
     setIsLoading(true);
     setResults(null);
+    setTranslatedResults(null);
 
     try {
       const response = await fetch('/api/compare', {
@@ -63,21 +68,64 @@ export default function KarsilastirmaPage() {
       if (!response.ok) throw new Error("API hatası");
       const data = await response.json();
       setResults(data);
+      setTranslatedResults(data); // Varsayılan olarak ata
+
+      if (language !== 'tr') {
+        translateResults(data, language);
+      }
     } catch (error) {
       console.error(error);
-      alert("Yapay zeka yanıtı alınamadı. Lütfen tekrar deneyin.");
+      alert(t('no_content'));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (results && language !== 'tr') {
+       translateResults(results, language);
+    } else if (results && language === 'tr') {
+       setTranslatedResults(results);
+    }
+  }, [language, results]);
+
+  const translateResults = async (data: CompareResult, lang: string) => {
+    setIsTranslating(true);
+    try {
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          text: JSON.stringify(data), 
+          targetLang: lang 
+        })
+      });
+      const resData = await res.json();
+      if (resData.translatedText) {
+        // Gemini bazen JSON stringini olduğu gibi çevirir, bazen içindeki textleri.
+        // Ama biz en garantisi analysis ve points'leri tek tek çevirtmek.
+        // Şimdilik toplu deniyoruz.
+        try {
+           const cleanJson = resData.translatedText.replace(/```json|```/g, "").trim();
+           setTranslatedResults(JSON.parse(cleanJson));
+        } catch (e) {
+           console.error("JSON parse error on translation", e);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsTranslating(false);
     }
   };
 
   return (
     <main className="container" style={{ padding: '60px 20px', minHeight: '80vh' }}>
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <span className="hero-badge" style={{ background: '#E11D48', color: '#fff' }}>Yapay Zeka Destekli</span>
-        <h1 style={{ fontSize: '42px', fontWeight: 800, marginBottom: '16px' }}>Akıllı Araç Karşılaştırma</h1>
+        <span className="hero-badge" style={{ background: '#E11D48', color: '#fff' }}>{t('ai_powered')}</span>
+        <h1 style={{ fontSize: '42px', fontWeight: 800, marginBottom: '16px' }}>{t('smart_compare_title')}</h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
-          Oto Rüyası veritabanı ve Yapay Zeka (AI) analizleriyle, iki aracı saniyeler içinde bütün detaylarıyla yüzleştir!
+          {t('smart_compare_desc')}
         </p>
       </div>
 
@@ -95,8 +143,8 @@ export default function KarsilastirmaPage() {
                 onChange={(e) => { setCar1Brand(e.target.value); setCar1Model(''); }}
                 style={{ width: '100%', padding: '12px', marginBottom: '15px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-color)', fontSize: '16px' }}
               >
-                <option value="">Marka Seçin</option>
-                {Object.keys(CAR_DATABASE).map(brand => <option key={`1-${brand}`} value={brand}>{brand}</option>)}
+                <option value="">{t('select_brand')}</option>
+                {Object.keys(CAR_DATABASE).sort().map(brand => <option key={`1-${brand}`} value={brand}>{brand}</option>)}
               </select>
 
               <select 
@@ -105,7 +153,7 @@ export default function KarsilastirmaPage() {
                 disabled={!car1Brand}
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-color)', fontSize: '16px', opacity: !car1Brand ? 0.5 : 1 }}
               >
-                <option value="">Model Seçin</option>
+                <option value="">{t('select_model')}</option>
                 {car1Brand && CAR_DATABASE[car1Brand].map(model => <option key={`1-${model}`} value={model}>{model}</option>)}
               </select>
             </div>
@@ -126,8 +174,8 @@ export default function KarsilastirmaPage() {
                 onChange={(e) => { setCar2Brand(e.target.value); setCar2Model(''); }}
                 style={{ width: '100%', padding: '12px', marginBottom: '15px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-color)', fontSize: '16px' }}
               >
-                <option value="">Marka Seçin</option>
-                {Object.keys(CAR_DATABASE).map(brand => <option key={`2-${brand}`} value={brand}>{brand}</option>)}
+                <option value="">{t('select_brand')}</option>
+                {Object.keys(CAR_DATABASE).sort().map(brand => <option key={`2-${brand}`} value={brand}>{brand}</option>)}
               </select>
 
               <select 
@@ -136,7 +184,7 @@ export default function KarsilastirmaPage() {
                 disabled={!car2Brand}
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-color)', fontSize: '16px', opacity: !car2Brand ? 0.5 : 1 }}
               >
-                <option value="">Model Seçin</option>
+                <option value="">{t('select_model')}</option>
                 {car2Brand && CAR_DATABASE[car2Brand].map(model => <option key={`2-${model}`} value={model}>{model}</option>)}
               </select>
             </div>
@@ -149,7 +197,7 @@ export default function KarsilastirmaPage() {
               disabled={isLoading || !car1Model || !car2Model}
               style={{ padding: '16px 40px', fontSize: '18px', width: '100%', maxWidth: '400px', opacity: (isLoading || !car1Model || !car2Model) ? 0.6 : 1, cursor: (isLoading || !car1Model || !car2Model) ? 'not-allowed' : 'pointer' }}
             >
-              {isLoading ? 'Yapay Zeka Analiz Ediyor...' : 'Kıyasıya Karşılaştır!'}
+              {isLoading ? t('ai_is_analyzing') : t('compare_btn')}
             </button>
           </div>
 
@@ -157,27 +205,27 @@ export default function KarsilastirmaPage() {
       </div>
 
       {/* SONUÇ ALANI */}
-      {results && (
+      {translatedResults && (
         <div style={{ marginTop: '60px', transition: 'all 0.3s' }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Yapay Zeka Analiz Sonucu</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>{t('ai_result_title')} {isTranslating && '...'}</h2>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>
             <div className="card" style={{ flex: '1', minWidth: '300px', padding: '30px', textAlign: 'center' }}>
               <h3 style={{ fontSize: '24px', margin: '0 0 10px' }}>{car1Brand} {car1Model}</h3>
-              <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--accent-color)' }}>{results.car1.score}<span style={{ fontSize: '16px', color: 'var(--text-muted)'}}>/10</span></div>
-              <p style={{ color: 'var(--text-muted)' }}>AI Puanı</p>
+              <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--accent-color)' }}>{translatedResults.car1.score}<span style={{ fontSize: '16px', color: 'var(--text-muted)'}}>/10</span></div>
+              <p style={{ color: 'var(--text-muted)' }}>{t('ai_score')}</p>
               
               <ul style={{ textAlign: 'left', marginTop: '20px', paddingLeft: '20px', listStyle: 'none' }}>
-                {results.car1.points.map((p: string, i: number) => <li key={i} style={{ marginBottom: '8px' }}>• {p}</li>)}
+                {translatedResults.car1.points.map((p: string, i: number) => <li key={i} style={{ marginBottom: '8px' }}>• {p}</li>)}
               </ul>
             </div>
             
             <div className="card" style={{ flex: '1', minWidth: '300px', padding: '30px', textAlign: 'center' }}>
               <h3 style={{ fontSize: '24px', margin: '0 0 10px' }}>{car2Brand} {car2Model}</h3>
-              <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--accent-color)' }}>{results.car2.score}<span style={{ fontSize: '16px', color: 'var(--text-muted)'}}>/10</span></div>
-              <p style={{ color: 'var(--text-muted)' }}>AI Puanı</p>
+              <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--accent-color)' }}>{translatedResults.car2.score}<span style={{ fontSize: '16px', color: 'var(--text-muted)'}}>/10</span></div>
+              <p style={{ color: 'var(--text-muted)' }}>{t('ai_score')}</p>
               
               <ul style={{ textAlign: 'left', marginTop: '20px', paddingLeft: '20px', listStyle: 'none' }}>
-                {results.car2.points.map((p: string, i: number) => <li key={i} style={{ marginBottom: '8px' }}>• {p}</li>)}
+                {translatedResults.car2.points.map((p: string, i: number) => <li key={i} style={{ marginBottom: '8px' }}>• {p}</li>)}
               </ul>
             </div>
           </div>
@@ -185,10 +233,10 @@ export default function KarsilastirmaPage() {
           {/* AI Uzman Yorumu */}
           <div className="card" style={{ marginTop: '30px', padding: '30px', textAlign: 'left', maxWidth: '920px', margin: '30px auto 0', border: '1px solid var(--accent-color)' }}>
               <h3 style={{ fontSize: '22px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                ⚡ Yapay Zeka Uzman Görüşü
+                ⚡ {t('ai_vision')}
               </h3>
-              <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)' }}>
-                {results.analysis}
+              <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)', opacity: isTranslating ? 0.6 : 1 }}>
+                {translatedResults.analysis}
               </p>
           </div>
         </div>

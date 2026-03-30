@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { GridSkeleton, HeroSkeleton } from '../components/Skeleton';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,27 +12,37 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const { language, t } = useLanguage();
+
+  const [heroTitle, setHeroTitle] = useState('');
+  const [heroExcerpt, setHeroExcerpt] = useState('');
+  const [isTranslatingHero, setIsTranslatingHero] = useState(false);
 
   const fetchRealData = async (pageNum: number, isLoadMore = false) => {
     try {
       if (isLoadMore) setLoadingMore(true);
-      
-      const limit = isLoadMore ? 30 : 31; // İlk sayfada hero alanı için 1 fazlalık çekiliyor
+
+      const limit = isLoadMore ? 30 : 31;
       const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts?_embed&per_page=${limit}&page=${pageNum}`);
-      
+
       if (!res.ok) {
         if (res.status === 400) setHasMore(false);
-        throw new Error('API yanıt vermedi veya içerik kalmadı.');
+        throw new Error(t('no_content'));
       }
-      
+
       const data = await res.json();
-      
+
       if (data.length < limit) setHasMore(false);
 
       if (isLoadMore) {
         setPosts(prev => [...prev, ...data]);
       } else {
         setPosts(data);
+        if (data.length > 0) {
+          setHeroTitle(data[0].title.rendered);
+          setHeroExcerpt(data[0].excerpt.rendered);
+          if (language !== 'tr') translateHero(data[0], language);
+        }
       }
     } catch (error) {
       console.error('Doğrudan bağlantı hatası:', error);
@@ -43,8 +54,41 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchRealData(1);
+    fetchRealData(page);
   }, []);
+
+  useEffect(() => {
+    if (posts.length > 0 && language !== 'tr') {
+      translateHero(posts[0], language);
+    } else if (posts.length > 0 && language === 'tr') {
+      setHeroTitle(posts[0].title.rendered);
+      setHeroExcerpt(posts[0].excerpt.rendered);
+    }
+  }, [language, posts]);
+
+  const translateHero = async (post: any, lang: string) => {
+    setIsTranslatingHero(true);
+    try {
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: `Title: ${post.title.rendered} --- Excerpt: ${post.excerpt.rendered}`,
+          targetLang: lang
+        })
+      });
+      const data = await res.json();
+      if (data.translatedText) {
+        const parts = data.translatedText.split('---');
+        setHeroTitle(parts[0].replace('Title: ', '').replace('Title:', '').trim());
+        setHeroExcerpt(parts[1]?.replace('Excerpt: ', '').replace('Excerpt:', '').trim() || '');
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsTranslatingHero(false);
+    }
+  }
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -65,7 +109,7 @@ export default function Home() {
     return (
       <main className="container">
         <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '20px', fontWeight: 600 }}>Maalesef şu an içeriklere ulaşılamıyor.</div>
+          <div style={{ fontSize: '20px', fontWeight: 600 }}>{t('no_content')}</div>
         </div>
       </main>
     );
@@ -86,14 +130,14 @@ export default function Home() {
         <img className="hero-img" src={getImageUrl(heroPost)} alt={heroPost.title.rendered} />
         <div className="hero-overlay"></div>
         <div className="hero-content">
-          <span className="hero-badge">Öne Çıkan Haber</span>
-          <h1 className="hero-title" dangerouslySetInnerHTML={{ __html: heroPost.title.rendered }}></h1>
-          <p className="hero-excerpt" dangerouslySetInnerHTML={{ __html: heroPost.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 150) + '...' }}></p>
+          <span className="hero-badge">{t('featured_news')} {isTranslatingHero && '...'}</span>
+          <h1 className="hero-title" dangerouslySetInnerHTML={{ __html: heroTitle }}></h1>
+          <p className="hero-excerpt" dangerouslySetInnerHTML={{ __html: heroExcerpt.replace(/<[^>]+>/g, '').substring(0, 180) + '...' }}></p>
         </div>
       </Link>
 
       <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '60px' }}>
-        <h2 style={{ fontSize: '28px', margin: 0 }}>Son Haberler</h2>
+        <h2 style={{ fontSize: '28px', margin: 0 }}>{t('last_news')}</h2>
       </div>
 
       {/* Grid Posts */}
@@ -101,19 +145,19 @@ export default function Home() {
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {gridPosts.map((post: any) => {
           return (
-          <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
-            <div className="card-img-wrapper">
-              <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
-            </div>
-            <div className="card-content">
-              <h3 className="card-title" dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
-              <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
-              <div className="card-footer">
-                <span>{new Date(post.date).toLocaleDateString('tr-TR')}</span>
-                <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>İncele &rarr;</span>
+            <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
+              <div className="card-img-wrapper">
+                <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
               </div>
-            </div>
-          </Link>
+              <div className="card-content">
+                <h3 className="card-title" dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
+                <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
+                <div className="card-footer">
+                  <span>{new Date(post.date).toLocaleDateString('tr-TR')}</span>
+                  <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{t('read_more')} &rarr;</span>
+                </div>
+              </div>
+            </Link>
           );
         })}
       </section>
@@ -121,13 +165,13 @@ export default function Home() {
       {/* Pagination Load More */}
       {hasMore && (
         <div style={{ textAlign: 'center', marginTop: '50px', paddingBottom: '30px' }}>
-          <button 
-            onClick={handleLoadMore} 
+          <button
+            onClick={handleLoadMore}
             disabled={loadingMore}
-            className="btn-primary" 
-            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--accent-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
+            className="btn-primary"
+            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
           >
-            {loadingMore ? 'Yükleniyor...' : 'Daha Fazla Göster'}
+            {loadingMore ? t('loading') : t('load_more')}
           </button>
         </div>
       )}

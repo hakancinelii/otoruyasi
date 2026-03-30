@@ -4,10 +4,12 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { GridSkeleton } from '../../components/Skeleton';
+import { useLanguage } from '../../context/LanguageContext';
 
 function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
+  const { t } = useLanguage();
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [posts, setPosts] = useState<any[]>([]);
@@ -27,7 +29,7 @@ function SearchResults() {
       
       if (!res.ok) {
         if (res.status === 400) setHasMore(false);
-        throw new Error('API yanıt vermedi veya içerik kalmadı.');
+        throw new Error(t('no_content'));
       }
       
       const data = await res.json();
@@ -80,7 +82,7 @@ function SearchResults() {
   if (!posts || posts.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
-        <div style={{ fontSize: '20px', fontWeight: 600 }}>&quot;{query}&quot; için sonuç bulunamadı.</div>
+        <div style={{ fontSize: '20px', fontWeight: 600 }}>&quot;{query}&quot; {t('no_content')}</div>
       </div>
     );
   }
@@ -88,7 +90,7 @@ function SearchResults() {
   return (
     <>
       <div style={{ marginBottom: '30px', marginTop: '40px' }}>
-        <h1 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>"{query}" İçin Arama Sonuçları</h1>
+        <h1 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>&quot;{query}&quot; {t('search_results')}</h1>
       </div>
 
       <section className="grid">
@@ -103,7 +105,7 @@ function SearchResults() {
               <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
               <div className="card-footer">
                 <span>{new Date(post.date).toLocaleDateString('tr-TR')}</span>
-                <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>İncele &rarr;</span>
+                <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{t('read_more')} &rarr;</span>
               </div>
             </div>
           </Link>
@@ -116,9 +118,9 @@ function SearchResults() {
             onClick={handleLoadMore} 
             disabled={loadingMore}
             className="btn-primary" 
-            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--accent-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
+            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
           >
-            {loadingMore ? 'Yükleniyor...' : 'Daha Fazla Göster'}
+            {loadingMore ? t('loading') : t('load_more')}
           </button>
         </div>
       )}

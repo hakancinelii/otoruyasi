@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { GridSkeleton } from '../../../components/Skeleton';
-
+import { useLanguage } from '../../../context/LanguageContext';
 
 export default function KategoriPage({ params }: { params: { id: string } }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,19 +12,20 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   const [page, setPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const { t } = useLanguage();
 
   const fetchCategoryData = async (pageNum: number, isLoadMore = false) => {
     try {
       if (isLoadMore) setLoadingMore(true);
       const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts?categories=${params.id}&_embed&per_page=30&page=${pageNum}`);
-      
+
       if (!res.ok) {
         if (res.status === 400) setHasMore(false);
-        throw new Error('API yanıt vermedi veya içerik kalmadı.');
+        throw new Error(t('no_content'));
       }
-      
+
       const data = await res.json();
-      
+
       if (data.length < 30) setHasMore(false);
 
       if (isLoadMore) {
@@ -71,7 +72,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
     return (
       <main className="container">
         <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '20px', fontWeight: 600 }}>Bu kategoride henüz içerik bulunmuyor.</div>
+          <div style={{ fontSize: '20px', fontWeight: 600 }}>{t('no_content')}</div>
         </div>
       </main>
     );
@@ -80,7 +81,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   return (
     <main className="container">
       <div style={{ marginBottom: '30px', marginTop: '40px' }}>
-        <h1 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>Kategori İçerikleri</h1>
+        <h1 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>{t('news')}</h1>
       </div>
 
       <section className="grid">
@@ -95,7 +96,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
               <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
               <div className="card-footer">
                 <span>{new Date(post.date).toLocaleDateString('tr-TR')}</span>
-                <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>İncele &rarr;</span>
+                <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{t('read_more')} &rarr;</span>
               </div>
             </div>
           </Link>
@@ -104,13 +105,13 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
 
       {hasMore && (
         <div style={{ textAlign: 'center', marginTop: '50px', paddingBottom: '30px' }}>
-          <button 
-            onClick={handleLoadMore} 
+          <button
+            onClick={handleLoadMore}
             disabled={loadingMore}
-            className="btn-primary" 
-            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--accent-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
+            className="btn-primary"
+            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
           >
-            {loadingMore ? 'Yükleniyor...' : 'Daha Fazla Göster'}
+            {loadingMore ? t('loading') : t('load_more')}
           </button>
         </div>
       )}
