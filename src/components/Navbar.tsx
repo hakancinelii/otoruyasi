@@ -35,9 +35,6 @@ export default function Navbar() {
               className="logo-img"
             />
           </Link>
-          <div className="desktop-only" style={{ marginLeft: '15px' }}>
-            <SearchBar />
-          </div>
         </div>
 
         {/* Desktop & Mobile Navigation */}
@@ -114,7 +111,8 @@ export default function Navbar() {
         </nav>
 
         <div className="nav-right">
-          <div className="desktop-only" style={{ gap: '10px' }}>
+          <div className="desktop-only" style={{ gap: '15px', alignItems: 'center' }}>
+            <SearchBar />
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span className="nav-link desktop-only" style={{ textTransform: 'none', color: 'var(--accent-color)' }}>{user.user_display_name}</span>
@@ -133,7 +131,7 @@ export default function Navbar() {
           <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle Theme" style={{ color: theme === 'light' ? '#f1c40f' : '#ffffff', background: 'none', border: 'none', cursor: 'pointer', padding: '8px' }}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 19.07l1.41-1.41M17.66 6.34l1.41-1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" /></svg>
           </button>
-
+          
           {/* Mobile Toggle Button */}
           <button className="mobile-menu-btn" onClick={() => setIsOpen(!isOpen)} title="Menüyü Aç">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
