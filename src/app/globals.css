@@ -44,6 +44,11 @@ body {
   padding: 0;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+html {
+  overflow-x: hidden;
 }
 
 /* Base resets */
@@ -436,7 +441,7 @@ a:hover {
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 8px; /* reduced from 15px to fit everything */
     margin: 0 auto;
   }
 }
