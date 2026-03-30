@@ -13,12 +13,20 @@ async function callGeminiAPI(text: string, lang: string, model: string) {
     body: JSON.stringify({
       contents: [{
         parts: [{
-          text: `Translate the following text into ${lang}. Return ONLY the translated text. Preserve all HTML tags exactly. Do not add any explanation.\n\n${text}`
+          text: `You are a professional translator. Translate the following text into ${lang}. 
+          CRITICAL INSTRUCTIONS:
+          1. TRANSLATE the ENTIRE text. DO NOT SUMMARIZE. DO NOT SKIP ANY PARAGRAPHS.
+          2. Return ONLY the translated text. No intros or outros.
+          3. Preserve ALL HTML tags (<a>, <p>, <img>, etc.) EXACTLY as they are.
+          4. If the text has a TITLE: and CONTENT: format, preserve those labels in the translation.
+          
+          TEXT TO TRANSLATE:
+          \n\n${text}`
         }]
       }],
       generationConfig: {
-        temperature: 0.3,
-        maxOutputTokens: 4096
+        temperature: 0.1, // Lower temperature for more literal translation
+        maxOutputTokens: 8192 // Increased for longer content
       }
     })
   });
@@ -29,7 +37,10 @@ async function callGeminiAPI(text: string, lang: string, model: string) {
   }
 
   const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+  const translated = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+  
+  if (!translated) throw new Error("AI returned empty content");
+  return translated;
 }
 
 export async function POST(req: Request) {
@@ -54,15 +65,23 @@ export async function POST(req: Request) {
     };
     const target = langNames[targetLang] || targetLang;
 
-    // March 2026: Only gemini-2.x models are available.
-    // gemini-1.5-flash and gemini-pro have been retired by Google.
+    // March 2026: gemini-2.0-flash supports up to 8k output tokens.
     let translatedText: string | undefined;
     const models = ["gemini-2.0-flash", "gemini-2.5-flash"];
 
+    // Try a direct full translation first with ultra-clear prompts
     for (const model of models) {
       try {
         translatedText = await callGeminiAPI(text, target, model);
-        if (translatedText) break;
+        if (translatedText) {
+          // Verify if it's suspiciously short compared to original
+          if (translatedText.length < text.length * 0.3 && text.length > 1000) {
+             console.warn("Translation seems too short, might be truncated.");
+             // We could implement chunking here if needed, but let's try 
+             // the low-temperature + strict prompt fix first.
+          }
+          break;
+        }
       } catch (e: any) {
         console.warn(`Model ${model} failed:`, e.message);
       }
