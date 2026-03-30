@@ -8,11 +8,12 @@ import { useLanguage } from '../../../context/LanguageContext';
 export default function KategoriPage({ params }: { params: { id: string } }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [posts, setPosts] = useState<any[]>([]);
+  const [translatedPosts, setTranslatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const fetchCategoryData = async (pageNum: number, isLoadMore = false) => {
     try {
@@ -25,13 +26,17 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
       }
 
       const data = await res.json();
-
       if (data.length < 30) setHasMore(false);
 
       if (isLoadMore) {
-        setPosts(prev => [...prev, ...data]);
+        const newPosts = [...posts, ...data];
+        setPosts(newPosts);
+        if (language !== 'tr') translateGridBatch(data);
+        else setTranslatedPosts(newPosts);
       } else {
         setPosts(data);
+        setTranslatedPosts(data);
+        if (language !== 'tr') translateGridBatch(data);
       }
     } catch (error) {
       console.error('Doğrudan bağlantı hatası:', error);
@@ -45,6 +50,56 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     fetchCategoryData(1);
   }, [params.id]);
+
+  useEffect(() => {
+    if (posts.length > 0) {
+      if (language !== 'tr') translateGridBatch(posts.slice(0, 20));
+      else setTranslatedPosts(posts);
+    }
+  }, [language, posts]);
+
+  const translateGridBatch = async (batch: any[]) => {
+    if (batch.length === 0) return;
+    const batchText = batch.map((p, i) => `[${i}] Title: ${p.title.rendered} --- Excerpt: ${p.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 100)}...`).join('\n');
+    
+    try {
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: batchText, targetLang: language })
+      });
+      const data = await res.json();
+      if (data.translatedText) {
+        const lines = data.translatedText.split('\n');
+        const updatedTranslatedPosts = [...(translatedPosts.length > 0 ? translatedPosts : posts)];
+        
+        lines.forEach((line: string) => {
+          const match = line.match(/^\[(\d+)\]/);
+          if (match) {
+            const indexInBatch = parseInt(match[1]);
+            const postInBatch = batch[indexInBatch];
+            if (postInBatch) {
+              const parts = line.split('---');
+              const newTitle = parts[0].replace(/^\[\d+\]\s*Title:\s*/i, '').trim();
+              const newExcerpt = parts[1]?.replace(/^\s*Excerpt:\s*/i, '').trim() || '';
+              
+              const globalIndex = posts.findIndex(p => p.id === postInBatch.id);
+              if (globalIndex !== -1) {
+                updatedTranslatedPosts[globalIndex] = {
+                  ...posts[globalIndex],
+                  title: { ...posts[globalIndex].title, rendered: newTitle },
+                  excerpt: { ...posts[globalIndex].excerpt, rendered: newExcerpt }
+                };
+              }
+            }
+          }
+        });
+        setTranslatedPosts(updatedTranslatedPosts);
+      }
+    } catch (e) {
+      console.error("Batch translate error:", e);
+    }
+  }
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -68,15 +123,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
     );
   }
 
-  if (!posts || posts.length === 0) {
-    return (
-      <main className="container">
-        <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '20px', fontWeight: 600 }}>{t('no_content')}</div>
-        </div>
-      </main>
-    );
-  }
+  const displayPosts = translatedPosts.length > 0 ? translatedPosts : posts;
 
   return (
     <main className="container">
@@ -85,8 +132,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
       </div>
 
       <section className="grid">
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {posts.map((post: any) => (
+        {displayPosts.map((post: any) => (
           <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
             <div className="card-img-wrapper">
               <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
@@ -109,7 +155,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
             onClick={handleLoadMore}
             disabled={loadingMore}
             className="btn-primary"
-            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
+            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--accent-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
           >
             {loadingMore ? t('loading') : t('load_more')}
           </button>

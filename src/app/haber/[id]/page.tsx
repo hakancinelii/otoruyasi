@@ -38,11 +38,13 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
   }, [params.id]);
 
   useEffect(() => {
-    if (post && language !== 'tr') {
-      translateContent(post, language);
-    } else if (post && language === 'tr') {
-      setTranslatedTitle(post.title.rendered);
-      setTranslatedContent(post.content.rendered);
+    if (post) {
+      if (language !== 'tr') {
+        translateContent(post, language);
+      } else {
+        setTranslatedTitle(post.title.rendered);
+        setTranslatedContent(post.content.rendered);
+      }
     }
   }, [language]);
 
@@ -58,14 +60,19 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
       const titleData = await titleRes.json();
       if (titleData.translatedText) setTranslatedTitle(titleData.translatedText);
 
-      // İçerik Çevirisi
+      // İçerik Çevirisi - Eğer çok uzunsa parçalayabiliriz ama şimdilik tek parça deniyoruz
       const contentRes = await fetch('/api/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: data.content.rendered, targetLang: lang })
       });
       const contentData = await contentRes.json();
-      if (contentData.translatedText) setTranslatedContent(contentData.translatedText);
+      if (contentData.translatedText) {
+        setTranslatedContent(contentData.translatedText);
+      } else if (contentData.error) {
+         console.warn("Translation partial error:", contentData.error);
+         // Hata durumunda orijinali bırak veya bir mesaj göster
+      }
       
     } catch (e) {
       console.error("Çeviri hatası:", e);
@@ -88,7 +95,7 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
   if (!post) {
     return (
       <article className="container" style={{ padding: '100px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-        <div style={{ fontSize: '20px', fontWeight: 600 }}>Haber bulunamadı.</div>
+        <div style={{ fontSize: '20px', fontWeight: 600 }}>{t('no_content')}</div>
         <Link href="/" style={{ color: 'var(--accent-color)', marginTop: '16px', display: 'inline-block' }}>← {t('home')}</Link>
       </article>
     );
@@ -114,12 +121,12 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
         ></h1>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: 'var(--text-muted)', fontSize: '14px' }}>
-          <span>{new Date(post.date).toLocaleDateString('tr-TR')}</span>
+          <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}</span>
           <span>•</span>
           <span>Oto Rüyası Editoryal</span>
           {isTranslating && (
             <span style={{ color: 'var(--accent-color)', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}>
-               <div className="spinner-mini"></div> AI Translating...
+               <div className="spinner-mini"></div> {language === 'tr' ? 'Çevriliyor...' : 'AI Translating...'}
             </span>
           )}
         </div>

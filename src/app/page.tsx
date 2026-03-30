@@ -8,6 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [posts, setPosts] = useState<any[]>([]);
+  const [translatedPosts, setTranslatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -35,13 +36,23 @@ export default function Home() {
       if (data.length < limit) setHasMore(false);
 
       if (isLoadMore) {
-        setPosts(prev => [...prev, ...data]);
+        const newPosts = [...posts, ...data];
+        setPosts(newPosts);
+        if (language !== 'tr') {
+          translateGridBatch(data);
+        } else {
+          setTranslatedPosts(newPosts);
+        }
       } else {
         setPosts(data);
+        setTranslatedPosts(data);
         if (data.length > 0) {
           setHeroTitle(data[0].title.rendered);
           setHeroExcerpt(data[0].excerpt.rendered);
-          if (language !== 'tr') translateHero(data[0], language);
+          if (language !== 'tr') {
+            translateHero(data[0], language);
+            translateGridBatch(data.slice(1, 11)); // İlk 10 kartı hemen çevir
+          }
         }
       }
     } catch (error) {
@@ -58,11 +69,15 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (posts.length > 0 && language !== 'tr') {
-      translateHero(posts[0], language);
-    } else if (posts.length > 0 && language === 'tr') {
-      setHeroTitle(posts[0].title.rendered);
-      setHeroExcerpt(posts[0].excerpt.rendered);
+    if (posts.length > 0) {
+      if (language !== 'tr') {
+        translateHero(posts[0], language);
+        translateGridBatch(posts.slice(1, 15)); // Dil değişince ilk 15 kartı çevir
+      } else {
+        setHeroTitle(posts[0].title.rendered);
+        setHeroExcerpt(posts[0].excerpt.rendered);
+        setTranslatedPosts(posts);
+      }
     }
   }, [language, posts]);
 
@@ -87,6 +102,52 @@ export default function Home() {
       console.error(e);
     } finally {
       setIsTranslatingHero(false);
+    }
+  }
+
+  const translateGridBatch = async (batch: any[]) => {
+    if (batch.length === 0) return;
+    
+    // Toplu çeviri için veriyi hazırla
+    const batchText = batch.map((p, i) => `[${i}] Title: ${p.title.rendered} --- Excerpt: ${p.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 100)}...`).join('\n');
+    
+    try {
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: batchText, targetLang: language })
+      });
+      const data = await res.json();
+      if (data.translatedText) {
+        const lines = data.translatedText.split('\n');
+        const updatedTranslatedPosts = [...translatedPosts];
+        
+        lines.forEach((line: string) => {
+          const match = line.match(/^\[(\d+)\]/);
+          if (match) {
+            const indexInBatch = parseInt(match[1]);
+            const postInBatch = batch[indexInBatch];
+            if (postInBatch) {
+              const parts = line.split('---');
+              const newTitle = parts[0].replace(/^\[\d+\]\s*Title:\s*/i, '').trim();
+              const newExcerpt = parts[1]?.replace(/^\s*Excerpt:\s*/i, '').trim() || '';
+              
+              // Orijinal posts içindeki indexi bul
+              const globalIndex = posts.findIndex(p => p.id === postInBatch.id);
+              if (globalIndex !== -1) {
+                updatedTranslatedPosts[globalIndex] = {
+                  ...posts[globalIndex],
+                  title: { ...posts[globalIndex].title, rendered: newTitle },
+                  excerpt: { ...posts[globalIndex].excerpt, rendered: newExcerpt }
+                };
+              }
+            }
+          }
+        });
+        setTranslatedPosts(updatedTranslatedPosts);
+      }
+    } catch (e) {
+      console.error("Batch translate error:", e);
     }
   }
 
@@ -116,7 +177,7 @@ export default function Home() {
   }
 
   const heroPost = posts[0];
-  const gridPosts = posts.slice(1);
+  const gridPosts = (translatedPosts.length > 0 ? translatedPosts : posts).slice(1);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getImageUrl = (post: any) => {
