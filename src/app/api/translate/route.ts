@@ -1,41 +1,11 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-// Kayıt gerektirmeyen MyMemory API (Günlük anonim limitli)
-// Metni her 800 karakterde bir bölerek uzun yazıları çevirir
-async function translateFullText(text: string, langPair: string) {
-  if (!text) return "";
-  
-  // Metni taglerden arındır (MyMemory HTML etiketlerini bazen bozabilir)
-  const cleanText = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-  
-  // Parçalara böl (Max 800 karakter)
-  const chunks = cleanText.match(/.{1,800}(\s|$)/g) || [cleanText];
-  let result = "";
-
-  console.log(`Translate request: ${chunks.length} chunks for ${langPair}`);
-
-  for (const chunk of chunks) {
-    try {
-      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${langPair}`;
-      const res = await fetch(url, { cache: 'no-store' });
-      const data = await res.json();
-      
-      if (data.responseData?.translatedText) {
-        result += data.responseData.translatedText + " ";
-      } else {
-        result += chunk + " ";
-      }
-      
-      // Çok kısa bekleme (opsiyonel, API kısıtı için)
-      if (chunks.length > 1) await new Promise(r => setTimeout(r, 100));
-    } catch (e) {
-      console.error("Chunk translation error:", e);
-      result += chunk + " ";
-    }
-  }
-
-  return result.trim();
-}
+// Hardcoding user's key as requested for quick fix, 
+// though environment variables are better for security.
+const API_KEY = "AIzaSyAxg5oVFAlO1EoKmsZqnrv46zXeIOvqlTI";
+const genAI = new GoogleGenerativeAI(API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export async function POST(req: Request) {
   try {
@@ -45,20 +15,37 @@ export async function POST(req: Request) {
       return NextResponse.json({ translatedText: text });
     }
 
-    const langPairs: Record<string, string> = {
-      en: 'tr|en',
-      ru: 'tr|ru',
-      de: 'tr|de'
+    const langNames: Record<string, string> = {
+      en: "English",
+      ru: "Russian",
+      de: "German",
+      tr: "Turkish"
     };
 
-    const langPair = langPairs[targetLang] || 'tr|en';
+    const target = langNames[targetLang as keyof typeof langNames] || targetLang;
 
-    // Uzun metinleri parçalayarak çevir (Hiçbir anahtar gerektirmez)
-    const translatedText = await translateFullText(text, langPair);
+    const prompt = `
+      You are a professional automotive translator. 
+      Translate the following content into ${target}. 
+      
+      RULES:
+      1. Keep all HTML tags exactly as they are.
+      2. Do not change brand names like "Oto Rüyası", car models or company names like "OSD".
+      3. Maintain the professional tone of a high-end digital magazine.
+      4. Provide ONLY the translated result without any commentary or markdown blocks.
+      
+      CONTENT TO TRANSLATE:
+      ${text}
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const translatedText = response.text().trim();
 
     return NextResponse.json({ translatedText });
   } catch (error: any) {
-    console.error("Main translation error:", error);
+    console.error("Gemini Translation Error:", error);
+    // Silent fallback to avoid ugly UI messages
     return NextResponse.json({ translatedText: text });
   }
 }
