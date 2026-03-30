@@ -55,7 +55,17 @@ export default function Navbar() {
             className="nav-dropdown"
             onMouseEnter={() => setIsDropdownOpen(true)}
             onMouseLeave={() => setIsDropdownOpen(false)}
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            onClick={(e) => {
+              const newState = !isDropdownOpen;
+              setIsDropdownOpen(newState);
+              if (newState && window.innerWidth <= 1024) {
+                const target = e.currentTarget;
+                // Add a small delay for the state menu render animation
+                setTimeout(() => {
+                  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 150);
+              }
+            }}
           >
             <span className="nav-link" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               Haberler
