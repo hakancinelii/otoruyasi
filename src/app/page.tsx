@@ -88,7 +88,7 @@ export default function Home() {
         <img className="hero-img" src={getImageUrl(heroPost)} alt={heroPost.title.rendered} />
         <div className="hero-overlay"></div>
         <div className="hero-content">
-          <span className="hero-badge">Öne Çıkan Gerçek Haber</span>
+          <span className="hero-badge">Öne Çıkan Haber</span>
           <h1 className="hero-title" dangerouslySetInnerHTML={{ __html: heroPost.title.rendered }}></h1>
           <p className="hero-excerpt" dangerouslySetInnerHTML={{ __html: heroPost.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 150) + '...' }}></p>
         </div>

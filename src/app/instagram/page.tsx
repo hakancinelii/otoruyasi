@@ -1,3 +1,5 @@
+import Script from 'next/script';
+
 export const metadata = {
   title: 'Instagram | Oto Rüyası',
   description: 'Oto Rüyası Instagram paylaşımları ve videoları.',
@@ -15,27 +17,9 @@ export default function InstagramPage() {
       </div>
 
       {/* Widget Container */}
-      <div 
-        className="card" 
-        style={{ 
-          minHeight: '400px', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          textAlign: 'center', 
-          padding: '40px',
-          borderRadius: '16px'
-        }}
-      >
-        <div style={{ marginBottom: '20px', color: 'var(--text-muted)' }}>
-          <img src="/logo.png" style={{ height: '60px', opacity: 0.5, filter: 'grayscale(100%)' }} alt="Logo" />
-        </div>
-        <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>Instagram Akışı Yapılandırılıyor</h3>
-        <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '16px', color: 'var(--text-muted)', lineHeight: '1.6' }}>
-          Instagram API kısıtlamaları nedeniyle gönderiler doğrudan çekilememektedir.<br />
-          Lütfen <b>Elfsight</b> veya <b>Curator.io</b> gibi ücretsiz bir araçtan alacağınız <br/> "Instagram Feed Widget" kodunuzu bu alana yerleştirin.
-        </p>
+      <div style={{ minHeight: '600px', width: '100%', paddingBottom: '40px' }}>
+        <Script src="https://static.elfsight.com/platform/platform.js" strategy="lazyOnload" />
+        <div className="elfsight-app-c6568d4c-fc7b-43b8-af37-9d78601ab39b" data-elfsight-app-lazy></div>
       </div>
 
     </main>
