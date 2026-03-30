@@ -26,12 +26,15 @@ export async function POST(req: Request) {
     const target = langNames[targetLang] || targetLang;
 
     const prompt = `
-      Translate the following HTML/Text content into ${target}. 
-      Keep all HTML tags exactly as they are. 
-      Do not change brand names like "Oto Rüyası". 
-      Provide only the translated content.
+      Translate the following content into ${target}. 
       
-      Content to translate:
+      STRICT RULES:
+      1. Keep all HTML tags exactly as they are. 
+      2. Do not change brand names like "Oto Rüyası". 
+      3. Use the exactly same labels (e.g. TITLE:, EXCERPT:, [ITEM-0]) provided in the input.
+      4. Provide ONLY the translated text, no introductions or explanations.
+      
+      CONTENT TO TRANSLATE:
       ${text}
     `;
 

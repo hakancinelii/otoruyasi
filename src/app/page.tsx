@@ -18,6 +18,7 @@ export default function Home() {
   const [heroTitle, setHeroTitle] = useState('');
   const [heroExcerpt, setHeroExcerpt] = useState('');
   const [isTranslatingHero, setIsTranslatingHero] = useState(false);
+  const [isTranslatingGrid, setIsTranslatingGrid] = useState(false);
 
   const fetchRealData = async (pageNum: number, isLoadMore = false) => {
     try {
@@ -32,27 +33,29 @@ export default function Home() {
       }
 
       const data = await res.json();
-
       if (data.length < limit) setHasMore(false);
 
       if (isLoadMore) {
         const newPosts = [...posts, ...data];
         setPosts(newPosts);
         if (language !== 'tr') {
-          translateGridBatch(data);
+          translateGridBatch(data, newPosts.length - data.length);
         } else {
           setTranslatedPosts(newPosts);
         }
       } else {
         setPosts(data);
-        setTranslatedPosts(data);
-        if (data.length > 0) {
+        if (language === 'tr') {
+          setTranslatedPosts(data);
           setHeroTitle(data[0].title.rendered);
           setHeroExcerpt(data[0].excerpt.rendered);
-          if (language !== 'tr') {
-            translateHero(data[0], language);
-            translateGridBatch(data.slice(1, 11)); // İlk 10 kartı hemen çevir
-          }
+        } else {
+          // Dil zaten farklıysa içerikleri temizle ve çeviri başlat
+          setHeroTitle('');
+          setHeroExcerpt('');
+          setTranslatedPosts([]); 
+          translateHero(data[0], language);
+          translateGridBatch(data.slice(1), 1);
         }
       }
     } catch (error) {
@@ -72,14 +75,14 @@ export default function Home() {
     if (posts.length > 0) {
       if (language !== 'tr') {
         translateHero(posts[0], language);
-        translateGridBatch(posts.slice(1, 15)); // Dil değişince ilk 15 kartı çevir
+        translateGridBatch(posts.slice(1), 1);
       } else {
         setHeroTitle(posts[0].title.rendered);
         setHeroExcerpt(posts[0].excerpt.rendered);
         setTranslatedPosts(posts);
       }
     }
-  }, [language, posts]);
+  }, [language]);
 
   const translateHero = async (post: any, lang: string) => {
     setIsTranslatingHero(true);
@@ -88,28 +91,39 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: `Title: ${post.title.rendered} --- Excerpt: ${post.excerpt.rendered}`,
+          text: `TITLE: ${post.title.rendered} \n\n EXCERPT: ${post.excerpt.rendered}`,
           targetLang: lang
         })
       });
       const data = await res.json();
       if (data.translatedText) {
-        const parts = data.translatedText.split('---');
-        setHeroTitle(parts[0].replace('Title: ', '').replace('Title:', '').trim());
-        setHeroExcerpt(parts[1]?.replace('Excerpt: ', '').replace('Excerpt:', '').trim() || '');
+        const fullText = data.translatedText;
+        const titleMatch = fullText.match(/TITLE:([\s\S]*?)EXCERPT:/i);
+        const excerptMatch = fullText.match(/EXCERPT:([\s\S]*)/i);
+        
+        if (titleMatch && excerptMatch) {
+          setHeroTitle(titleMatch[1].trim());
+          setHeroExcerpt(excerptMatch[1].trim());
+        } else {
+          setHeroTitle(fullText.substring(0, 100));
+          setHeroExcerpt(fullText.substring(100, 300));
+        }
       }
     } catch (e) {
       console.error(e);
+      setHeroTitle(post.title.rendered);
+      setHeroExcerpt(post.excerpt.rendered);
     } finally {
       setIsTranslatingHero(false);
     }
   }
 
-  const translateGridBatch = async (batch: any[]) => {
+  const translateGridBatch = async (batch: any[], startIndex: number) => {
     if (batch.length === 0) return;
+    setIsTranslatingGrid(true);
     
     // Toplu çeviri için veriyi hazırla
-    const batchText = batch.map((p, i) => `[${i}] Title: ${p.title.rendered} --- Excerpt: ${p.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 100)}...`).join('\n');
+    const batchText = batch.map((p, i) => `[ITEM-${i}] TITLE: ${p.title.rendered} \n EXCERPT: ${p.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 100)}...`).join('\n\n');
     
     try {
       const res = await fetch('/api/translate', {
@@ -119,35 +133,32 @@ export default function Home() {
       });
       const data = await res.json();
       if (data.translatedText) {
-        const lines = data.translatedText.split('\n');
-        const updatedTranslatedPosts = [...translatedPosts];
+        const fullText = data.translatedText;
+        const updatedTranslatedPosts = [...(translatedPosts.length === posts.length ? translatedPosts : [...posts])];
         
-        lines.forEach((line: string) => {
-          const match = line.match(/^\[(\d+)\]/);
-          if (match) {
-            const indexInBatch = parseInt(match[1]);
-            const postInBatch = batch[indexInBatch];
-            if (postInBatch) {
-              const parts = line.split('---');
-              const newTitle = parts[0].replace(/^\[\d+\]\s*Title:\s*/i, '').trim();
-              const newExcerpt = parts[1]?.replace(/^\s*Excerpt:\s*/i, '').trim() || '';
-              
-              // Orijinal posts içindeki indexi bul
-              const globalIndex = posts.findIndex(p => p.id === postInBatch.id);
-              if (globalIndex !== -1) {
-                updatedTranslatedPosts[globalIndex] = {
-                  ...posts[globalIndex],
-                  title: { ...posts[globalIndex].title, rendered: newTitle },
-                  excerpt: { ...posts[globalIndex].excerpt, rendered: newExcerpt }
-                };
-              }
-            }
+        batch.forEach((oldPost, i) => {
+          const itemRegex = new RegExp(`\\[ITEM-${i}\\]\\s*TITLE:([\\s\\S]*?)(?=\\[ITEM-|EXCERPT:|\\n|$)`, 'i');
+          const excerptRegex = new RegExp(`\\[ITEM-${i}\\][\\s\\S]*?EXCERPT:([\\s\\S]*?)(?=\\[ITEM-|\\n|$)`, 'i');
+          
+          const titleMatch = fullText.match(itemRegex);
+          const excerptMatch = fullText.match(excerptRegex);
+          
+          const globalIndex = startIndex + i;
+          if (updatedTranslatedPosts[globalIndex]) {
+             updatedTranslatedPosts[globalIndex] = {
+               ...updatedTranslatedPosts[globalIndex],
+               title: { ...updatedTranslatedPosts[globalIndex].title, rendered: titleMatch ? titleMatch[1].trim() : oldPost.title.rendered },
+               excerpt: { ...updatedTranslatedPosts[globalIndex].excerpt, rendered: excerptMatch ? excerptMatch[1].trim() : oldPost.excerpt.rendered }
+             };
           }
         });
         setTranslatedPosts(updatedTranslatedPosts);
       }
     } catch (e) {
       console.error("Batch translate error:", e);
+      if (translatedPosts.length === 0) setTranslatedPosts(posts); // Hata durumunda orijinalleri bas
+    } finally {
+      setIsTranslatingGrid(false);
     }
   }
 
@@ -166,20 +177,9 @@ export default function Home() {
     );
   }
 
-  if (!posts || posts.length === 0) {
-    return (
-      <main className="container">
-        <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '20px', fontWeight: 600 }}>{t('no_content')}</div>
-        </div>
-      </main>
-    );
-  }
-
   const heroPost = posts[0];
-  const gridPosts = (translatedPosts.length > 0 ? translatedPosts : posts).slice(1);
+  const displayPosts = (translatedPosts.length > 0 ? translatedPosts : posts).slice(1);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getImageUrl = (post: any) => {
     return post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
   };
@@ -192,21 +192,25 @@ export default function Home() {
         <div className="hero-overlay"></div>
         <div className="hero-content">
           <span className="hero-badge">{t('featured_news')} {isTranslatingHero && '...'}</span>
-          <h1 className="hero-title" dangerouslySetInnerHTML={{ __html: heroTitle }}></h1>
-          <p className="hero-excerpt" dangerouslySetInnerHTML={{ __html: heroExcerpt.replace(/<[^>]+>/g, '').substring(0, 180) + '...' }}></p>
+          {isTranslatingHero && !heroTitle ? (
+            <div style={{ width: '80%', height: '40px', background: 'rgba(255,255,255,0.1)', marginBottom: '15px' }}></div>
+          ) : (
+            <h1 className="hero-title" dangerouslySetInnerHTML={{ __html: heroTitle || heroPost.title.rendered }}></h1>
+          )}
+          <p className="hero-excerpt" dangerouslySetInnerHTML={{ __html: (heroExcerpt || heroPost.excerpt.rendered).replace(/<[^>]+>/g, '').substring(0, 180) + '...' }}></p>
         </div>
       </Link>
 
       <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '60px' }}>
         <h2 style={{ fontSize: '28px', margin: 0 }}>{t('last_news')}</h2>
+        {isTranslatingGrid && <span style={{ color: 'var(--accent-color)', fontSize: '14px' }}>AI Translating...</span>}
       </div>
 
       {/* Grid Posts */}
       <section className="grid">
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {gridPosts.map((post: any) => {
+        {displayPosts.map((post: any) => {
           return (
-            <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', opacity: isTranslatingGrid ? 0.7 : 1 }}>
               <div className="card-img-wrapper">
                 <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
               </div>
@@ -214,7 +218,7 @@ export default function Home() {
                 <h3 className="card-title" dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
                 <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
                 <div className="card-footer">
-                  <span>{new Date(post.date).toLocaleDateString('tr-TR')}</span>
+                  <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}</span>
                   <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{t('read_more')} &rarr;</span>
                 </div>
               </div>

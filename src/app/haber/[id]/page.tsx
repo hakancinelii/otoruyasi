@@ -12,6 +12,7 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
   const [translatedTitle, setTranslatedTitle] = useState('');
   const [translatedContent, setTranslatedContent] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
+  const [translationError, setTranslationError] = useState(false);
 
   useEffect(() => {
     async function fetchRealPost() {
@@ -21,11 +22,12 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
         const data = await res.json();
         setPost(data);
         
-        // İlk yüklemede başlık ve içeriği ata (TR varsayılan)
-        setTranslatedTitle(data.title.rendered);
-        setTranslatedContent(data.content.rendered);
-
-        if (language !== 'tr') {
+        // İlk yükleme
+        if (language === 'tr') {
+          setTranslatedTitle(data.title.rendered);
+          setTranslatedContent(data.content.rendered);
+        } else {
+          // Dil zaten farklıysa direkt çeviriye git
           translateContent(data, language);
         }
       } catch (error) {
@@ -44,38 +46,52 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
       } else {
         setTranslatedTitle(post.title.rendered);
         setTranslatedContent(post.content.rendered);
+        setTranslationError(false);
       }
     }
   }, [language]);
 
   const translateContent = async (data: any, lang: string) => {
+    setTranslatedTitle(''); // Temizle ki eski/TR metin görünmesin
+    setTranslatedContent('');
     setIsTranslating(true);
-    try {
-      // Başlık Çevirisi
-      const titleRes = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: data.title.rendered, targetLang: lang })
-      });
-      const titleData = await titleRes.json();
-      if (titleData.translatedText) setTranslatedTitle(titleData.translatedText);
+    setTranslationError(false);
 
-      // İçerik Çevirisi - Eğer çok uzunsa parçalayabiliriz ama şimdilik tek parça deniyoruz
-      const contentRes = await fetch('/api/translate', {
+    try {
+      const res = await fetch('/api/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: data.content.rendered, targetLang: lang })
+        body: JSON.stringify({ 
+          text: `TITLE: ${data.title.rendered} \n\n CONTENT: ${data.content.rendered}`, 
+          targetLang: lang 
+        })
       });
-      const contentData = await contentRes.json();
-      if (contentData.translatedText) {
-        setTranslatedContent(contentData.translatedText);
-      } else if (contentData.error) {
-         console.warn("Translation partial error:", contentData.error);
-         // Hata durumunda orijinali bırak veya bir mesaj göster
-      }
       
+      const resData = await res.json();
+      
+      if (resData.translatedText) {
+        const fullText = resData.translatedText;
+        // Basit ayırma mantığı
+        const titleMatch = fullText.match(/TITLE:([\s\S]*?)CONTENT:/i);
+        const contentMatch = fullText.match(/CONTENT:([\s\S]*)/i);
+        
+        if (titleMatch && contentMatch) {
+          setTranslatedTitle(titleMatch[1].trim());
+          setTranslatedContent(contentMatch[1].trim());
+        } else {
+          // Eğer AI formatı bozarsa düz ayır veya tamamını bas
+          setTranslatedContent(fullText);
+          setTranslatedTitle(data.title.rendered); 
+        }
+      } else {
+        throw new Error("Translation data empty");
+      }
     } catch (e) {
       console.error("Çeviri hatası:", e);
+      setTranslationError(true);
+      // Hata durumunda orijinale dön
+      setTranslatedTitle(data.title.rendered);
+      setTranslatedContent(data.content.rendered);
     } finally {
       setIsTranslating(false);
     }
@@ -86,7 +102,6 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
       <article className="container" style={{ paddingTop: '40px', paddingBottom: '40px', maxWidth: '860px', margin: '0 auto' }}>
         <div style={{ width: '60%', height: '36px', background: 'var(--border-color)', marginBottom: '20px', borderRadius: '8px' }}></div>
         <div style={{ width: '100%', height: '420px', background: 'var(--border-color)', borderRadius: '16px', marginBottom: '30px', animation: 'pulse 1.5s infinite' }}></div>
-        <div style={{ width: '100%', height: '200px', background: 'var(--border-color)', borderRadius: '8px' }}></div>
         <style jsx global>{`@keyframes pulse { 0%{opacity:.3} 50%{opacity:.6} 100%{opacity:.3} }`}</style>
       </article>
     );
@@ -101,12 +116,7 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getImageUrl = (p: any) => {
-    return p._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
-  };
-  
-  const imageUrl = getImageUrl(post);
+  const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
   
   return (
     <article className="container" style={{ padding: '60px 20px', maxWidth: '860px', margin: '0 auto' }}>
@@ -114,11 +124,16 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
         <Link href="/" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontSize: '14px', marginBottom: '20px', display: 'inline-block' }}>
           ← {t('home')}
         </Link>
-        <h1 
-          className="hero-title" 
-          style={{ fontSize: 'clamp(24px, 5vw, 42px)', lineHeight: '1.2', color: 'var(--text-color)', marginBottom: '20px' }}
-          dangerouslySetInnerHTML={{ __html: translatedTitle }}
-        ></h1>
+        
+        {isTranslating && !translatedTitle ? (
+          <div style={{ width: '100%', height: '40px', background: 'var(--border-color)', borderRadius: '8px', marginBottom: '20px', animation: 'pulse 1.5s infinite' }}></div>
+        ) : (
+          <h1 
+            className="hero-title" 
+            style={{ fontSize: 'clamp(24px, 5vw, 42px)', lineHeight: '1.2', color: 'var(--text-color)', marginBottom: '20px' }}
+            dangerouslySetInnerHTML={{ __html: translatedTitle }}
+          ></h1>
+        )}
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: 'var(--text-muted)', fontSize: '14px' }}>
           <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}</span>
@@ -129,6 +144,9 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
                <div className="spinner-mini"></div> {language === 'tr' ? 'Çevriliyor...' : 'AI Translating...'}
             </span>
           )}
+          {translationError && (
+            <span style={{ color: '#ff5722', marginLeft: 'auto' }}>Translation Failed (Original TR)</span>
+          )}
         </div>
       </div>
 
@@ -136,11 +154,19 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
         <img src={imageUrl} alt={post.title.rendered} style={{ width: '100%', display: 'block' }} />
       </div>
 
-      <div 
-        className="haber-icerik" 
-        style={{ fontSize: '18px', lineHeight: '1.8', color: 'var(--text-color)', opacity: isTranslating ? 0.5 : 1, transition: 'opacity 0.3s' }}
-        dangerouslySetInnerHTML={{ __html: translatedContent }}
-      />
+      {isTranslating && !translatedContent ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+           <div style={{ width: '100%', height: '20px', background: 'var(--border-color)', borderRadius: '4px', animation: 'pulse 1.5s infinite' }}></div>
+           <div style={{ width: '90%', height: '20px', background: 'var(--border-color)', borderRadius: '4px', animation: 'pulse 1.5s infinite' }}></div>
+           <div style={{ width: '95%', height: '20px', background: 'var(--border-color)', borderRadius: '4px', animation: 'pulse 1.5s infinite' }}></div>
+        </div>
+      ) : (
+        <div 
+          className="haber-icerik" 
+          style={{ fontSize: '18px', lineHeight: '1.8', color: 'var(--text-color)', opacity: isTranslating ? 0.5 : 1, transition: 'opacity 0.3s' }}
+          dangerouslySetInnerHTML={{ __html: translatedContent }}
+        />
+      )}
 
       <style jsx global>{`
         .haber-icerik p { margin-bottom: 25px; }
@@ -154,6 +180,7 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
           animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%{opacity:.3} 50%{opacity:.6} 100%{opacity:.3} }
       `}</style>
     </article>
   );
