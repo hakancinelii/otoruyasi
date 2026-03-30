@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { GridSkeleton, HeroSkeleton } from '../components/Skeleton';
 
 export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,29 +55,8 @@ export default function Home() {
   if (loading) {
     return (
       <main className="container">
-        {/* Hero Skeleton */}
-        <div style={{ width: '100%', height: '500px', background: 'var(--border-color)', borderRadius: '24px', marginBottom: '60px', animation: 'pulse 1.5s infinite' }}></div>
-        
-        {/* Grid Skeleton */}
-        <div className="grid">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="card" style={{ height: '400px', opacity: 0.5 }}>
-              <div style={{ width: '100%', height: '200px', background: 'var(--border-color)', animation: 'pulse 1.5s infinite' }}></div>
-              <div style={{ padding: '20px' }}>
-                <div style={{ width: '80%', height: '24px', background: 'var(--border-color)', marginBottom: '10px', animation: 'pulse 1.5s infinite' }}></div>
-                <div style={{ width: '100%', height: '16px', background: 'var(--border-color)', animation: 'pulse 1.5s infinite' }}></div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <style jsx>{`
-          @keyframes pulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.6; }
-            100% { opacity: 0.3; }
-          }
-        `}</style>
+        <HeroSkeleton />
+        <GridSkeleton count={6} />
       </main>
     );
   }
@@ -86,7 +66,6 @@ export default function Home() {
       <main className="container">
         <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
           <div style={{ fontSize: '20px', fontWeight: 600 }}>Maalesef şu an içeriklere ulaşılamıyor.</div>
-          <p>Lütfen daha sonra tekrar deneyiniz.</p>
         </div>
       </main>
     );

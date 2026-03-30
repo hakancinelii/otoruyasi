@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { GridSkeleton } from '../../../components/Skeleton';
+
 
 export default function KategoriPage({ params }: { params: { id: string } }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,9 +59,9 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   if (loading) {
     return (
       <main className="container">
-        <div style={{ textAlign: 'center', padding: '150px 20px', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '24px', marginBottom: '10px' }}>Kategori Haberleri Çekiliyor...</div>
-          <p>Lütfen bekleyin, veritabanına doğrudan bağlanılıyor.</p>
+        <div style={{ padding: '40px 0' }}>
+          <div style={{ width: '200px', height: '32px', background: 'var(--border-color)', marginBottom: '30px', borderRadius: '8px' }}></div>
+          <GridSkeleton count={8} />
         </div>
       </main>
     );
@@ -68,8 +70,8 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   if (!posts || posts.length === 0) {
     return (
       <main className="container">
-        <div style={{ textAlign: 'center', padding: '150px 20px', color: '#ff5722' }}>
-          <div style={{ fontSize: '24px', marginBottom: '10px' }}>Bu Kategoride Haber Bulunamadı</div>
+        <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
+          <div style={{ fontSize: '20px', fontWeight: 600 }}>Bu kategoride henüz içerik bulunmuyor.</div>
         </div>
       </main>
     );

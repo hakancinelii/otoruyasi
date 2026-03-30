@@ -26,16 +26,22 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <article className="container" style={{ padding: '150px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-        <div style={{ fontSize: '24px' }}>Gerçek Haber İçeriği Yükleniyor...</div>
+      <article className="container" style={{ paddingTop: '40px', paddingBottom: '40px', maxWidth: '860px', margin: '0 auto' }}>
+        <div style={{ width: '60%', height: '36px', background: 'var(--border-color)', marginBottom: '20px', borderRadius: '8px' }}></div>
+        <div style={{ width: '100%', height: '420px', background: 'var(--border-color)', borderRadius: '16px', marginBottom: '30px', animation: 'pulse 1.5s infinite' }}></div>
+        <div style={{ width: '100%', height: '20px', background: 'var(--border-color)', marginBottom: '12px', borderRadius: '6px' }}></div>
+        <div style={{ width: '90%', height: '20px', background: 'var(--border-color)', marginBottom: '12px', borderRadius: '6px' }}></div>
+        <div style={{ width: '80%', height: '20px', background: 'var(--border-color)', borderRadius: '6px' }}></div>
+        <style jsx global>{`@keyframes pulse { 0%{opacity:.3} 50%{opacity:.6} 100%{opacity:.3} }`}</style>
       </article>
     );
   }
 
   if (!post) {
     return (
-      <article className="container" style={{ padding: '150px 20px', textAlign: 'center', color: '#ff5722' }}>
-        <div style={{ fontSize: '24px' }}>Haber Bulunamadı</div>
+      <article className="container" style={{ padding: '100px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
+        <div style={{ fontSize: '20px', fontWeight: 600 }}>Haber bulunamadı.</div>
+        <Link href="/" style={{ color: 'var(--accent-color)', marginTop: '16px', display: 'inline-block' }}>← Ana Sayfaya Dön</Link>
       </article>
     );
   }

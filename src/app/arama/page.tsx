@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { GridSkeleton } from '../../components/Skeleton';
 
 function SearchResults() {
   const searchParams = useSearchParams();
@@ -73,17 +74,13 @@ function SearchResults() {
   };
 
   if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '150px 20px', color: 'var(--text-muted)' }}>
-        <div style={{ fontSize: '24px', marginBottom: '10px' }}>"{query}" için Haberler Taranıyor...</div>
-      </div>
-    );
+    return <GridSkeleton count={6} />;
   }
 
   if (!posts || posts.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '150px 20px', color: '#ff5722' }}>
-        <div style={{ fontSize: '24px', marginBottom: '10px' }}>"{query}" için hiçbir sonuç bulunamadı!</div>
+      <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
+        <div style={{ fontSize: '20px', fontWeight: 600 }}>&quot;{query}&quot; için sonuç bulunamadı.</div>
       </div>
     );
   }
@@ -132,7 +129,7 @@ function SearchResults() {
 export default function SearchPage() {
   return (
     <main className="container">
-      <Suspense fallback={<div style={{ padding: '150px 20px', textAlign: 'center' }}>Arama Altyapısı Hazırlanıyor...</div>}>
+      <Suspense fallback={<div style={{ paddingTop: '80px' }}><GridSkeleton count={6} /></div>}>
         <SearchResults />
       </Suspense>
     </main>

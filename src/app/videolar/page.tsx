@@ -46,9 +46,8 @@ export default async function VideolarPage() {
   if (!videos || videos.length === 0) {
     return (
       <main className="container">
-        <div style={{ textAlign: 'center', padding: '150px 20px', color: '#ff5722' }}>
-          <div style={{ fontSize: '24px', marginBottom: '10px' }}>Videolar Yüklenemedi</div>
-          <p>Şu an YouTube sisteminden videolar çekilemiyor, lütfen daha sonra tekrar deneyin.</p>
+        <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--text-muted)' }}>
+          <div style={{ fontSize: '20px', fontWeight: 600 }}>Şu an videolar alınamıyor.</div>
         </div>
       </main>
     );
