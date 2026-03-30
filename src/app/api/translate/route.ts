@@ -1,9 +1,30 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-// Using the key from the environment (added via CLI) or fallback
 const API_KEY = process.env.GEMINI_API_KEY || "AIzaSyAxg5oVFAlO1EoKmsZqnrv46zXeIOvqlTI";
-const genAI = new GoogleGenerativeAI(API_KEY);
+
+async function callGeminiAPI(text: string, lang: string, model: string) {
+  const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${API_KEY}`;
+  
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: `Translate the following automotive text into ${lang}. Only return translated text. Keep HTML tags. Marka isimlərini dəyişmə. CONTENT: ${text}`
+        }]
+      }]
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Gemini API Error");
+  }
+
+  const data = await response.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+}
 
 export async function POST(req: Request) {
   let body: any = null;
@@ -18,33 +39,24 @@ export async function POST(req: Request) {
     const langNames: Record<string, string> = {
       en: "English",
       ru: "Russian",
-      de: "German",
-      tr: "Turkish"
+      de: "German"
     };
-
     const target = langNames[targetLang as keyof typeof langNames] || targetLang;
 
-    // 1.5 Flash is the modern standard. Trying without 'models/' prefix as SDK does it.
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const prompt = `Translate the following to ${target}. Return ONLY translation. HTML tags stay same. TEXT: ${text}`;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const translatedText = response.text().trim();
-
-    // If result contains error (like 404), throw to catch block
-    if (!translatedText || translatedText.includes("404 Not Found")) {
-       throw new Error("Translation failed or model not found");
+    // We use a safe retry mechanism with Native REST API to bypass SDK 404s
+    let translatedText;
+    try {
+      // First try 1.5 Flash
+      translatedText = await callGeminiAPI(text, target, "gemini-1.5-flash");
+    } catch (e: any) {
+      console.warn("Gemini 1.5 Flash failed, trying gemini-pro...", e.message);
+      // Fallback to gemini-pro
+      translatedText = await callGeminiAPI(text, target, "gemini-pro");
     }
 
-    return NextResponse.json({ translatedText });
+    return NextResponse.json({ translatedText: translatedText || text });
   } catch (error: any) {
-    console.error("Gemini Final Retry Error:", error.message || error);
-    // Silent fallback to original text to avoid site breakage
-    return NextResponse.json({ 
-       translatedText: body?.text || "",
-       error: error.message
-    });
+    console.error("Final Translation Fallback:", error.message || error);
+    return NextResponse.json({ translatedText: body?.text || "" });
   }
 }
