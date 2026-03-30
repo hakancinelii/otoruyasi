@@ -44,7 +44,8 @@ export const translations = {
     payment_secure: 'Ödemeler 256-bit SSL güvencesi altındadır.',
     congrats: 'Tebrikler, Hoş Geldiniz!',
     success_desc: 'Ödemeniz başarıyla alındı. Artık bir üyesiniz.',
-    search_results: 'İçin Arama Sonuçları'
+    search_results: 'İçin Arama Sonuçları',
+    all_news: 'Tüm Haberler'
   },
   en: {
     home: 'Home',
@@ -89,7 +90,8 @@ export const translations = {
     payment_secure: 'Payments are secured with 256-bit SSL.',
     congrats: 'Congratulations, Welcome!',
     success_desc: 'Payment successful. You are now a member.',
-    search_results: 'Search Results'
+    search_results: 'Search Results',
+    all_news: 'All News'
   },
   ru: {
     home: 'Главная',
@@ -134,7 +136,8 @@ export const translations = {
     payment_secure: 'Платежи защищены 256-битным SSL.',
     congrats: 'Поздравляем, добро пожаловать!',
     success_desc: 'Оплата прошла успешно. Теперь вы участник.',
-    search_results: 'Результаты поиска'
+    search_results: 'Результаты поиска',
+    all_news: 'Все новости'
   },
   de: {
     home: 'Startseite',
@@ -179,6 +182,7 @@ export const translations = {
     payment_secure: 'Zahlungen sind mit 256-Bit-SSL gesichert.',
     congrats: 'Herzlichen Glückwunsch, Willkommen!',
     success_desc: 'Zahlung erfolgreich. Sie sind jetzt Mitglied.',
-    search_results: 'Suchergebnisse'
+    search_results: 'Suchergebnisse',
+    all_news: 'Alle Nachrichten'
   }
 };

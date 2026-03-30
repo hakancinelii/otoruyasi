@@ -106,8 +106,8 @@ body {
 }
 
 .logo-img {
-  height: 90px;
-  max-width: 240px;
+  height: 60px;
+  max-width: 200px;
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
@@ -440,12 +440,12 @@ body {
 
 /* Navbar Responsive CSS */
 .nav-container {
-  display: flex !important;
-  justify-content: space-between !important;
+  display: grid !important;
+  grid-template-columns: 240px 1fr auto;
   align-items: center;
-  position: relative;
+  gap: 20px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -495,10 +495,14 @@ body {
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 12px; /* Reduced slightly to fit centered */
+    gap: 16px;
     justify-content: center;
-    flex: 2;
-    padding: 0 40px; /* Force gap from logo and search bar */
+    background: none;
+    border: none;
+    padding: 0;
+    position: static;
+    height: auto;
+    width: auto;
   }
 }
 
