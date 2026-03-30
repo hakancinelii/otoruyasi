@@ -35,7 +35,11 @@ export default function Navbar() {
           />
         </Link>
 
+        {/* Desktop & Mobile Navigation */}
         <nav className={`nav-links ${isOpen ? 'mobile-open' : ''}`}>
+          <div className="mobile-search-wrapper">
+            <SearchBar />
+          </div>
           <Link href="/" className="nav-link" onClick={() => setIsOpen(false)}>Ana Sayfa</Link>
           <Link href="/kategori/5" className="nav-link" onClick={() => setIsOpen(false)}>Test Sürüşleri</Link>
           <Link href="/karsilastirma" className="nav-link" onClick={() => setIsOpen(false)} style={{ color: 'var(--accent-color)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -91,46 +95,23 @@ export default function Navbar() {
 
           <Link href="/abonelik" className="nav-link" onClick={() => setIsOpen(false)}>Dergi Aboneliği</Link>
 
-          {/* Mobile Only Quick Actions (Bottom of menu) */}
-          <div className="mobile-only" style={{ flexDirection: 'column', gap: '15px', width: '100%', marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border-color)' }}>
-            <SearchBar />
-            {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'space-between' }}>
-                <span className="nav-link" style={{ textTransform: 'none', color: 'var(--accent-color)' }}>{user.user_display_name}</span>
-                <button
-                  onClick={logout}
-                  className="nav-link"
-                  style={{ background: 'none', border: '1px solid var(--border-color)', padding: '5px 12px', borderRadius: '6px', cursor: 'pointer' }}
-                >
-                  Çıkış
-                </button>
-              </div>
-            ) : (
-              <Link href="/giris" className="btn-primary" onClick={() => setIsOpen(false)} style={{ textAlign: 'center', width: '100%' }}>Kayıt / Üye Girişi</Link>
-            )}
-          </div>
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <span className="nav-link" style={{ textTransform: 'none', color: 'var(--accent-color)' }}>{user.user_display_name}</span>
+              <button
+                onClick={logout}
+                className="nav-link"
+                style={{ background: 'none', border: '1px solid var(--border-color)', padding: '5px 12px', borderRadius: '6px', cursor: 'pointer' }}
+              >
+                Çıkış
+              </button>
+            </div>
+          ) : (
+            <Link href="/giris" className="btn-primary" onClick={() => setIsOpen(false)}>Kayıt / Üye Girişi</Link>
+          )}
         </nav>
 
-        {/* Right Nav Actions (Desktop & Interactive) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          {/* Sadece Desktopda Görünenler */}
-          <div className="desktop-only" style={{ alignItems: 'center', gap: '15px' }}>
-            <SearchBar />
-            {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span className="nav-link" style={{ textTransform: 'none', color: 'var(--accent-color)' }}>{user.user_display_name}</span>
-                <button
-                  onClick={logout}
-                  className="nav-link"
-                  style={{ background: 'none', border: '1px solid var(--border-color)', padding: '5px 12px', borderRadius: '6px', cursor: 'pointer' }}
-                >
-                  Çıkış
-                </button>
-              </div>
-            ) : (
-              <Link href="/giris" className="btn-primary" onClick={() => setIsOpen(false)}>Kayıt / Üye Girişi</Link>
-            )}
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle Theme" style={{ color: theme === 'light' ? '#f1c40f' : '#ffffff', background: 'none', border: 'none', cursor: 'pointer', padding: '8px' }}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 19.07l1.41-1.41M17.66 6.34l1.41-1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" /></svg>
           </button>

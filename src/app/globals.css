@@ -68,23 +68,6 @@ a:hover {
   padding: 0 20px;
 }
 
-.desktop-only {
-  display: flex;
-}
-
-.mobile-only {
-  display: none;
-}
-
-@media (max-width: 1024px) {
-  .desktop-only {
-    display: none !important;
-  }
-  .mobile-only {
-    display: flex;
-  }
-}
-
 .header {
   padding: 12px 0;
   border-bottom: 1px solid var(--border-color);
@@ -453,8 +436,6 @@ a:hover {
   .nav-links {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex: 1;
     gap: 15px;
   }
 }
