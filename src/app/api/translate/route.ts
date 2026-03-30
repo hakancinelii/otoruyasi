@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 
-const API_KEY = process.env.GEMINI_API_KEY || "AIzaSyAxg5oVFAlO1EoKmsZqnrv46zXeIOvqlTI";
+// CRITICAL SECURITY UPDATE:
+// We removed all hardcoded keys to avoid Google's "Leaked Key" automatic disabling.
+// You MUST add GEMINI_API_KEY to your Vercel Dashboard Environment Variables.
+const API_KEY = process.env.GEMINI_API_KEY;
 
 async function callGeminiAPI(text: string, lang: string, model: string, apiVersion: string = "v1beta") {
+  if (!API_KEY) throw new Error("API_KEY_MISSING");
+
   const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${API_KEY}`;
   
   const response = await fetch(url, {
@@ -32,6 +37,11 @@ export async function POST(req: Request) {
     body = await req.json();
     const { text, targetLang } = body;
 
+    if (!API_KEY) {
+      console.error("Vercel'de GEMINI_API_KEY eksik!");
+      return NextResponse.json({ translatedText: text || "", error: "API Key is missing in Vercel. Please add GEMINI_API_KEY first." });
+    }
+
     if (!text || !targetLang || targetLang === 'tr') {
       return NextResponse.json({ translatedText: text || "" });
     }
@@ -43,26 +53,14 @@ export async function POST(req: Request) {
     };
     const target = langNames[targetLang as keyof typeof langNames] || targetLang;
 
-    // Strategy: Try the most modern Flash model first, then fallbacks.
     let translatedText;
     try {
-      // 1. Try gemini-1.5-flash-latest (v1beta is safest for latest models)
-      translatedText = await callGeminiAPI(text, target, "gemini-1.5-flash-latest", "v1beta");
-    } catch (e1: any) {
-      console.warn("Attempt 1 failed:", e1.message);
-      try {
-        // 2. Try standard gemini-1.5-flash (v1)
-        translatedText = await callGeminiAPI(text, target, "gemini-1.5-flash", "v1");
-      } catch (e2: any) {
-        console.warn("Attempt 2 failed:", e2.message);
-        try {
-          // 3. Last resort: gemini-pro (v1beta)
-          translatedText = await callGeminiAPI(text, target, "gemini-pro", "v1beta");
-        } catch (e3: any) {
-           console.error("Final Attempt failed:", e3.message);
-           throw e3;
-        }
-      }
+      // First try 1.5 Flash (Modern standard)
+      translatedText = await callGeminiAPI(text, target, "gemini-1.5-flash", "v1beta");
+    } catch (e: any) {
+      console.warn("Retrying with fallback model due to:", e.message);
+      // Fallback
+      translatedText = await callGeminiAPI(text, target, "gemini-pro", "v1beta");
     }
 
     return NextResponse.json({ translatedText: translatedText || text });
@@ -70,7 +68,7 @@ export async function POST(req: Request) {
     console.error("All Gemini Models Failed:", error.message || error);
     return NextResponse.json({ 
       translatedText: body?.text || "",
-      error: error.message
+      error: error.message === "API_KEY_MISSING" ? "Vercel üzerinde GEMINI_API_KEY tanımlanmamış!" : error.message
     });
   }
 }
