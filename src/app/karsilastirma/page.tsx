@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Popüler Türkiye Pazarı Araç Veritabanı
 const CAR_DATABASE: Record<string, string[]> = {
