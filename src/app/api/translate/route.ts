@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 
 const API_KEY = process.env.GEMINI_API_KEY || "AIzaSyAxg5oVFAlO1EoKmsZqnrv46zXeIOvqlTI";
 
-async function callGeminiAPI(text: string, lang: string, model: string) {
-  const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${API_KEY}`;
+async function callGeminiAPI(text: string, lang: string, model: string, apiVersion: string = "v1beta") {
+  const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${API_KEY}`;
   
   const response = await fetch(url, {
     method: "POST",
@@ -11,7 +11,7 @@ async function callGeminiAPI(text: string, lang: string, model: string) {
     body: JSON.stringify({
       contents: [{
         parts: [{
-          text: `Translate the following automotive text into ${lang}. Only return translated text. Keep HTML tags. Marka isimlərini dəyişmə. CONTENT: ${text}`
+          text: `Translate the following automotive text into ${lang}. Only return translated text. Keep HTML tags. CONTENT: ${text}`
         }]
       }]
     })
@@ -19,7 +19,7 @@ async function callGeminiAPI(text: string, lang: string, model: string) {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.error?.message || "Gemini API Error");
+    throw new Error(errorData.error?.message || `Gemini ${model} Error`);
   }
 
   const data = await response.json();
@@ -43,20 +43,34 @@ export async function POST(req: Request) {
     };
     const target = langNames[targetLang as keyof typeof langNames] || targetLang;
 
-    // We use a safe retry mechanism with Native REST API to bypass SDK 404s
+    // Strategy: Try the most modern Flash model first, then fallbacks.
     let translatedText;
     try {
-      // First try 1.5 Flash
-      translatedText = await callGeminiAPI(text, target, "gemini-1.5-flash");
-    } catch (e: any) {
-      console.warn("Gemini 1.5 Flash failed, trying gemini-pro...", e.message);
-      // Fallback to gemini-pro
-      translatedText = await callGeminiAPI(text, target, "gemini-pro");
+      // 1. Try gemini-1.5-flash-latest (v1beta is safest for latest models)
+      translatedText = await callGeminiAPI(text, target, "gemini-1.5-flash-latest", "v1beta");
+    } catch (e1: any) {
+      console.warn("Attempt 1 failed:", e1.message);
+      try {
+        // 2. Try standard gemini-1.5-flash (v1)
+        translatedText = await callGeminiAPI(text, target, "gemini-1.5-flash", "v1");
+      } catch (e2: any) {
+        console.warn("Attempt 2 failed:", e2.message);
+        try {
+          // 3. Last resort: gemini-pro (v1beta)
+          translatedText = await callGeminiAPI(text, target, "gemini-pro", "v1beta");
+        } catch (e3: any) {
+           console.error("Final Attempt failed:", e3.message);
+           throw e3;
+        }
+      }
     }
 
     return NextResponse.json({ translatedText: translatedText || text });
   } catch (error: any) {
-    console.error("Final Translation Fallback:", error.message || error);
-    return NextResponse.json({ translatedText: body?.text || "" });
+    console.error("All Gemini Models Failed:", error.message || error);
+    return NextResponse.json({ 
+      translatedText: body?.text || "",
+      error: error.message
+    });
   }
 }
