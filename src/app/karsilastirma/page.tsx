@@ -156,7 +156,21 @@ export default function KarsilastirmaPage() {
               </ul>
             </div>
           </div>
-          <p style={{ textAlign: 'center', marginTop: '20px', color: 'var(--text-muted)', fontSize: '12px' }}>* Bu bir test (demo) verisidir. Yakında gerçek yapay zeka verileriyle değiştirilecektir.</p>
+          
+          {/* AI Uzman Yorumu */}
+          <div className="card" style={{ marginTop: '30px', padding: '30px', textAlign: 'left', maxWidth: '920px', margin: '30px auto 0', border: '1px solid var(--accent-color)' }}>
+            <h3 style={{ fontSize: '22px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Yapay Zeka Uzman Görüşü
+            </h3>
+            <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)' }}>
+              <strong>{car1Brand} {car1Model}</strong> ile <strong>{car2Brand} {car2Model}</strong> karşılaştırmasında, <em>{car1Brand}</em> modeli iç hacim ve pratiklik konusunda segmentinin yıldızı olurken, <em>{car2Brand}</em> modeli sunduğu premium sürüş hissiyatı ve gelişmiş güvenlik donanımlarıyla öne çıkıyor. 
+              <br/><br/>
+              Eğer önceliğiniz fiyat avantajıyla fonksiyonel bir araç satın almaksa {car1Brand} {car1Model} mantıklı bir tercih olacaktır. Ancak malzeme kalitesi ve ikinci el değerinden ödün vermek istemiyorsanız {car2Brand} {car2Model} kesinlikle bu rekabette bir adım önde konumlanıyor.
+            </p>
+          </div>
+
+          <p style={{ textAlign: 'center', marginTop: '30px', color: 'var(--text-muted)', fontSize: '13px' }}>* Bu bir test (demo) verisidir. Yakında gerçek yapay zeka entegrasyonu ile metinler anlık üretilecektir.</p>
         </div>
       )}
     </main>
