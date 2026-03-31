@@ -77,12 +77,12 @@ export default function Navbar() {
     <header className={`header ${isVisible ? 'header-visible' : 'header-hidden'}`}>
       <div className="container nav-container">
         <div className="nav-left">
-          <Link href="/">
+          <Link href="/" onClick={() => setIsOpen(false)}>
             <img src="/logo.png" alt="Oto Rüyası" className="logo-img" />
           </Link>
         </div>
 
-        {/* Desktop Links */}
+        {/* Desktop-only: Middle Menu */}
         <nav className="desktop-only nav-links">
           {menuItems.map((item) => (
             <Link key={item.href} href={item.href} className="nav-link" style={{ color: item.color, fontWeight: item.bold ? 700 : 400 }}>{item.label}</Link>
@@ -102,6 +102,7 @@ export default function Navbar() {
 
         {/* Action Right */}
         <div className="nav-right">
+          {/* Desktop Only Right Actions */}
           <div className="desktop-only" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <SearchBar />
             {user ? (
@@ -116,7 +117,7 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <Link href="/giris" className="btn-primary">{t('login')}</Link>
+              <Link href="/giris" className="btn-primary" style={{ padding: '8px 16px', fontSize: '12px' }}>{t('login')}</Link>
             )}
             <div className="lang-switcher" ref={langRef}>
               <button className="lang-btn" onClick={() => setIsLangOpen(!isLangOpen)}>
@@ -136,42 +137,60 @@ export default function Navbar() {
             <button className="theme-toggle" onClick={toggleTheme}>{theme === 'light' ? '🌙' : '☀️'}</button>
           </div>
 
+          {/* Hamburger (Only visible on mobile - 1200px and below) */}
           <button className="mobile-menu-btn" onClick={() => setIsOpen(true)}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y1="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><line x1="3" y1="12" x2="21" y1="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
         </div>
       </div>
 
-      {/* Sidebar Mobile - The one you liked */}
+      {/* THE SIDEBAR / DRAWER - RESTORED PREMIUM DESIGN */}
       <div className={`mobile-sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <img src="/logo.png" alt="Logo" style={{ height: '30px' }} />
+          <img src="/logo.png" alt="Oto Rüyası" style={{ height: '30px' }} />
           <button className="close-btn" onClick={() => setIsOpen(false)}>✕</button>
         </div>
+        
         <div className="sidebar-content">
-          <div className="sidebar-links">
-            {menuItems.map((item) => (
-              <Link key={item.href} href={item.href} className="sidebar-item" onClick={() => setIsOpen(false)}>{item.label}</Link>
-            ))}
-            <div className="sidebar-divider"></div>
-            {newsCategories.map((cat) => (
-              <Link key={cat.id} href={`/kategori/${cat.id}`} className="sidebar-item secondary" onClick={() => setIsOpen(false)}>{cat.label}</Link>
-            ))}
+          <div className="sidebar-search">
+            <SearchBar />
           </div>
-          <div className="sidebar-footer">
-            <div className="sidebar-lang-grid">
-               {(['tr', 'en', 'ru', 'de'] as Language[]).map(l => (
-                 <button key={l} onClick={() => { setLanguage(l); setIsOpen(false); }} className={`sidebar-lang-btn ${language === l ? 'active' : ''}`}>
-                   <span>{flags[l]}</span> {l.toUpperCase()}
-                 </button>
-               ))}
-            </div>
-            <button onClick={toggleTheme} className="sidebar-theme-btn">
-              {theme === 'light' ? '🌙 Gece Modu' : '☀️ Aydınlık Mod'}
-            </button>
+
+          <div className="sidebar-links">
+            <div className="sidebar-label">{language === 'tr' ? 'MENÜ' : 'MENU'}</div>
+            {menuItems.map((item) => (
+              <Link key={item.href} href={item.href} className="sidebar-item" onClick={() => setIsOpen(false)} style={{ color: item.color }}>
+                {item.label}
+              </Link>
+            ))}
+            <Link href="/abonelik" className="sidebar-item" onClick={() => setIsOpen(false)}>{t('subscription')}</Link>
+            
+            <div className="sidebar-divider"></div>
+            <div className="sidebar-label">{language === 'tr' ? 'HABER KATEGORİSİ' : 'CATEGORIES'}</div>
+            {newsCategories.map((cat) => (
+              <Link key={cat.id} href={`/kategori/${cat.id}`} className="sidebar-item secondary" onClick={() => setIsOpen(false)}>
+                {cat.label}
+              </Link>
+            ))}
           </div>
         </div>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-label" style={{ marginBottom: '10px' }}>{language === 'tr' ? 'DİL VE TEMA' : 'LANGUAGE & THEME'}</div>
+          <div className="sidebar-lang-grid">
+            {(['tr', 'en', 'ru', 'de'] as Language[]).map(l => (
+              <button key={l} onClick={() => { setLanguage(l); setIsOpen(false); }} className={`sidebar-lang-btn ${language === l ? 'active' : ''}`}>
+                <span>{flags[l]}</span> {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <button onClick={toggleTheme} className="sidebar-theme-btn" style={{ marginTop: '15px' }}>
+            {theme === 'light' ? '🌙 Koyu Mod' : '☀️ Açık Mod'}
+          </button>
+        </div>
       </div>
+      
+      {/* Dimmed Background when Sidebar is active */}
       {isOpen && <div className="sidebar-overlay" onClick={() => setIsOpen(false)}></div>}
     </header>
   );
