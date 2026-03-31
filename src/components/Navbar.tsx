@@ -121,74 +121,51 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <nav className={`nav-links ${isOpen ? 'mobile-open' : ''}`}>
-          <div className="mobile-only" style={{ marginBottom: '20px', width: '100%' }}>
-            <SearchBar />
-          </div>
-          
-          {menuItems.map((item) => (
-            <Link 
-              key={item.href} 
-              href={item.href} 
-              className="nav-link" 
-              onClick={() => setIsOpen(false)}
-              style={{ color: item.color, fontWeight: item.bold ? 700 : 400 }}
+        <div className="nav-main-wrapper">
+          <nav className={`nav-links ${isOpen ? 'mobile-open' : ''}`}>
+            <div className="mobile-only" style={{ marginBottom: '20px', width: '100%' }}>
+              <SearchBar />
+            </div>
+            
+            {menuItems.map((item) => (
+              <Link 
+                key={item.href} 
+                href={item.href} 
+                className="nav-link" 
+                onClick={() => setIsOpen(false)}
+                style={{ color: item.color, fontWeight: item.bold ? 700 : 400 }}
+              >
+                {item.label}
+              </Link>
+            ))}
+            
+            <div 
+              className="nav-dropdown" 
+              onMouseEnter={() => setIsNewsOpen(true)} 
+              onMouseLeave={() => setIsNewsOpen(false)}
             >
-              {item.label}
-            </Link>
-          ))}
-          
-          <div 
-            className="nav-dropdown" 
-            onMouseEnter={() => setIsNewsOpen(true)} 
-            onMouseLeave={() => setIsNewsOpen(false)}
-          >
-            <span className="nav-link" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {t('news')}
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M6 9l6 6 6-6"/></svg>
-            </span>
-            <div className={`dropdown-menu ${isNewsOpen ? 'show' : ''}`}>
-               {newsCategories.map((cat) => (
-                 <Link 
-                   key={cat.id} 
-                   href={`/kategori/${cat.id}`} 
-                   className="dropdown-item" 
-                   onClick={() => setIsOpen(false)}
-                   style={{ color: cat.accent ? 'var(--accent-color)' : 'inherit' }}
-                 >
-                   {cat.label}
-                 </Link>
-               ))}
+              <span className="nav-link" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {t('news')}
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M6 9l6 6 6-6"/></svg>
+              </span>
+              <div className={`dropdown-menu ${isNewsOpen ? 'show' : ''}`}>
+                 {newsCategories.map((cat) => (
+                   <Link 
+                     key={cat.id} 
+                     href={`/kategori/${cat.id}`} 
+                     className="dropdown-item" 
+                     onClick={() => setIsOpen(false)}
+                     style={{ color: cat.accent ? 'var(--accent-color)' : 'inherit' }}
+                   >
+                     {cat.label}
+                   </Link>
+                 ))}
+              </div>
             </div>
-          </div>
-          
-          <Link href="/abonelik" className="nav-link" onClick={() => setIsOpen(false)}>{t('subscription')}</Link>
-
-          {/* Mobile-only: Language selector + Theme toggle */}
-          <div className="mobile-only" style={{ marginTop: '12px', borderTop: '1px solid var(--border-color)', paddingTop: '20px', width: '100%' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '12px', letterSpacing: '1px' }}>
-              {language === 'tr' ? 'Dil Seçimi' : 'Language'}
-            </div>
-            <div className="mobile-lang-grid">
-              {(['tr', 'en', 'ru', 'de'] as Language[]).map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => { setLanguage(lang); setIsOpen(false); }}
-                  className={`mobile-lang-btn ${language === lang ? 'active' : ''}`}
-                >
-                  <span style={{ fontSize: '22px' }}>{flags[lang]}</span>
-                  <span className="mobile-lang-name">{langNames[lang]}</span>
-                </button>
-              ))}
-            </div>
-            <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <button onClick={toggleTheme} className="mobile-theme-btn">
-                {theme === 'light' ? '🌙' : '☀️'}
-                <span>{theme === 'light' ? (language === 'tr' ? 'Koyu Mod' : 'Dark Mode') : (language === 'tr' ? 'Açık Mod' : 'Light Mode')}</span>
-              </button>
-            </div>
-          </div>
-        </nav>
+            
+            <Link href="/abonelik" className="nav-link" onClick={() => setIsOpen(false)}>{t('subscription')}</Link>
+          </nav>
+        </div>
 
         <div className="nav-right">
           <div className="desktop-only" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>

@@ -1101,3 +1101,48 @@ body,
 .breaking-content {
   perspective: 1000px; /* 3D effect for flipping */
 }
+
+/* Navbar Layout Fixes for 100% Zoom */
+.nav-container {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.nav-main-wrapper {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+  margin-left: 30px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 18px; /* Reduced gap to fit everything */
+}
+
+.nav-link {
+  font-size: 13px !important; /* Slightly smaller font for better fit */
+  white-space: nowrap;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .nav-links {
+    gap: 12px;
+  }
+  .nav-link {
+    font-size: 12px !important;
+  }
+}
