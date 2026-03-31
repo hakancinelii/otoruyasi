@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { GridSkeleton, HeroSkeleton } from '../components/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 import NewsMosaic from '../components/NewsMosaic';
+import CategorySection from '../components/CategorySection';
 
 export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,8 +50,7 @@ export default function Home() {
         if (language === 'tr') {
           setTranslatedPosts(data);
         } else {
-          setTranslatedPosts([]);
-          // Çeviri başlat: İlk 4 Mosaic için, geri kalanı Grid için
+          setTranslatedPosts([]); 
           translateBatch(data.slice(0, 4), 0, true);
           translateBatch(data.slice(4), 4, false);
         }
@@ -82,10 +82,10 @@ export default function Home() {
   const translateBatch = async (batch: any[], startIndex: number, isMosaic = false) => {
     if (batch.length === 0) return;
     if (isMosaic) setIsTranslatingMosaic(true); else setIsTranslatingGrid(true);
-
+    
     // Toplu çeviri havuzu
     const batchText = batch.map((p, i) => `[ITEM-${i}] TITLE: ${p.title.rendered}`).join('\n\n');
-
+    
     try {
       const res = await fetch('/api/translate', {
         method: 'POST',
@@ -95,7 +95,7 @@ export default function Home() {
       const data = await res.json();
       if (data.translatedText) {
         const fullText = data.translatedText;
-
+        
         setTranslatedPosts(prev => {
           const updated = [...(prev.length === posts.length ? prev : [...posts])];
           batch.forEach((oldPost, i) => {
@@ -144,20 +144,49 @@ export default function Home() {
 
   return (
     <main className="container" style={{ paddingBottom: '100px' }}>
-
+      
       {/* Mosaic/Hero Section */}
-      <NewsMosaic
-        posts={mosaicPosts}
-        isTranslating={isTranslatingMosaic}
+      <NewsMosaic 
+        posts={mosaicPosts} 
+        isTranslating={isTranslatingMosaic} 
+        t={t} 
+      />
+
+      {/* Featured Categories Titles */}
+      <CategorySection 
+        categoryId="5802" 
+        title={language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles'} 
+        language={language}
         t={t}
       />
 
-      <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '60px' }}>
-        <h2 style={{ fontSize: '28px', margin: 0, fontWeight: 800 }}>{t('last_news')}</h2>
+      <CategorySection 
+        categoryId="5" 
+        title={language === 'tr' ? 'Test Sürüşleri' : 'Test Drives'} 
+        language={language}
+        t={t}
+      />
+
+      <CategorySection 
+        categoryId="5801" 
+        title={language === 'tr' ? 'Kampanyalar' : 'Campaigns'} 
+        language={language}
+        t={t}
+      />
+
+      <CategorySection 
+        categoryId="3" 
+        title={language === 'tr' ? 'Gündem' : 'Agenda'} 
+        language={language}
+        t={t}
+      />
+
+      {/* Last News Grid */}
+      <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '100px' }}>
+        <h2 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>{t('last_news')}</h2>
         {(isTranslatingGrid || isTranslatingMosaic) && <span style={{ color: 'var(--accent-color)', fontSize: '14px' }}>AI {t('translating')}...</span>}
       </div>
 
-      {/* Grid Posts */}
       <section className="grid">
         {gridPosts.map((post: any) => {
           return (
