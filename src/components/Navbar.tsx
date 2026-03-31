@@ -121,12 +121,12 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <div className="nav-main-wrapper">
-          <nav className={`nav-links ${isOpen ? 'mobile-open' : ''}`}>
-            <div className="mobile-only" style={{ marginBottom: '20px', width: '100%' }}>
-              <SearchBar />
-            </div>
-            
+        <nav className={`nav-links ${isOpen ? 'mobile-open' : ''}`}>
+          <div className="mobile-only" style={{ marginBottom: '20px', width: '100%' }}>
+            <SearchBar />
+          </div>
+          
+          <div className="nav-links-inner">
             {menuItems.map((item) => (
               <Link 
                 key={item.href} 
@@ -164,8 +164,8 @@ export default function Navbar() {
             </div>
             
             <Link href="/abonelik" className="nav-link" onClick={() => setIsOpen(false)}>{t('subscription')}</Link>
-          </nav>
-        </div>
+          </div>
+        </nav>
 
         <div className="nav-right">
           <div className="desktop-only" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
