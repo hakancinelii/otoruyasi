@@ -67,7 +67,7 @@ export default function CollaborationPage() {
           </div>
           <div>
             <p style={{ color: 'var(--text-muted)', fontSize: '14px', textTransform: 'uppercase', marginBottom: '10px' }}>{language === 'tr' ? 'Adres' : 'Address'}</p>
-            <p style={{ fontSize: '20px', fontWeight: 700 }}>İstanbul, Türkiye</p>
+            <p style={{ fontSize: '18px', fontWeight: 700, maxWidth: '300px', margin: '0 auto' }}>Zafer Mah. Fuzuli sok. No;9/14 Yenibosna/İstanbul</p>
           </div>
         </div>
 
