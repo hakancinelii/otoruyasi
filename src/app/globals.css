@@ -1145,3 +1145,54 @@ body,
   gap: 12px !important;
   align-items: center !important;
 }
+
+/* MOBIL GORUNUM DUZELTME (RESPONSIVE FIXES) */
+@media (max-width: 1200px) {
+  .nav-container {
+    justify-content: space-between !important;
+    padding: 0 15px !important;
+    gap: 0 !important;
+  }
+
+  .nav-main-wrapper {
+    display: none !important; /* Masaüstü menüsünü gizle */
+  }
+
+  .nav-links.mobile-open {
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    top: 70px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: var(--bg-color) !important;
+    padding: 20px !important;
+    gap: 20px !important;
+    z-index: 1001 !important;
+    overflow-y: auto !important;
+    height: calc(100vh - 70px) !important;
+  }
+
+  .nav-links.mobile-open .nav-link {
+    font-size: 18px !important;
+    padding: 10px 0 !important;
+    display: block !important;
+    width: 100% !important;
+    border-bottom: 1px solid var(--border-color) !important;
+  }
+
+  .nav-right .desktop-only {
+    display: none !important; /* Masaüstü ikonlarını gizle */
+  }
+
+  .nav-right {
+    margin-left: 0 !important;
+  }
+
+  .mobile-menu-btn {
+    display: block !important;
+    color: var(--text-color) !important;
+    padding: 10px !important;
+  }
+}
