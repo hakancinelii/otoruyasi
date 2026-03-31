@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { GridSkeleton } from '../../../components/Skeleton';
+import { GridSkeleton, HeroSkeleton } from '../../../components/Skeleton';
 import { useLanguage } from '../../../context/LanguageContext';
+import NewsMosaic from '../../../components/NewsMosaic';
 
 export default function KategoriPage({ params }: { params: { id: string } }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,12 +15,14 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const { t, language } = useLanguage();
-  const [isTranslating, setIsTranslating] = useState(false);
+  const [isTranslatingMosaic, setIsTranslatingMosaic] = useState(false);
+  const [isTranslatingGrid, setIsTranslatingGrid] = useState(false);
 
   const fetchCategoryData = async (pageNum: number, isLoadMore = false) => {
     try {
       if (isLoadMore) setLoadingMore(true);
-      const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts?categories=${params.id}&_embed&per_page=30&page=${pageNum}`);
+      const limit = isLoadMore ? 30 : 31;
+      const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts?categories=${params.id}&_embed&per_page=${limit}&page=${pageNum}`);
 
       if (!res.ok) {
         if (res.status === 400) setHasMore(false);
@@ -27,20 +30,23 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
       }
 
       const data = await res.json();
-      if (data.length < 30) setHasMore(false);
+      if (data.length < limit) setHasMore(false);
 
       if (isLoadMore) {
-        const newPosts = [...posts, ...data];
-        setPosts(newPosts);
-        if (language !== 'tr') translateGridBatch(data, newPosts.length - data.length);
-        else setTranslatedPosts(newPosts);
+        setPosts(prev => {
+          const newPosts = [...prev, ...data];
+          if (language !== 'tr') translateBatch(data, newPosts.length - data.length, false);
+          else setTranslatedPosts(newPosts);
+          return newPosts;
+        });
       } else {
         setPosts(data);
         if (language === 'tr') {
           setTranslatedPosts(data);
         } else {
           setTranslatedPosts([]); 
-          translateGridBatch(data, 0);
+          translateBatch(data.slice(0, 4), 0, true);
+          translateBatch(data.slice(4), 4, false);
         }
       }
     } catch (error) {
@@ -59,18 +65,19 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (posts.length > 0) {
       if (language !== 'tr') {
-        setTranslatedPosts([]); 
-        translateGridBatch(posts, 0);
+        translateBatch(posts.slice(0, 4), 0, true);
+        translateBatch(posts.slice(4), 4, false);
       } else {
         setTranslatedPosts(posts);
       }
     }
   }, [language]);
 
-  const translateGridBatch = async (batch: any[], startIndex: number) => {
+  const translateBatch = async (batch: any[], startIndex: number, isMosaic = false) => {
     if (batch.length === 0) return;
-    setIsTranslating(true);
-    const batchText = batch.map((p, i) => `[ITEM-${i}] TITLE: ${p.title.rendered} \n EXCERPT: ${p.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 100)}...`).join('\n\n');
+    if (isMosaic) setIsTranslatingMosaic(true); else setIsTranslatingGrid(true);
+    
+    const batchText = batch.map((p, i) => `[ITEM-${i}] TITLE: ${p.title.rendered}`).join('\n\n');
     
     try {
       const res = await fetch('/api/translate', {
@@ -81,31 +88,26 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
       const data = await res.json();
       if (data.translatedText) {
         const fullText = data.translatedText;
-        const updatedTranslatedPosts = [...(translatedPosts.length === posts.length ? translatedPosts : [...posts])];
-        
-        batch.forEach((oldPost, i) => {
-          const itemRegex = new RegExp(`\\[ITEM-${i}\\]\\s*TITLE:([\\s\\S]*?)(?=\\[ITEM-|EXCERPT:|\\n|$)`, 'i');
-          const excerptRegex = new RegExp(`\\[ITEM-${i}\\][\\s\\S]*?EXCERPT:([\\s\\S]*?)(?=\\[ITEM-|\\n|$)`, 'i');
-          
-          const titleMatch = fullText.match(itemRegex);
-          const excerptMatch = fullText.match(excerptRegex);
-          
-          const globalIndex = startIndex + i;
-          if (updatedTranslatedPosts[globalIndex]) {
-             updatedTranslatedPosts[globalIndex] = {
-               ...updatedTranslatedPosts[globalIndex],
-               title: { ...updatedTranslatedPosts[globalIndex].title, rendered: titleMatch ? titleMatch[1].trim() : oldPost.title.rendered },
-               excerpt: { ...updatedTranslatedPosts[globalIndex].excerpt, rendered: excerptMatch ? excerptMatch[1].trim() : oldPost.excerpt.rendered }
-             };
-          }
+        setTranslatedPosts(prev => {
+          const updated = [...(prev.length === posts.length ? prev : [...posts])];
+          batch.forEach((oldPost, i) => {
+            const itemRegex = new RegExp(`\\[ITEM-${i}\\]\\s*TITLE:([\\s\\S]*?)(?=\\[ITEM-|\\n|$)`, 'i');
+            const titleMatch = fullText.match(itemRegex);
+            const globalIndex = startIndex + i;
+            if (updated[globalIndex]) {
+               updated[globalIndex] = {
+                 ...updated[globalIndex],
+                 title: { ...updated[globalIndex].title, rendered: titleMatch ? titleMatch[1].trim() : oldPost.title.rendered }
+               };
+            }
+          });
+          return updated;
         });
-        setTranslatedPosts(updatedTranslatedPosts);
       }
     } catch (e) {
       console.error("Batch translate error:", e);
-      if (translatedPosts.length === 0) setTranslatedPosts(batch);
     } finally {
-      setIsTranslating(false);
+      if (isMosaic) setIsTranslatingMosaic(false); else setIsTranslatingGrid(false);
     }
   }
 
@@ -118,33 +120,42 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   if (loading) {
     return (
       <main className="container">
-        <div style={{ padding: '40px 0' }}>
-          <div style={{ width: '200px', height: '32px', background: 'var(--border-color)', marginBottom: '30px', borderRadius: '8px' }}></div>
-          <GridSkeleton count={8} />
-        </div>
+        <HeroSkeleton />
+        <GridSkeleton count={8} />
       </main>
     );
   }
 
+  const currentData = translatedPosts.length > 0 ? translatedPosts : posts;
+  const mosaicPosts = currentData.slice(0, 4);
+  const gridPosts = currentData.slice(4);
+
   return (
-    <main className="container">
-      <div style={{ marginBottom: '30px', marginTop: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <main className="container" style={{ paddingBottom: '100px' }}>
+      
+      <NewsMosaic 
+        posts={mosaicPosts} 
+        isTranslating={isTranslatingMosaic} 
+        t={t} 
+      />
+
+      <div style={{ marginBottom: '30px', marginTop: '60px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>{t('news')}</h1>
-        {isTranslating && <span style={{ color: 'var(--accent-color)', fontSize: '14px' }}>AI Translating...</span>}
+        {(isTranslatingGrid || isTranslatingMosaic) && <span style={{ color: 'var(--accent-color)', fontSize: '14px' }}>AI {t('translating')}...</span>}
       </div>
 
       <section className="grid">
-        {(translatedPosts.length > 0 ? translatedPosts : posts).map((post: any, i) => (
-          <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', opacity: isTranslating && translatedPosts.length === 0 ? 0 : 1 }}>
+        {gridPosts.map((post: any) => (
+          <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
             <div className="card-img-wrapper">
               <img className="card-img" src={post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200'} alt={post.title.rendered} />
             </div>
             <div className="card-content">
-              <h3 className="card-title" dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
+              <h3 className="card-title" style={{ fontSize: '18px', fontWeight: 700 }} dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
               <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
-              <div className="card-footer">
+              <div className="card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '15px' }}>
                 <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}</span>
-                <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{t('read_more')} &rarr;</span>
+                <span style={{ color: 'var(--accent-color)', fontWeight: 700 }}>{t('read_more')}</span>
               </div>
             </div>
           </Link>
@@ -152,12 +163,12 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
       </section>
 
       {hasMore && (
-        <div style={{ textAlign: 'center', marginTop: '50px', paddingBottom: '30px' }}>
+        <div style={{ textAlign: 'center', marginTop: '80px' }}>
           <button
             onClick={handleLoadMore}
             disabled={loadingMore}
             className="btn-primary"
-            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
+            style={{ padding: '16px 50px', fontSize: '18px', fontWeight: 800, background: 'var(--accent-color)', border: 'none', color: '#000', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
           >
             {loadingMore ? t('loading') : t('load_more')}
           </button>

@@ -105,6 +105,101 @@ body {
   padding-top: 100px; /* Header yüksekliği kadar boşluk */
 }
 
+/* News Mosaic Grid Layout (1 Large + 3 Small) */
+.mosaic-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 250px 250px;
+  gap: 15px;
+  margin: 40px 0;
+  height: 515px;
+}
+
+.mosaic-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  cursor: pointer;
+  background: var(--card-bg);
+}
+
+.mosaic-item-large {
+  grid-row: span 2;
+}
+
+.mosaic-item-medium {
+  grid-column: span 1;
+}
+
+.mosaic-item-small-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.mosaic-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.mosaic-item:hover .mosaic-img {
+  transform: scale(1.05);
+}
+
+.mosaic-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 25px;
+  z-index: 2;
+}
+
+.mosaic-title {
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.mosaic-item-large .mosaic-title { font-size: 32px; }
+.mosaic-item-medium .mosaic-title { font-size: 18px; }
+.mosaic-item-small .mosaic-title { font-size: 14px; }
+
+.mosaic-badge {
+  background: var(--accent-color);
+  color: #000;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  width: fit-content;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1024px) {
+  .mosaic-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    height: auto;
+  }
+  .mosaic-item-large { grid-row: span 1; height: 400px; }
+  .mosaic-item-small-group { grid-template-columns: 1fr 1fr; height: 200px; }
+  .mosaic-item-medium { height: 250px; }
+}
+
+@media (max-width: 768px) {
+  .mosaic-item-small-group { grid-template-columns: 1fr; height: auto; }
+  .mosaic-item-small-group .mosaic-item { height: 200px; }
+}
+
+/* Original Header & Hero Section styles... */
 .logo-img {
   height: 60px;
   max-width: 200px;

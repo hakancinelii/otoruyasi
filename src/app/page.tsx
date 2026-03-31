@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { GridSkeleton, HeroSkeleton } from '../components/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
+import NewsMosaic from '../components/NewsMosaic';
 
 export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,9 +16,7 @@ export default function Home() {
   const [hasMore, setHasMore] = useState(true);
   const { language, t } = useLanguage();
 
-  const [heroTitle, setHeroTitle] = useState('');
-  const [heroExcerpt, setHeroExcerpt] = useState('');
-  const [isTranslatingHero, setIsTranslatingHero] = useState(false);
+  const [isTranslatingMosaic, setIsTranslatingMosaic] = useState(false);
   const [isTranslatingGrid, setIsTranslatingGrid] = useState(false);
 
   const fetchRealData = async (pageNum: number, isLoadMore = false) => {
@@ -36,26 +35,24 @@ export default function Home() {
       if (data.length < limit) setHasMore(false);
 
       if (isLoadMore) {
-        const newPosts = [...posts, ...data];
-        setPosts(newPosts);
-        if (language !== 'tr') {
-          translateGridBatch(data, newPosts.length - data.length);
-        } else {
-          setTranslatedPosts(newPosts);
-        }
+        setPosts(prevPosts => {
+          const newPosts = [...prevPosts, ...data];
+          if (language !== 'tr') {
+            translateBatch(data, newPosts.length - data.length);
+          } else {
+            setTranslatedPosts(newPosts);
+          }
+          return newPosts;
+        });
       } else {
         setPosts(data);
         if (language === 'tr') {
           setTranslatedPosts(data);
-          setHeroTitle(data[0].title.rendered);
-          setHeroExcerpt(data[0].excerpt.rendered);
         } else {
-          // Dil zaten farklıysa içerikleri temizle ve çeviri başlat
-          setHeroTitle('');
-          setHeroExcerpt('');
-          setTranslatedPosts([]); 
-          translateHero(data[0], language);
-          translateGridBatch(data.slice(1), 1);
+          setTranslatedPosts([]);
+          // Çeviri başlat: İlk 4 Mosaic için, geri kalanı Grid için
+          translateBatch(data.slice(0, 4), 0, true);
+          translateBatch(data.slice(4), 4, false);
         }
       }
     } catch (error) {
@@ -74,57 +71,21 @@ export default function Home() {
   useEffect(() => {
     if (posts.length > 0) {
       if (language !== 'tr') {
-        translateHero(posts[0], language);
-        translateGridBatch(posts.slice(1), 1);
+        translateBatch(posts.slice(0, 4), 0, true);
+        translateBatch(posts.slice(4), 4, false);
       } else {
-        setHeroTitle(posts[0].title.rendered);
-        setHeroExcerpt(posts[0].excerpt.rendered);
         setTranslatedPosts(posts);
       }
     }
   }, [language]);
 
-  const translateHero = async (post: any, lang: string) => {
-    setIsTranslatingHero(true);
-    try {
-      const res = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: `TITLE: ${post.title.rendered} \n\n EXCERPT: ${post.excerpt.rendered}`,
-          targetLang: lang
-        })
-      });
-      const data = await res.json();
-      if (data.translatedText) {
-        const fullText = data.translatedText;
-        const titleMatch = fullText.match(/TITLE:([\s\S]*?)EXCERPT:/i);
-        const excerptMatch = fullText.match(/EXCERPT:([\s\S]*)/i);
-        
-        if (titleMatch && excerptMatch) {
-          setHeroTitle(titleMatch[1].trim());
-          setHeroExcerpt(excerptMatch[1].trim());
-        } else {
-          setHeroTitle(fullText.substring(0, 100));
-          setHeroExcerpt(fullText.substring(100, 300));
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      setHeroTitle(post.title.rendered);
-      setHeroExcerpt(post.excerpt.rendered);
-    } finally {
-      setIsTranslatingHero(false);
-    }
-  }
-
-  const translateGridBatch = async (batch: any[], startIndex: number) => {
+  const translateBatch = async (batch: any[], startIndex: number, isMosaic = false) => {
     if (batch.length === 0) return;
-    setIsTranslatingGrid(true);
-    
-    // Toplu çeviri için veriyi hazırla
-    const batchText = batch.map((p, i) => `[ITEM-${i}] TITLE: ${p.title.rendered} \n EXCERPT: ${p.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 100)}...`).join('\n\n');
-    
+    if (isMosaic) setIsTranslatingMosaic(true); else setIsTranslatingGrid(true);
+
+    // Toplu çeviri havuzu
+    const batchText = batch.map((p, i) => `[ITEM-${i}] TITLE: ${p.title.rendered}`).join('\n\n');
+
     try {
       const res = await fetch('/api/translate', {
         method: 'POST',
@@ -134,31 +95,27 @@ export default function Home() {
       const data = await res.json();
       if (data.translatedText) {
         const fullText = data.translatedText;
-        const updatedTranslatedPosts = [...(translatedPosts.length === posts.length ? translatedPosts : [...posts])];
-        
-        batch.forEach((oldPost, i) => {
-          const itemRegex = new RegExp(`\\[ITEM-${i}\\]\\s*TITLE:([\\s\\S]*?)(?=\\[ITEM-|EXCERPT:|\\n|$)`, 'i');
-          const excerptRegex = new RegExp(`\\[ITEM-${i}\\][\\s\\S]*?EXCERPT:([\\s\\S]*?)(?=\\[ITEM-|\\n|$)`, 'i');
-          
-          const titleMatch = fullText.match(itemRegex);
-          const excerptMatch = fullText.match(excerptRegex);
-          
-          const globalIndex = startIndex + i;
-          if (updatedTranslatedPosts[globalIndex]) {
-             updatedTranslatedPosts[globalIndex] = {
-               ...updatedTranslatedPosts[globalIndex],
-               title: { ...updatedTranslatedPosts[globalIndex].title, rendered: titleMatch ? titleMatch[1].trim() : oldPost.title.rendered },
-               excerpt: { ...updatedTranslatedPosts[globalIndex].excerpt, rendered: excerptMatch ? excerptMatch[1].trim() : oldPost.excerpt.rendered }
-             };
-          }
+
+        setTranslatedPosts(prev => {
+          const updated = [...(prev.length === posts.length ? prev : [...posts])];
+          batch.forEach((oldPost, i) => {
+            const itemRegex = new RegExp(`\\[ITEM-${i}\\]\\s*TITLE:([\\s\\S]*?)(?=\\[ITEM-|\\n|$)`, 'i');
+            const titleMatch = fullText.match(itemRegex);
+            const globalIndex = startIndex + i;
+            if (updated[globalIndex]) {
+              updated[globalIndex] = {
+                ...updated[globalIndex],
+                title: { ...updated[globalIndex].title, rendered: titleMatch ? titleMatch[1].trim() : oldPost.title.rendered }
+              };
+            }
+          });
+          return updated;
         });
-        setTranslatedPosts(updatedTranslatedPosts);
       }
     } catch (e) {
       console.error("Batch translate error:", e);
-      if (translatedPosts.length === 0) setTranslatedPosts(posts); // Hata durumunda orijinalleri bas
     } finally {
-      setIsTranslatingGrid(false);
+      if (isMosaic) setIsTranslatingMosaic(false); else setIsTranslatingGrid(false);
     }
   }
 
@@ -177,49 +134,43 @@ export default function Home() {
     );
   }
 
-  const heroPost = posts[0];
-  const displayPosts = (translatedPosts.length > 0 ? translatedPosts : posts).slice(1);
+  const currentData = translatedPosts.length > 0 ? translatedPosts : posts;
+  const mosaicPosts = currentData.slice(0, 4);
+  const gridPosts = currentData.slice(4);
 
   const getImageUrl = (post: any) => {
     return post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
   };
 
   return (
-    <main className="container">
-      {/* Hero Section */}
-      <Link href={`/haber/${heroPost.id}`} className="hero" style={{ display: 'block', textDecoration: 'none' }}>
-        <img className="hero-img" src={getImageUrl(heroPost)} alt={heroPost.title.rendered} />
-        <div className="hero-overlay"></div>
-        <div className="hero-content">
-          <span className="hero-badge">{t('featured_news')} {isTranslatingHero && '...'}</span>
-          {isTranslatingHero && !heroTitle ? (
-            <div style={{ width: '80%', height: '40px', background: 'rgba(255,255,255,0.1)', marginBottom: '15px' }}></div>
-          ) : (
-            <h1 className="hero-title" dangerouslySetInnerHTML={{ __html: heroTitle || heroPost.title.rendered }}></h1>
-          )}
-          <p className="hero-excerpt" dangerouslySetInnerHTML={{ __html: (heroExcerpt || heroPost.excerpt.rendered).replace(/<[^>]+>/g, '').substring(0, 180) + '...' }}></p>
-        </div>
-      </Link>
+    <main className="container" style={{ paddingBottom: '100px' }}>
+
+      {/* Mosaic/Hero Section */}
+      <NewsMosaic
+        posts={mosaicPosts}
+        isTranslating={isTranslatingMosaic}
+        t={t}
+      />
 
       <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '60px' }}>
-        <h2 style={{ fontSize: '28px', margin: 0 }}>{t('last_news')}</h2>
-        {isTranslatingGrid && <span style={{ color: 'var(--accent-color)', fontSize: '14px' }}>AI Translating...</span>}
+        <h2 style={{ fontSize: '28px', margin: 0, fontWeight: 800 }}>{t('last_news')}</h2>
+        {(isTranslatingGrid || isTranslatingMosaic) && <span style={{ color: 'var(--accent-color)', fontSize: '14px' }}>AI {t('translating')}...</span>}
       </div>
 
       {/* Grid Posts */}
       <section className="grid">
-        {displayPosts.map((post: any) => {
+        {gridPosts.map((post: any) => {
           return (
-            <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', opacity: isTranslatingGrid ? 0.7 : 1 }}>
+            <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', transition: 'transform 0.3s' }}>
               <div className="card-img-wrapper">
                 <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
               </div>
               <div className="card-content">
-                <h3 className="card-title" dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
+                <h3 className="card-title" style={{ fontSize: '18px', lineHeight: '1.4' }} dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
                 <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
-                <div className="card-footer">
+                <div className="card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '15px', marginTop: '15px' }}>
                   <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}</span>
-                  <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{t('read_more')} &rarr;</span>
+                  <span style={{ color: 'var(--accent-color)', fontWeight: 700 }}>{t('read_more')}</span>
                 </div>
               </div>
             </Link>
@@ -229,12 +180,12 @@ export default function Home() {
 
       {/* Pagination Load More */}
       {hasMore && (
-        <div style={{ textAlign: 'center', marginTop: '50px', paddingBottom: '30px' }}>
+        <div style={{ textAlign: 'center', marginTop: '80px' }}>
           <button
             onClick={handleLoadMore}
             disabled={loadingMore}
             className="btn-primary"
-            style={{ padding: '12px 30px', fontSize: '16px', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--accent-color)', cursor: loadingMore ? 'not-allowed' : 'pointer' }}
+            style={{ padding: '16px 50px', fontSize: '18px', fontWeight: 800, background: 'var(--accent-color)', color: '#000', cursor: loadingMore ? 'not-allowed' : 'pointer', border: 'none', borderRadius: '12px', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}
           >
             {loadingMore ? t('loading') : t('load_more')}
           </button>
