@@ -1106,9 +1106,11 @@ body,
 .nav-container {
   display: flex !important;
   justify-content: flex-start !important;
-  gap: 15px !important; /* Logodan sonraki boşluğu ayarla */
-  max-width: 1400px;
-  margin: 0 auto;
+  gap: 15px !important; 
+  width: 100% !important;
+  max-width: 1500px !important; /* Biraz daha genişletildi */
+  margin: 0 auto !important;
+  padding: 0 10px 0 5px !important; /* Sol boşluğu minimuma indirdik */
 }
 
 .nav-main-wrapper {
