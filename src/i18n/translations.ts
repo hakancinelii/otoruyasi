@@ -4,7 +4,8 @@ export const translations = {
   tr: {
     home: 'Ana Sayfa',
     test_drives: 'Test Sürüşleri',
-    compare: 'Karşılaştır',
+    compare: 'Ai Araç Karşılaştır',
+    collaboration: 'İş Birliği',
     videos: 'Test Videoları',
     instagram: 'Instagram',
     news: 'Haberler',
@@ -51,7 +52,8 @@ export const translations = {
   en: {
     home: 'Home',
     test_drives: 'Test Drives',
-    compare: 'Compare',
+    compare: 'AI Car Comparison',
+    collaboration: 'Collaboration',
     videos: 'Videos',
     instagram: 'Instagram',
     news: 'News',
@@ -98,7 +100,8 @@ export const translations = {
   ru: {
     home: 'Главная',
     test_drives: 'Тест-драйвы',
-    compare: 'Сравнить',
+    compare: 'Сравнение ИИ',
+    collaboration: 'Сотрудничество',
     videos: 'Видео',
     instagram: 'Instagram',
     news: 'Новости',
@@ -145,7 +148,8 @@ export const translations = {
   de: {
     home: 'Startseite',
     test_drives: 'Testfahrten',
-    compare: 'Vergleichen',
+    compare: 'KI-Auto-Vergleich',
+    collaboration: 'Zusammenarbeit',
     videos: 'Videos',
     instagram: 'Instagram',
     news: 'Nachrichten',

@@ -72,7 +72,8 @@ export default function Navbar() {
     { label: t('test_drives'), href: '/kategori/5' },
     { label: t('compare'), href: '/karsilastirma', color: 'var(--accent-color)', bold: true },
     { label: t('videos'), href: '/videolar', color: '#ff2d2d' },
-    { label: t('instagram'), href: '/instagram' }
+    { label: t('instagram'), href: '/instagram' },
+    { label: t('collaboration'), href: '/is-birligi' }
   ];
 
   const newsCategories = [
