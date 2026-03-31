@@ -6,6 +6,7 @@ import { GridSkeleton, HeroSkeleton } from '../components/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 import NewsMosaic from '../components/NewsMosaic';
 import CategorySection from '../components/CategorySection';
+import BreakingNews from '../components/BreakingNews';
 
 export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -151,6 +152,9 @@ export default function Home() {
         isTranslating={isTranslatingMosaic}
         t={t}
       />
+
+      {/* Breaking News Ticker Section */}
+      <BreakingNews language={language} t={t} />
 
       {/* Featured Categories Titles */}
       <CategorySection
