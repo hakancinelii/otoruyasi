@@ -278,9 +278,10 @@ body {
 
 .nav-links {
   display: flex;
-  gap: 12px;
+  gap: 15px;
+  margin-right: auto;
+  margin-left: 20px;
 }
-
 .nav-link {
   font-weight: 500;
   font-size: 13px;
@@ -651,19 +652,12 @@ body {
     gap: 12px;
   }
 
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 14px; /* Reduced gap slightly to fit more */
-    justify-content: flex-start;
-    background: none;
-    border: none;
-    padding: 0;
-    position: static;
-    height: auto;
-    width: auto;
-  }
-}
+.nav-links {
+  display: flex;
+  gap: 15px;
+  margin-right: auto;
+  margin-left: 20px;
+}}
 
 .mobile-menu-btn {
   display: none;
@@ -681,23 +675,12 @@ body {
     justify-content: center;
   }
 
-  .nav-links {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 300px;
-    height: 100vh;
-    background: var(--bg-color);
-    border-left: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    padding: 80px 30px 40px;
-    gap: 25px;
-    transition: right 0.4s ease;
-    z-index: 1000;
-    overflow-y: auto;
-  }
-
+.nav-links {
+  display: flex;
+  gap: 15px;
+  margin-right: auto;
+  margin-left: 20px;
+}
   .nav-links.mobile-open {
     right: 0;
   }
