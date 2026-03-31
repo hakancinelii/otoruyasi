@@ -161,6 +161,13 @@ export default function Home() {
       />
 
       <CategorySection
+        categoryId="12"
+        title={language === 'tr' ? 'Röportajlar' : 'Interviews'}
+        language={language}
+        t={t}
+      />
+
+      <CategorySection
         categoryId="5"
         title={language === 'tr' ? 'Test Sürüşleri' : 'Test Drives'}
         language={language}
@@ -168,8 +175,29 @@ export default function Home() {
       />
 
       <CategorySection
+        categoryId="7368"
+        title={language === 'tr' ? 'Motor Sporları' : 'Motorsports'}
+        language={language}
+        t={t}
+      />
+
+      <CategorySection
+        categoryId="11"
+        title={language === 'tr' ? 'Motobike' : 'Motobike'}
+        language={language}
+        t={t}
+      />
+
+      <CategorySection
         categoryId="5801"
         title={language === 'tr' ? 'Kampanyalar' : 'Campaigns'}
+        language={language}
+        t={t}
+      />
+
+      <CategorySection
+        categoryId="9"
+        title={language === 'tr' ? 'Teknoloji' : 'Technology'}
         language={language}
         t={t}
       />

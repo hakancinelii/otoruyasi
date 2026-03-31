@@ -76,11 +76,18 @@ export default function Navbar() {
 
   const newsCategories = [
     { id: '5801', label: language === 'tr' ? 'Kampanyalar' : 'Campaigns' },
-    { id: '5802', label: language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles' },
-    { id: '3', label: language === 'tr' ? 'Gündem' : 'Agenda' },
-    { id: '16714', label: language === 'tr' ? 'Modifikasyon' : 'Modification' },
     { id: '7368', label: language === 'tr' ? 'Motor Sporları' : 'Motorsports' },
-    { id: '18326', label: language === 'tr' ? 'Otobüs' : 'Bus' },
+    { id: '12', label: language === 'tr' ? 'Röportajlar' : 'Interviews' },
+    { id: '7', label: language === 'tr' ? 'Ticari Araçlar' : 'Commercial Vehicles' },
+    { id: '30', label: language === 'tr' ? 'Hafif Ticari' : 'Light Commercial' },
+    { id: '5802', label: language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles' },
+    { id: '10', label: language === 'tr' ? 'Konsept' : 'Concept' },
+    { id: '11', label: language === 'tr' ? 'Motobike' : 'Motobike' },
+    { id: '9', label: language === 'tr' ? 'Teknoloji' : 'Technology' },
+    { id: '13', label: language === 'tr' ? 'Lastik' : 'Tires' },
+    { id: '14', label: language === 'tr' ? 'Akaryakıt' : 'Fuel' },
+    { id: '15', label: language === 'tr' ? 'Lansman' : 'Launch' },
+    { id: '3', label: language === 'tr' ? 'Gündem' : 'Agenda' },
     { id: '4', label: language === 'tr' ? 'Tüm Haberler' : 'All News', accent: true }
   ];
 
