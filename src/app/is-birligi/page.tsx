@@ -59,11 +59,11 @@ export default function CollaborationPage() {
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '40px' }}>
           <div>
             <p style={{ color: 'var(--text-muted)', fontSize: '14px', textTransform: 'uppercase', marginBottom: '10px' }}>Email</p>
-            <a href="mailto:reklam@otoruyasi.com" style={{ fontSize: '20px', fontWeight: 700, color: 'var(--accent-color)' }}>reklam@otoruyasi.com</a>
+            <a href="mailto:otoruyasi@gmail.com" style={{ fontSize: '20px', fontWeight: 700, color: 'var(--accent-color)' }}>otoruyasi@gmail.com</a>
           </div>
           <div>
             <p style={{ color: 'var(--text-muted)', fontSize: '14px', textTransform: 'uppercase', marginBottom: '10px' }}>{language === 'tr' ? 'Telefon' : 'Phone'}</p>
-            <p style={{ fontSize: '20px', fontWeight: 700 }}>+90 (555) 000 00 00</p>
+            <p style={{ fontSize: '20px', fontWeight: 700 }}>+90 505 476 15 31</p>
           </div>
           <div>
             <p style={{ color: 'var(--text-muted)', fontSize: '14px', textTransform: 'uppercase', marginBottom: '10px' }}>{language === 'tr' ? 'Adres' : 'Address'}</p>
