@@ -76,12 +76,12 @@ export default function Navbar() {
   ];
 
   const newsCategories = [
-    { id: '5801', label: language === 'tr' ? 'Kampanyalar' : 'Campaigns' },
-    { id: '7368', label: language === 'tr' ? 'Motor Sporları' : 'Motorsports' },
-    { id: '12', label: language === 'tr' ? 'Röportajlar' : 'Interviews' },
-    { id: '7', label: language === 'tr' ? 'Ticari Araçlar' : 'Commercial Vehicles' },
-    { id: '30', label: language === 'tr' ? 'Hafif Ticari' : 'Light Commercial' },
-    { id: '5802', label: language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles' },
+    {id: '5802', label: language === 'tr' ? 'Kampanyalar' : 'Campaigns' },
+    {id: '7368', label: language === 'tr' ? 'Motor Sporları' : 'Motorsports' },
+    {id: '12', label: language === 'tr' ? 'Röportajlar' : 'Interviews' },
+    {id: '7', label: language === 'tr' ? 'Ticari Araçlar' : 'Commercial Vehicles' },
+    {id: '30', label: language === 'tr' ? 'Hafif Ticari' : 'Light Commercial' },
+    {id: '16714', label: language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles' },
     { id: '10', label: language === 'tr' ? 'Konsept' : 'Concept' },
     { id: '11', label: language === 'tr' ? 'Motobike' : 'Motobike' },
     { id: '9', label: language === 'tr' ? 'Teknoloji' : 'Technology' },

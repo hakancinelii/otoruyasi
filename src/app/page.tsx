@@ -154,7 +154,7 @@ export default function Home() {
 
       {/* Featured Categories Titles */}
       <CategorySection
-        categoryId="5802"
+        categoryId="16714"
         title={language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles'}
         language={language}
         t={t}
@@ -208,7 +208,7 @@ export default function Home() {
       />
 
       <CategorySection
-        categoryId="5801"
+        categoryId="5802"
         title={language === 'tr' ? 'Kampanyalar' : 'Campaigns'}
         language={language}
         t={t}
