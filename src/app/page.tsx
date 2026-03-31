@@ -178,14 +178,14 @@ export default function Home() {
         t={t}
       />
 
-      {/* Video Haberler Section - CLEANED */}
-      <section style={{ margin: '40px 0', padding: '20px 0' }}>
+      {/* Video Section Insertion for Visual Diversity */}
+      <div style={{ margin: '80px 0', padding: '60px 0', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
         <div className="container">
           <h2 style={{ fontSize: '32px', marginBottom: '30px', fontWeight: 800 }}>🎬 {language === 'tr' ? 'Video Haberler' : 'Video News'}</h2>
           <Link href="/videolar" style={{ display: 'block', borderRadius: '24px', overflow: 'hidden', position: 'relative', height: '450px', boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}>
             <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=1200" alt="Videos" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#ff0000', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 40px rgba(255,0,0,0.4)', cursor: 'pointer' }}>
+              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#ff0000', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 40px rgba(255,0,0,0.4)' }}>
                 <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z" /></svg>
               </div>
               <div style={{ position: 'absolute', bottom: '40px', left: '40px' }}>
@@ -195,7 +195,7 @@ export default function Home() {
             </div>
           </Link>
         </div>
-      </section>
+      </div>
 
       <CategorySection
         categoryId="7368"
