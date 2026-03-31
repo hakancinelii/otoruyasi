@@ -46,8 +46,9 @@ export default function BreakingNews({ language, t }: { language: string, t: any
       </div>
       <div className="breaking-content">
         <Link 
+          key={posts[currentIndex].id}
           href={`/haber/${posts[currentIndex].id}`}
-          className="breaking-link animate-fade-in"
+          className="breaking-link animate-flip-up"
           dangerouslySetInnerHTML={{ __html: posts[currentIndex].title.rendered }}
         />
       </div>
