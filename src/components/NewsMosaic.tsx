@@ -15,7 +15,7 @@ interface MosaicPost {
 interface NewsMosaicProps {
   posts: MosaicPost[];
   isTranslating: boolean;
-  t: any; // Using any for t to avoid type mismatch with LanguageContext
+  t: any;
 }
 
 export default function NewsMosaic({ posts, isTranslating, t }: NewsMosaicProps) {
@@ -50,40 +50,37 @@ export default function NewsMosaic({ posts, isTranslating, t }: NewsMosaicProps)
         </div>
       </Link>
 
-      {/* Right Side Group */}
-      <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '10px' }}>
-        {/* 2. Medium Item (TOP RIGHT) */}
-        {mosaicItems[1] && (
-          <Link href={`/haber/${mosaicItems[1].id}`} className="mosaic-item mosaic-item-medium">
-            <img className="mosaic-img" src={getImageUrl(mosaicItems[1])} alt={mosaicItems[1].title.rendered} />
-            <div className="mosaic-overlay">
-              <span className="mosaic-badge">HABERLER</span>
-              <h3 className="mosaic-title" dangerouslySetInnerHTML={{ __html: mosaicItems[1].title.rendered }}></h3>
+      {/* 2. Medium Item (TOP RIGHT) */}
+      {mosaicItems[1] && (
+        <Link href={`/haber/${mosaicItems[1].id}`} className="mosaic-item mosaic-item-medium">
+          <img className="mosaic-img" src={getImageUrl(mosaicItems[1])} alt={mosaicItems[1].title.rendered} />
+          <div className="mosaic-overlay">
+            <span className="mosaic-badge">HABERLER</span>
+            <h3 className="mosaic-title" dangerouslySetInnerHTML={{ __html: mosaicItems[1].title.rendered }}></h3>
+          </div>
+        </Link>
+      )}
+
+      {/* 3 & 4 Small Items Group (BOTTOM RIGHT) */}
+      <div className="mosaic-item-small-group">
+        {mosaicItems[2] && (
+          <Link href={`/haber/${mosaicItems[2].id}`} className="mosaic-item">
+            <img className="mosaic-img" src={getImageUrl(mosaicItems[2])} alt={mosaicItems[2].title.rendered} />
+            <div className="mosaic-overlay" style={{ padding: '15px' }}>
+              <span className="mosaic-badge" style={{ fontSize: '8px', padding: '2px 6px', marginBottom: '8px' }}>HABERLER</span>
+              <h3 className="mosaic-title" title={mosaicItems[2].title.rendered} dangerouslySetInnerHTML={{ __html: mosaicItems[2].title.rendered }}></h3>
             </div>
           </Link>
         )}
-
-        {/* 3 & 4 Small Items Group (BOTTOM RIGHT) */}
-        <div className="mosaic-item-small-group">
-          {mosaicItems[2] && (
-            <Link href={`/haber/${mosaicItems[2].id}`} className="mosaic-item">
-              <img className="mosaic-img" src={getImageUrl(mosaicItems[2])} alt={mosaicItems[2].title.rendered} />
-              <div className="mosaic-overlay" style={{ padding: '15px' }}>
-                <span className="mosaic-badge" style={{ fontSize: '8px', padding: '2px 6px', marginBottom: '8px' }}>HABERLER</span>
-                <h3 className="mosaic-title" dangerouslySetInnerHTML={{ __html: mosaicItems[2].title.rendered }}></h3>
-              </div>
-            </Link>
-          )}
-          {mosaicItems[3] && (
-            <Link href={`/haber/${mosaicItems[3].id}`} className="mosaic-item">
-              <img className="mosaic-img" src={getImageUrl(mosaicItems[3])} alt={mosaicItems[3].title.rendered} />
-              <div className="mosaic-overlay" style={{ padding: '15px' }}>
-                <span className="mosaic-badge" style={{ fontSize: '8px', padding: '2px 6px', marginBottom: '8px' }}>HABERLER</span>
-                <h3 className="mosaic-title" dangerouslySetInnerHTML={{ __html: mosaicItems[3].title.rendered }}></h3>
-              </div>
-            </Link>
-          )}
-        </div>
+        {mosaicItems[3] && (
+          <Link href={`/haber/${mosaicItems[3].id}`} className="mosaic-item">
+            <img className="mosaic-img" src={getImageUrl(mosaicItems[3])} alt={mosaicItems[3].title.rendered} />
+            <div className="mosaic-overlay" style={{ padding: '15px' }}>
+              <span className="mosaic-badge" style={{ fontSize: '8px', padding: '2px 6px', marginBottom: '8px' }}>HABERLER</span>
+              <h3 className="mosaic-title" title={mosaicItems[3].title.rendered} dangerouslySetInnerHTML={{ __html: mosaicItems[3].title.rendered }}></h3>
+            </div>
+          </Link>
+        )}
       </div>
     </section>
   );

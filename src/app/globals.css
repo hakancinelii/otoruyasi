@@ -109,30 +109,35 @@ body {
 .mosaic-container {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
-  grid-template-rows: 280px 280px;
+  grid-template-rows: 1fr 1fr; /* 2 Eşit satır */
   gap: 10px;
   margin: 30px 0 50px;
-  height: 570px;
+  height: 580px; /* Sabit yükseklik */
 }
 
 .mosaic-item {
   position: relative;
   overflow: hidden;
-  border-radius: 8px; /* Daha keskin, modern köşeler */
+  border-radius: 8px;
   cursor: pointer;
   background: var(--card-bg);
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  height: 100%; /* Kutu yüksekliğini doldur */
 }
 
 .mosaic-item-large {
   grid-row: span 2;
+  grid-column: 1;
 }
 
 .mosaic-item-medium {
-  grid-column: span 1;
+  grid-column: 2;
+  grid-row: 1;
 }
 
 .mosaic-item-small-group {
+  grid-column: 2;
+  grid-row: 2;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
