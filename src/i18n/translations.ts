@@ -45,7 +45,8 @@ export const translations = {
     congrats: 'Tebrikler, Hoş Geldiniz!',
     success_desc: 'Ödemeniz başarıyla alındı. Artık bir üyesiniz.',
     search_results: 'İçin Arama Sonuçları',
-    all_news: 'Tüm Haberler'
+    all_news: 'Tüm Haberler',
+    translating: 'AI Çeviriyor'
   },
   en: {
     home: 'Home',
@@ -91,7 +92,8 @@ export const translations = {
     congrats: 'Congratulations, Welcome!',
     success_desc: 'Payment successful. You are now a member.',
     search_results: 'Search Results',
-    all_news: 'All News'
+    all_news: 'All News',
+    translating: 'AI Translating'
   },
   ru: {
     home: 'Главная',
@@ -137,7 +139,8 @@ export const translations = {
     congrats: 'Поздравляем, добро пожаловать!',
     success_desc: 'Оплата прошла успешно. Теперь вы участник.',
     search_results: 'Результаты поиска',
-    all_news: 'Все новости'
+    all_news: 'Все новости',
+    translating: 'ИИ переводит'
   },
   de: {
     home: 'Startseite',
@@ -183,6 +186,7 @@ export const translations = {
     congrats: 'Herzlichen Glückwunsch, Willkommen!',
     success_desc: 'Zahlung erfolgreich. Sie sind jetzt Mitglied.',
     search_results: 'Suchergebnisse',
-    all_news: 'Alle Nachrichten'
+    all_news: 'Alle Nachrichten',
+    translating: 'KI übersetzt'
   }
 };
