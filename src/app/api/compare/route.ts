@@ -78,7 +78,7 @@ export async function POST(req: Request) {
        return NextResponse.json({ error: "Gemini API anahtarı ayarlanmamış." }, { status: 500 });
     }
 
-    const models = ["gemini-2.5-flash", "gemini-flash-latest"];
+    const models = ["gemini-1.5-flash", "gemini-1.5-pro"];
     let result: any = null;
 
     for (const modelName of models) {

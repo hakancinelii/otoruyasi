@@ -11,7 +11,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNewsOpen, setIsNewsOpen] = useState(false);
+  const [isUserOpen, setIsUserOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [theme, setTheme] = useState('dark');
   const { user, logout } = useAuth();
@@ -138,14 +139,14 @@ export default function Navbar() {
           
           <div 
             className="nav-dropdown" 
-            onMouseEnter={() => setIsDropdownOpen(true)} 
-            onMouseLeave={() => setIsDropdownOpen(false)}
+            onMouseEnter={() => setIsNewsOpen(true)} 
+            onMouseLeave={() => setIsNewsOpen(false)}
           >
             <span className="nav-link" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               {t('news')}
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M6 9l6 6 6-6"/></svg>
             </span>
-            <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
+            <div className={`dropdown-menu ${isNewsOpen ? 'show' : ''}`}>
                {newsCategories.map((cat) => (
                  <Link 
                    key={cat.id} 
@@ -191,10 +192,26 @@ export default function Navbar() {
         <div className="nav-right">
           <div className="desktop-only" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <SearchBar />
+            
             {user ? (
-               <button onClick={logout} className="btn-outline" style={{ background: 'none', border: '1px solid var(--border-color)', padding: '6px 14px', borderRadius: '8px', color: 'inherit', fontSize: '13px', cursor: 'pointer' }}>{t('logout')}</button>
+              <div className="nav-dropdown" onMouseEnter={() => setIsUserOpen(true)} onMouseLeave={() => setIsUserOpen(false)}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 12px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', cursor: 'pointer' }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--accent-color)', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '11px' }}>
+                    {user.user_display_name ? user.user_display_name[0].toUpperCase() : 'U'}
+                  </div>
+                  <span style={{ fontSize: '13px', fontWeight: 600 }}>{user.user_display_name || user.user_nicename}</span>
+                  {user.isPremium && <span style={{ fontSize: '10px', padding: '2px 6px', background: 'linear-gradient(45deg, #FFD700, #FFA500)', color: '#000', borderRadius: '4px', fontWeight: '800' }}>⭐ PREMIUM</span>}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                <div className={`dropdown-menu ${isUserOpen ? 'show' : ''}`} style={{ minWidth: '180px', right: 0 }}>
+                  <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-color)', fontSize: '11px', color: 'var(--text-muted)' }}>{user.user_email}</div>
+                  <Link href="/profil" className="dropdown-item">{language === 'tr' ? '👤 Profilim' : '👤 My Profile'}</Link>
+                  <Link href="/abonelik" className="dropdown-item">{user.isPremium ? (language === 'tr' ? '🛡️ Abonelik Yönetimi' : '🛡️ Manage Sub') : (language === 'tr' ? '✨ Premium\'a Geç' : '✨ Go Premium')}</Link>
+                  <button onClick={logout} className="dropdown-item" style={{ border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', color: '#ff4d4d' }}>{language === 'tr' ? '🚪 Çıkış Yap' : '🚪 Logout'}</button>
+                </div>
+              </div>
             ) : (
-               <Link href="/giris" className="btn-primary" style={{ padding: '8px 16px', fontSize: '12px' }}>{t('login')}</Link>
+              <Link href="/giris" className="btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }}>{t('login')}</Link>
             )}
             
             <div className="lang-switcher" ref={langRef} style={{ position: 'relative' }}>

@@ -26,7 +26,8 @@ async function callGeminiAPI(text: string, lang: string, model: string) {
       }],
       generationConfig: {
         temperature: 0.1,
-        maxOutputTokens: 8192
+        maxOutputTokens: 8192,
+        topP: 1
       }
     })
   });
@@ -68,7 +69,7 @@ export async function POST(req: Request) {
     // Use "-latest" aliases to ensure we always use the current stable version
     // This prevents "no longer available to new users" errors.
     let translatedText: string | undefined;
-    const models = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-pro-latest"];
+    const models = ["gemini-1.5-flash", "gemini-1.5-pro"];
 
     for (const model of models) {
       try {

@@ -64,7 +64,7 @@ export default function NewsMosaic({ posts, isTranslating, t }: NewsMosaicProps)
       {/* 3 & 4 Small Items Group (BOTTOM RIGHT) */}
       <div className="mosaic-item-small-group">
         {mosaicItems[2] && (
-          <Link href={`/haber/${mosaicItems[2].id}`} className="mosaic-item">
+          <Link href={`/haber/${mosaicItems[2].id}`} className="mosaic-item mosaic-item-small">
             <img className="mosaic-img" src={getImageUrl(mosaicItems[2])} alt={mosaicItems[2].title.rendered} />
             <div className="mosaic-overlay" style={{ padding: '15px' }}>
               <span className="mosaic-badge" style={{ fontSize: '8px', padding: '2px 6px', marginBottom: '8px' }}>HABERLER</span>
@@ -73,7 +73,7 @@ export default function NewsMosaic({ posts, isTranslating, t }: NewsMosaicProps)
           </Link>
         )}
         {mosaicItems[3] && (
-          <Link href={`/haber/${mosaicItems[3].id}`} className="mosaic-item">
+          <Link href={`/haber/${mosaicItems[3].id}`} className="mosaic-item mosaic-item-small">
             <img className="mosaic-img" src={getImageUrl(mosaicItems[3])} alt={mosaicItems[3].title.rendered} />
             <div className="mosaic-overlay" style={{ padding: '15px' }}>
               <span className="mosaic-badge" style={{ fontSize: '8px', padding: '2px 6px', marginBottom: '8px' }}>HABERLER</span>

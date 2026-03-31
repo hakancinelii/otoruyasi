@@ -25,16 +25,40 @@ export default function Abonelik() {
     setShowCheckout(true);
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
+    if (!selectedPlan || !user) return;
+    
     setIsProcessing(true);
-    // Creem Checkout API URL redirecting logic
-    // Example: fetch('/api/creem/checkout', { body: { plan: selectedPlan } })
-    // For now we simulate success
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/creem/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          plan: selectedPlan,
+          userId: user.user_email, // Veya gerçek bir WP User ID
+          email: user.user_email 
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Creem'e yönlendirme yapabiliriz veya modalı kapatıp başarılı diyebiliriz
+        // Bu demo/başlangıç için simüle ediyoruz ama API tetiklenmiş oldu
+        setTimeout(() => {
+          setIsProcessing(false);
+          setIsSuccess(true);
+          // Gerçekte burada premium statüsü veritabanında güncellenmeli
+        }, 2000);
+      } else {
+        alert(language === 'tr' ? 'Ödeme başlatılamadı: ' + data.error : 'Payment failed: ' + data.error);
+        setIsProcessing(false);
+      }
+    } catch (e) {
+      console.error('Payment Error:', e);
       setIsProcessing(false);
-      setIsSuccess(true);
-      // In production, update the user state with isPremium = true here
-    }, 2500);
+      alert(language === 'tr' ? 'Sistem hatası.' : 'System error.');
+    }
   };
 
   return (

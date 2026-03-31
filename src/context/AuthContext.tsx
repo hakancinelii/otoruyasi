@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (username: string, email: string, password: string) => {
     try {
-      // WordPress User Registration (Using a common WP Rest API endpoint or a custom one)
+      // WordPress User Registration
       const response = await fetch('https://otoruyasi.com/wp-json/wp/v2/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -78,17 +78,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (response.ok) {
         // Kayıttan sonra otomatik giriş yapmayı dene
-        await login(username, password);
-        return { success: true };
+        const loginSuccess = await login(username, password);
+        return { success: loginSuccess, message: loginSuccess ? '' : 'Kullanıcı oluşturuldu ancak giriş yapılamadı.' };
       } else {
-        return { success: false, message: data.message || 'Kullanıcı oluşturulamadı.' };
+        // WordPress tarafındaki hata mesajlarını kullanıcıya iletelim
+        return { success: false, message: data.message || 'Kullanıcı oluşturulamadı. Lütfen bilgilerinizi kontrol edin.' };
       }
     } catch (error) {
-      // Demo amaçlı ve WordPress tarafında henüz API açık olmayabileceği için 
-      // şimdilik başarılı sayıp login yapıyoruz
-      console.warn('Register API failed, simulating local success for demo...');
-      const success = await login(username, password); 
-      return { success: true };
+      console.error('Register error:', error);
+      // Demo ve gerçek senaryo dengesi: Hata durumunda bile login denenebilir ya da hata döndürülebilir
+      return { success: false, message: 'Sunucuya bağlanılamadı. Lütfen internet bağlantınızı kontrol edin.' };
     }
   };
 
