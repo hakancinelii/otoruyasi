@@ -1106,7 +1106,7 @@ body,
 .nav-container {
   display: flex !important;
   justify-content: flex-start !important;
-  gap: 10px !important; /* Logodan sonraki boşluğu daralt */
+  gap: 15px !important; /* Logodan sonraki boşluğu ayarla */
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -1119,24 +1119,27 @@ body,
 
 .nav-links {
   display: flex !important;
-  gap: 12px !important; /* Menü elemanları arasındaki boşluğu daralt */
+  gap: 10px !important; /* Menü elemanları arasındaki boşluğu daralt */
 }
 
 .nav-link {
-  font-size: 13px !important;
+  font-size: 11.5px !important; /* Biraz daha küçültülmüş font */
   white-space: nowrap !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
 }
 
 .nav-right {
-  margin-left: auto !important; /* Her şeyi sağa it */
+  margin-left: auto !important; /* Sağa yaslar */
   display: flex !important;
   align-items: center !important;
-  gap: 15px !important;
+  gap: 12px !important;
   flex-shrink: 0 !important;
+  padding-right: 25px !important; /* En sağdaki öğeyi (renk modu) içeri çek */
 }
 
 .desktop-only {
   display: flex !important;
-  gap: 10px !important;
+  gap: 12px !important;
   align-items: center !important;
 }
