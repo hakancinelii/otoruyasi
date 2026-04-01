@@ -43,27 +43,31 @@ async function callExperienceAI(car1: string, car2: string, lang: string, model:
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      contents: [{
-        parts: [{ text: prompt }]
-      }],
+      contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
-        temperature: 0.7,
+        temperature: 0.1, // Fixed for consistency
         maxOutputTokens: 2048,
-        responseMimeType: "application/json"
+        response_mime_type: "application/json"
       }
     })
   });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+    const message = errorData.error?.message || `HTTP ${response.status}`;
+    console.error("AI Error:", message);
+    throw new Error(message);
   }
 
   const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
   
-  if (!text) throw new Error("AI returned empty content");
-  return JSON.parse(text);
+  try {
+     return JSON.parse(text);
+  } catch (parseError) {
+     console.error("Failed to parse AI JSON:", text);
+     throw new Error("AI response format error");
+  }
 }
 
 export async function POST(req: Request) {

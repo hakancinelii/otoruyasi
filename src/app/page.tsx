@@ -100,13 +100,17 @@ export default function Home() {
         setTranslatedPosts(prev => {
           const updated = [...(prev.length === posts.length ? prev : [...posts])];
           batch.forEach((oldPost, i) => {
-            const itemRegex = new RegExp(`\\[ITEM-${i}\\]\\s*TITLE:([\\s\\S]*?)(?=\\[ITEM-|\\n|$)`, 'i');
+            // More robust regex: Case insensitive, handles extra spaces, handles optional quotes
+            const itemRegex = new RegExp(`\\[ITEM[-_\\s]?${i}\\]\\s*(?:TITLE|Title):([\\s\\S]*?)(?=\\[ITEM-|\\n|$)`, 'i');
             const titleMatch = fullText.match(itemRegex);
             const globalIndex = startIndex + i;
             if (updated[globalIndex]) {
               updated[globalIndex] = {
                 ...updated[globalIndex],
-                title: { ...updated[globalIndex].title, rendered: titleMatch ? titleMatch[1].trim() : oldPost.title.rendered }
+                title: {
+                  ...updated[globalIndex].title,
+                  rendered: titleMatch ? titleMatch[1].replace(/\"/g, '').trim() : oldPost.title.rendered
+                }
               };
             }
           });
