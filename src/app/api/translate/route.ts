@@ -69,7 +69,7 @@ export async function POST(req: Request) {
     // Use "-latest" aliases to ensure we always use the current stable version
     // This prevents "no longer available to new users" errors.
     let translatedText: string | undefined;
-    const models = ["gemini-2.0-flash", "gemini-1.5-flash-latest", "gemini-1.5-pro-latest"];
+    const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
 
     for (const model of models) {
       try {
