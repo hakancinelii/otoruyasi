@@ -30,9 +30,16 @@ export default function AdBanner() {
 
   // If there's a featured image uploaded
   if (imageUrl) {
-    // Try to extract just text link from content string if they pasted a pure URL
-    let link = contentStr.replace(/<[^>]+>/g, '').trim();
-    if (!link.startsWith('http')) link = '#';
+    // Find the first URL that is NOT an invisible impression tracking pixel
+    let link = '#';
+    const urls = rawContent.match(/https?:\/\/[^\s<"']+/g) || [];
+    for (const url of urls) {
+      // Ignore 1x1 tracking pixels (trackimp) from DoubleClick/Google
+      if (!url.includes('trackimp') && !url.includes('impression') && !url.includes('.gif')) {
+        link = url;
+        break;
+      }
+    }
     
     return (
       <div className="container ad-banner-wrapper" style={{ textAlign: 'center', margin: '40px auto 20px auto' }}>
