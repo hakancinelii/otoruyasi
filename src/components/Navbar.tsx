@@ -135,7 +135,7 @@ export default function Navbar() {
             <button className="theme-toggle" onClick={toggleTheme} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}>{theme === 'light' ? '🌙' : '☀️'}</button>
           </div>
 
-          <button className="mobile-menu-btn" onClick={() => setIsOpen(true)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: '10px' }}>
+          <button className="mobile-menu-btn" onClick={() => setIsOpen(true)} style={{ background: 'none', border: 'none', color: 'var(--text-color)', cursor: 'pointer', padding: '10px' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
         </div>
@@ -145,7 +145,7 @@ export default function Navbar() {
       <div className={`mobile-sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header" style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
            <img src="/logo.png" alt="Logo" style={{ height: '30px' }} />
-           <button className="close-btn" onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '24px' }}>✕</button>
+           <button className="close-btn" onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-color)', fontSize: '24px' }}>✕</button>
         </div>
         <div className="sidebar-content" style={{ padding: '20px', flex: 1, overflowY: 'auto' }}>
            <div style={{ marginBottom: '20px' }}>
@@ -154,7 +154,7 @@ export default function Navbar() {
            <div className="sidebar-links">
              <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--accent-color)', marginBottom: '15px' }}>MENÜ</div>
              {menuItems.map((item) => (
-                <Link key={item.href} href={item.href} style={{ display: 'block', padding: '12px 0', fontSize: '16px', fontWeight: 700, color: item.color || '#fff', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }} onClick={() => setIsOpen(false)}>{item.label}</Link>
+                <Link key={item.href} href={item.href} style={{ display: 'block', padding: '12px 0', fontSize: '16px', fontWeight: 700, color: item.color || 'var(--text-color)', textDecoration: 'none', borderBottom: '1px solid var(--border-color)' }} onClick={() => setIsOpen(false)}>{item.label}</Link>
              ))}
              <div style={{ height: '1px', background: 'var(--border-color)', margin: '20px 0' }}></div>
              <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--accent-color)', marginBottom: '15px' }}>KATEGORİLER</div>
@@ -163,15 +163,15 @@ export default function Navbar() {
              ))}
            </div>
         </div>
-        <div className="sidebar-footer" style={{ padding: '20px', borderTop: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.3)' }}>
+        <div className="sidebar-footer" style={{ padding: '20px', borderTop: '1px solid var(--border-color)', background: 'var(--bg-color)' }}>
            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
              {(['tr', 'en', 'ru', 'de'] as Language[]).map(l => (
-               <button key={l} onClick={() => { setLanguage(l); setIsOpen(false); }} style={{ padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: '6px', color: '#fff', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
+               <button key={l} onClick={() => { setLanguage(l); setIsOpen(false); }} style={{ padding: '8px', background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-color)', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
                  <span>{flags[l]}</span> {l.toUpperCase()}
                </button>
              ))}
            </div>
-           <button onClick={toggleTheme} style={{ width: '100%', marginTop: '12px', padding: '12px', background: '#333', color: '#fff', border: '1px solid #444', borderRadius: '8px', fontWeight: 700 }}>
+           <button onClick={toggleTheme} style={{ width: '100%', marginTop: '12px', padding: '12px', background: 'var(--card-bg)', color: 'var(--text-color)', border: '1px solid var(--border-color)', borderRadius: '8px', fontWeight: 700 }}>
              {theme === 'light' ? '🌙 Gece Modu' : '☀️ Açık Mod'}
            </button>
         </div>
