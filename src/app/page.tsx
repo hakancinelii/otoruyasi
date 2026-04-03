@@ -10,8 +10,10 @@ import CategorySection from '../components/CategorySection';
 import BreakingNews from '../components/BreakingNews';
 import NewsSlider from '../components/NewsSlider';
 
+import SidebarCategorySection from '../components/SidebarCategorySection';
+
 export default function Home() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // ... existing state ...
   const [posts, setPosts] = useState<any[]>([]);
   const [translatedPosts, setTranslatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,7 @@ export default function Home() {
   const [isTranslatingMosaic, setIsTranslatingMosaic] = useState(false);
   const [isTranslatingGrid, setIsTranslatingGrid] = useState(false);
 
+  // ... fetchRealData and translateBatch ...
   const fetchRealData = async (pageNum: number, isLoadMore = false) => {
     try {
       if (isLoadMore) setLoadingMore(true);
@@ -86,7 +89,6 @@ export default function Home() {
     if (batch.length === 0) return;
     if (isMosaic) setIsTranslatingMosaic(true); else setIsTranslatingGrid(true);
 
-    // Toplu çeviri havuzu
     const batchText = batch.map((p, i) => `[ITEM-${i}] TITLE: ${p.title.rendered}`).join('\n\n');
 
     try {
@@ -102,7 +104,6 @@ export default function Home() {
         setTranslatedPosts(prev => {
           const updated = [...(prev.length === posts.length ? prev : [...posts])];
           batch.forEach((oldPost, i) => {
-            // More robust regex: Case insensitive, handles extra spaces, handles optional quotes
             const itemRegex = new RegExp(`\\[ITEM[-_\\s]?${i}\\]\\s*(?:TITLE|Title):([\\s\\S]*?)(?=\\[ITEM-|\\n|$)`, 'i');
             const titleMatch = fullText.match(itemRegex);
             const globalIndex = startIndex + i;
@@ -142,9 +143,9 @@ export default function Home() {
   }
 
   const currentData = translatedPosts.length > 0 ? translatedPosts : posts;
-  const mosaicPosts = currentData.slice(0, 7); // 4 for slider, 3 for static right
-  const sliderPosts = currentData.slice(7, 17); // 10 posts for horizontal slider
-  const gridPosts = currentData.slice(17); // rest for bottom grid
+  const mosaicPosts = currentData.slice(0, 7);
+  const sliderPosts = currentData.slice(7, 17);
+  const gridPosts = currentData.slice(17);
 
   const getImageUrl = (post: any) => {
     return post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
@@ -155,20 +156,16 @@ export default function Home() {
 
       <AdBanner />
 
-      {/* Mosaic/Hero Section */}
       <NewsMosaic
         posts={mosaicPosts}
         isTranslating={isTranslatingMosaic}
         t={t}
       />
 
-      {/* Breaking News Ticker Section */}
       <BreakingNews language={language} t={t} />
 
-      {/* Horizontal News Slider Section */}
       <NewsSlider posts={sliderPosts} title={language === 'tr' ? 'Haberler' : 'News'} t={t} />
 
-      {/* Featured Categories Titles */}
       <CategorySection
         categoryId="16714"
         title={language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles'}
@@ -211,45 +208,76 @@ export default function Home() {
         t={t}
       />
 
-      {/* Last News Grid */}
+      {/* Last News Grid with Sidebar Layout */}
       <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '100px' }}>
         <h2 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>{t('last_news')}</h2>
         {(isTranslatingGrid || isTranslatingMosaic) && <span style={{ color: 'var(--accent-color)', fontSize: '14px' }}>AI {t('translating')}...</span>}
       </div>
 
-      <section className="grid">
-        {gridPosts.map((post: any) => {
-          return (
-            <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', transition: 'transform 0.3s' }}>
-              <div className="card-img-wrapper">
-                <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
-              </div>
-              <div className="card-content">
-                <h3 className="card-title" style={{ fontSize: '18px', lineHeight: '1.4' }} dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
-                <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
-                <div className="card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '15px', marginTop: '15px' }}>
-                  <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}</span>
-                  <span style={{ color: 'var(--accent-color)', fontWeight: 700 }}>{t('read_more')}</span>
-                </div>
-              </div>
-            </Link>
-          );
-        })}
-      </section>
-
-      {/* Pagination Load More */}
-      {hasMore && (
-        <div style={{ textAlign: 'center', marginTop: '80px' }}>
-          <button
-            onClick={handleLoadMore}
-            disabled={loadingMore}
-            className="btn-primary"
-            style={{ padding: '16px 50px', fontSize: '18px', fontWeight: 800, background: 'var(--accent-color)', color: '#000', cursor: loadingMore ? 'not-allowed' : 'pointer', border: 'none', borderRadius: '12px', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}
-          >
-            {loadingMore ? t('loading') : t('load_more')}
-          </button>
+      <div className="main-content-layout" style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
+        <div className="left-news-column" style={{ flex: 3 }}>
+          <section className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+            {gridPosts.map((post: any) => {
+              return (
+                <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', transition: 'transform 0.3s' }}>
+                  <div className="card-img-wrapper">
+                    <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
+                  </div>
+                  <div className="card-content">
+                    <h3 className="card-title" style={{ fontSize: '18px', lineHeight: '1.4' }} dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
+                    <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
+                    <div className="card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '15px', marginTop: '15px' }}>
+                      <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}</span>
+                      <span style={{ color: 'var(--accent-color)', fontWeight: 700 }}>{t('read_more')}</span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </section>
+          
+          {/* Pagination Load More inside left column */}
+          {hasMore && (
+            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="btn-primary"
+                style={{ padding: '16px 50px', fontSize: '18px', fontWeight: 800, background: 'var(--accent-color)', color: '#000', cursor: loadingMore ? 'not-allowed' : 'pointer', border: 'none', borderRadius: '12px', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}
+              >
+                {loadingMore ? t('loading') : t('load_more')}
+              </button>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Vertical Sidebars for Editors */}
+        <aside className="sidebar-column desktop-only" style={{ flex: 1, minWidth: '320px', position: 'sticky', top: '120px' }}>
+           <SidebarCategorySection 
+              categoryId="10" 
+              title="Test Editörü : Hakkı Günerkan" 
+              language={language} 
+              t={t} 
+           />
+           <SidebarCategorySection 
+              categoryId="5153" 
+              title="Test Editörü : Onur Kaan Günerkan" 
+              language={language} 
+              t={t} 
+           />
+        </aside>
+      </div>
+
+      <style jsx>{`
+        @media (max-width: 1024px) {
+          .main-content-layout {
+            flex-direction: column;
+          }
+          .sidebar-column {
+            display: none !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }
