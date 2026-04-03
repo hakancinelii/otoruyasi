@@ -142,9 +142,9 @@ export default function Home() {
   }
 
   const currentData = translatedPosts.length > 0 ? translatedPosts : posts;
-  const mosaicPosts = currentData.slice(0, 4);
-  const sliderPosts = currentData.slice(4, 14); // 10 posts for slider
-  const gridPosts = currentData.slice(14); // rest for bottom grid
+  const mosaicPosts = currentData.slice(0, 7); // 4 for slider, 3 for static right
+  const sliderPosts = currentData.slice(7, 17); // 10 posts for horizontal slider
+  const gridPosts = currentData.slice(17); // rest for bottom grid
 
   const getImageUrl = (post: any) => {
     return post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
