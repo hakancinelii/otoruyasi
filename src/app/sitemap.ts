@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let postEntries: MetadataRoute.Sitemap = [];
   try {
     const res = await fetch(
-      'https://otoruyasi.com/wp-json/wp/v2/posts?per_page=100&_fields=id,modified',
+      'https://cms.otoruyasi.com/wp-json/wp/v2/posts?per_page=100&_fields=id,modified',
       { next: { revalidate: 3600 } } // Cache for 1 hour
     );
     

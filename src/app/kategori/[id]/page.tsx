@@ -22,7 +22,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
     try {
       if (isLoadMore) setLoadingMore(true);
       const limit = isLoadMore ? 30 : 31;
-      const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts?categories=${params.id}&_embed&per_page=${limit}&page=${pageNum}`);
+      const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts?categories=${params.id}&_embed&per_page=${limit}&page=${pageNum}`);
 
       if (!res.ok) {
         if (res.status === 400) setHasMore(false);

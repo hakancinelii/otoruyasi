@@ -24,7 +24,7 @@ function SearchResults() {
       if (isLoadMore) setLoadingMore(true);
       else setLoading(true);
 
-      const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts?search=${encodeURIComponent(query)}&_embed&per_page=30&page=${pageNum}`);
+      const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts?search=${encodeURIComponent(query)}&_embed&per_page=30&page=${pageNum}`);
       
       if (!res.ok) {
         if (res.status === 400) setHasMore(false);

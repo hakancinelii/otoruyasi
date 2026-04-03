@@ -17,7 +17,7 @@ export default function HaberDetay({ params }: { params: { id: string } }) {
   useEffect(() => {
     async function fetchRealPost() {
       try {
-        const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts/${params.id}?_embed`);
+        const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts/${params.id}?_embed`);
         if (!res.ok) throw new Error('API yanıt vermedi.');
         const data = await res.json();
         setPost(data);

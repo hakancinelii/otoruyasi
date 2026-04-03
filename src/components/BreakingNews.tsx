@@ -15,7 +15,7 @@ export default function BreakingNews({ language, t }: { language: string, t: any
   useEffect(() => {
     const fetchBreaking = async () => {
       try {
-        const res = await fetch('https://otoruyasi.com/wp-json/wp/v2/posts?per_page=10');
+        const res = await fetch('https://cms.otoruyasi.com/wp-json/wp/v2/posts?per_page=10');
         if (res.ok) {
           const data = await res.json();
           setPosts(data);

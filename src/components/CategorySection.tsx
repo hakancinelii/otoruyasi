@@ -27,7 +27,7 @@ export default function CategorySection({ categoryId, title, language, t }: Cate
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`https://otoruyasi.com/wp-json/wp/v2/posts?categories=${categoryId}&_embed&per_page=4`);
+        const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts?categories=${categoryId}&_embed&per_page=4`);
         if (res.ok) {
           const data = await res.json();
           setPosts(data);

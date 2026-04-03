@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      const response = await fetch('https://otoruyasi.com/wp-json/jwt-auth/v1/token', {
+      const response = await fetch('https://cms.otoruyasi.com/wp-json/jwt-auth/v1/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (username: string, email: string, password: string) => {
     try {
       // WordPress User Registration
-      const response = await fetch('https://otoruyasi.com/wp-json/wp/v2/users/register', {
+      const response = await fetch('https://cms.otoruyasi.com/wp-json/wp/v2/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),
