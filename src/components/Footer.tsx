@@ -28,7 +28,6 @@ export default function Footer() {
           <div>
             <h4 style={{ color: '#fff', marginBottom: '16px' }}>{t('quick_links')}</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <li><Link href="/abonelik" style={{ color: 'inherit', textDecoration: 'none' }}>{t('premium_cta')}</Link></li>
               <li><Link href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{t('contact')}</Link></li>
               <li><Link href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{t('privacy')}</Link></li>
             </ul>
