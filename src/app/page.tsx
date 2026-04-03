@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { GridSkeleton, HeroSkeleton } from '../components/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 import NewsMosaic from '../components/NewsMosaic';
+import AdBanner from '../components/AdBanner';
 import CategorySection from '../components/CategorySection';
 import BreakingNews from '../components/BreakingNews';
 import NewsSlider from '../components/NewsSlider';
@@ -158,6 +159,8 @@ export default function Home() {
         isTranslating={isTranslatingMosaic}
         t={t}
       />
+
+      <AdBanner />
 
       {/* Breaking News Ticker Section */}
       <BreakingNews language={language} t={t} />
