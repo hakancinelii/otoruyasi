@@ -69,6 +69,11 @@ export default function CollaborationPage() {
             <p style={{ color: 'var(--text-muted)', fontSize: '14px', textTransform: 'uppercase', marginBottom: '10px' }}>{language === 'tr' ? 'Adres' : 'Address'}</p>
             <p style={{ fontSize: '18px', fontWeight: 700, maxWidth: '300px', margin: '0 auto' }}>Zafer Mah. Fuzuli sok. No;9/14 Yenibosna/İstanbul</p>
           </div>
+          <div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px', textTransform: 'uppercase', marginBottom: '10px' }}>{language === 'tr' ? 'Reklam Ajansı' : 'Ad Agency'}</p>
+            <p style={{ fontSize: '18px', fontWeight: 700, marginBottom: '5px' }}>AR FİLM REKLAM PRODÜKSİYON</p>
+            <a href="https://www.arajans.com.tr" target="_blank" rel="noopener noreferrer" style={{ fontSize: '16px', color: 'var(--accent-color)' }}>www.arajans.com.tr</a>
+          </div>
         </div>
 
         <div style={{ marginTop: '50px' }}>
