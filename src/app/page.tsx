@@ -28,7 +28,7 @@ export default function Home() {
       if (isLoadMore) setLoadingMore(true);
 
       const limit = isLoadMore ? 30 : 31;
-      const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts?_embed&per_page=${limit}&page=${pageNum}`);
+      const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts?_embed&per_page=${limit}&page=${pageNum}&categories_exclude=20723`);
 
       if (!res.ok) {
         if (res.status === 400) setHasMore(false);
