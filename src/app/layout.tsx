@@ -5,6 +5,7 @@ import { AuthProvider } from '../context/AuthContext';
 import { LanguageProvider } from '../context/LanguageContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import GoogleAnalytics from '../components/GoogleAnalytics';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -49,6 +50,7 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={inter.className}>
+        <GoogleAnalytics />
         <AuthProvider>
           <LanguageProvider>
             <Navbar />
