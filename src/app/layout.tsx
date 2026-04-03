@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     description: 'Yapay zeka destekli araç karşılaştırma, detaylı test sürüşleri ve otomobil haberleri.',
   },
   alternates: {
-    canonical: 'https://otoruyasi-web.vercel.app',
+    canonical: 'https://otoruyasi.com',
     languages: {
-      'tr-TR': 'https://otoruyasi-web.vercel.app',
-      'en-US': 'https://otoruyasi-web.vercel.app/en',
-      'de-DE': 'https://otoruyasi-web.vercel.app/de',
-      'ru-RU': 'https://otoruyasi-web.vercel.app/ru',
-      'x-default': 'https://otoruyasi-web.vercel.app',
+      'tr-TR': 'https://otoruyasi.com',
+      'en-US': 'https://otoruyasi.com/en',
+      'de-DE': 'https://otoruyasi.com/de',
+      'ru-RU': 'https://otoruyasi.com/ru',
+      'x-default': 'https://otoruyasi.com',
     },
   },
   robots: {

@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const BASE_URL = 'https://otoruyasi-web.vercel.app';
+const BASE_URL = 'https://otoruyasi.com';
 const LANGS = ['', '/en', '/de', '/ru'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

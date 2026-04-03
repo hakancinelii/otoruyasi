@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/giris'],
       },
     ],
-    sitemap: 'https://otoruyasi-web.vercel.app/sitemap.xml',
+    sitemap: 'https://otoruyasi.com/sitemap.xml',
   };
 }
