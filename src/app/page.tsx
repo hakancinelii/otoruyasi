@@ -191,22 +191,15 @@ export default function Home() {
       />
 
       <CategorySection
-        categoryId="12"
-        title={language === 'tr' ? 'Röportajlar' : 'Interviews'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="9"
-        title={language === 'tr' ? 'Teknoloji' : 'Technology'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
         categoryId="3"
         title={language === 'tr' ? 'Gündem' : 'Agenda'}
+        language={language}
+        t={t}
+      />
+
+      <CategorySection
+        categoryId="12"
+        title={language === 'tr' ? 'Röportajlar' : 'Interviews'}
         language={language}
         t={t}
       />
