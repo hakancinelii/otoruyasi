@@ -98,27 +98,23 @@ export default function Navbar() {
               ))}
             </div>
           </div>
-          <Link href="/abonelik" className="nav-link">{t('subscription')}</Link>
+          {/* <Link href="/abonelik" className="nav-link">{t('subscription')}</Link> HIDDEN */}
         </nav>
 
         {/* ACTION RIGHT - Anchored to the right side */}
         <div className="nav-right">
           <div className="desktop-only" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <SearchBar /> 
+            
+            {/* HIDDEN AUTH SYSTEM
             {user ? (
               <div className="nav-dropdown" onMouseEnter={() => setIsUserOpen(true)} onMouseLeave={() => setIsUserOpen(false)}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                   <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: '800', fontSize: '10px' }}>{user.user_display_name ? user.user_display_name[0].toUpperCase() : 'U'}</div>
-                   <span style={{ fontSize: '10.5px', fontWeight: 700 }}>{user.user_display_name}</span>
-                </div>
-                <div className={`dropdown-menu ${isUserOpen ? 'show' : ''}`} style={{ right: 0 }}>
-                   <Link href="/profil" className="dropdown-item">👤 Profil</Link>
-                   <button onClick={logout} className="dropdown-item" style={{ border: 'none', background: 'none', color: '#ff4d4d', cursor: 'pointer', width: '100%', textAlign: 'left' }}>🚪 Çıkış</button>
-                </div>
+                ...
               </div>
             ) : (
               <Link href="/giris" className="btn-primary" style={{ padding: '8px 14px', background: 'var(--accent-color)', color: '#000', borderRadius: '6px', fontWeight: '700', fontSize: '11px' }}>{t('login')}</Link>
             )}
+            */}
             
             <div className="lang-switcher" ref={langRef} style={{ position: 'relative' }}>
               <button className="lang-btn" onClick={() => setIsLangOpen(!isLangOpen)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', padding: '6px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '5px', color: '#fff', cursor: 'pointer' }}>

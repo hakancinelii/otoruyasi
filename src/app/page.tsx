@@ -169,37 +169,11 @@ export default function Home() {
       />
 
       <CategorySection
-        categoryId="12"
-        title={language === 'tr' ? 'Röportajlar' : 'Interviews'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
         categoryId="5"
         title={language === 'tr' ? 'Test Sürüşleri' : 'Test Drives'}
         language={language}
         t={t}
       />
-
-      {/* Video Section Insertion for Visual Diversity */}
-      <div style={{ margin: '80px 0', padding: '60px 0', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
-        <div className="container">
-          <h2 style={{ fontSize: '32px', marginBottom: '30px', fontWeight: 800 }}>🎬 {language === 'tr' ? 'Video Haberler' : 'Video News'}</h2>
-          <Link href="/videolar" style={{ display: 'block', borderRadius: '24px', overflow: 'hidden', position: 'relative', height: '450px', boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}>
-            <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=1200" alt="Videos" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#ff0000', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 40px rgba(255,0,0,0.4)' }}>
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z" /></svg>
-              </div>
-              <div style={{ position: 'absolute', bottom: '40px', left: '40px' }}>
-                <h3 style={{ fontSize: '28px', color: '#fff', margin: 0 }}>{language === 'tr' ? 'En Son İnceleme Videoları' : 'Latest Review Videos'}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.7)', margin: '10px 0 0' }}>{language === 'tr' ? 'Oto Rüyası YouTube kanalından en yeni test sürüşleri.' : 'Latest test drives from Oto Rüyası YouTube channel.'}</p>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </div>
 
       <CategorySection
         categoryId="7368"
@@ -209,29 +183,8 @@ export default function Home() {
       />
 
       <CategorySection
-        categoryId="11"
-        title={language === 'tr' ? 'Motobike' : 'Motobike'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="5802"
-        title={language === 'tr' ? 'Kampanyalar' : 'Campaigns'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="30"
-        title={language === 'tr' ? 'Hafif Ticari' : 'Light Commercial'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="15"
-        title={language === 'tr' ? 'Lansman' : 'Launch'}
+        categoryId="12"
+        title={language === 'tr' ? 'Röportajlar' : 'Interviews'}
         language={language}
         t={t}
       />
@@ -244,22 +197,15 @@ export default function Home() {
       />
 
       <CategorySection
-        categoryId="13"
-        title={language === 'tr' ? 'Lastik' : 'Tires'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="14"
-        title={language === 'tr' ? 'Akaryakıt' : 'Fuel'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
         categoryId="3"
         title={language === 'tr' ? 'Gündem' : 'Agenda'}
+        language={language}
+        t={t}
+      />
+
+      <CategorySection
+        categoryId="5802"
+        title={language === 'tr' ? 'Kampanyalar' : 'Campaigns'}
         language={language}
         t={t}
       />
