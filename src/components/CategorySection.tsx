@@ -31,7 +31,7 @@ export default function CategorySection({ categoryId, title, language, t }: Cate
         if (res.ok) {
           const data = await res.json();
           setPosts(data);
-          
+
           if (language === 'tr') {
             setTranslatedPosts(data);
             setLoading(false);
@@ -52,7 +52,7 @@ export default function CategorySection({ categoryId, title, language, t }: Cate
     if (batch.length === 0) return;
     setIsTranslating(true);
     const batchText = batch.map((p, i) => `[ITEM-${i}] TITLE: ${p.title.rendered}`).join('\n\n');
-    
+
     try {
       const res = await fetch('/api/translate', {
         method: 'POST',
@@ -97,10 +97,10 @@ export default function CategorySection({ categoryId, title, language, t }: Cate
         {(translatedPosts.slice(0, 4)).map((post) => (
           <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
             <div className="card-img-wrapper" style={{ height: '160px' }}>
-              <img 
-                className="card-img" 
-                src={post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200'} 
-                alt={post.title.rendered} 
+              <img
+                className="card-img"
+                src={post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200'}
+                alt={post.title.rendered}
               />
             </div>
             <div className="card-content" style={{ padding: '15px' }}>

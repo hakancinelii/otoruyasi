@@ -252,7 +252,15 @@ export default function Home() {
         </div>
 
         {/* Vertical Sidebars for Editors */}
-        <aside className="sidebar-column desktop-only" style={{ flex: 1, minWidth: '320px', position: 'sticky', top: '120px' }}>
+        <aside className="sidebar-column desktop-only" style={{ 
+          flex: 1, 
+          minWidth: '320px', 
+          position: 'sticky', 
+          top: '120px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '30px'
+        }}>
            <SidebarCategorySection 
               categoryId="10" 
               title="Test Editörü : Hakkı Günerkan" 
@@ -262,6 +270,12 @@ export default function Home() {
            <SidebarCategorySection 
               categoryId="5153" 
               title="Test Editörü : Onur Kaan Günerkan" 
+              language={language} 
+              t={t} 
+           />
+           <SidebarCategorySection 
+              categoryId="1" 
+              title="Çok Okunanlar" 
               language={language} 
               t={t} 
            />

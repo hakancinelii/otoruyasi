@@ -77,18 +77,18 @@ export default function NewsMosaic({ posts, isTranslating, t }: NewsMosaicProps)
         {/* Navigation Indicators inside the left slider */}
         <div style={{ position: 'absolute', bottom: '20px', right: '40px', display: 'flex', gap: '8px', zIndex: 10 }}>
           {sliderItems.map((_, idx) => (
-            <button 
-              key={idx} 
+            <button
+              key={idx}
               onClick={(e) => { e.preventDefault(); setCurrentIndex(idx); }}
-              style={{ 
-                width: idx === currentIndex ? '30px' : '10px', 
-                height: '8px', 
-                borderRadius: '4px', 
-                background: idx === currentIndex ? 'var(--accent-color)' : 'rgba(255,255,255,0.5)', 
-                border: 'none', 
+              style={{
+                width: idx === currentIndex ? '30px' : '10px',
+                height: '8px',
+                borderRadius: '4px',
+                background: idx === currentIndex ? 'var(--accent-color)' : 'rgba(255,255,255,0.5)',
+                border: 'none',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease'
-              }} 
+              }}
               aria-label={`Slayt ${idx + 1}`}
             />
           ))}
