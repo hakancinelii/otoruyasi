@@ -153,14 +153,14 @@ export default function Home() {
   return (
     <main className="container" style={{ paddingBottom: '100px' }}>
 
+      <AdBanner />
+
       {/* Mosaic/Hero Section */}
       <NewsMosaic
         posts={mosaicPosts}
         isTranslating={isTranslatingMosaic}
         t={t}
       />
-
-      <AdBanner />
 
       {/* Breaking News Ticker Section */}
       <BreakingNews language={language} t={t} />
