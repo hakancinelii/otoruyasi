@@ -7,6 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 import NewsMosaic from '../components/NewsMosaic';
 import CategorySection from '../components/CategorySection';
 import BreakingNews from '../components/BreakingNews';
+import NewsSlider from '../components/NewsSlider';
 
 export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -141,7 +142,8 @@ export default function Home() {
 
   const currentData = translatedPosts.length > 0 ? translatedPosts : posts;
   const mosaicPosts = currentData.slice(0, 4);
-  const gridPosts = currentData.slice(4);
+  const sliderPosts = currentData.slice(4, 14); // 10 posts for slider
+  const gridPosts = currentData.slice(14); // rest for bottom grid
 
   const getImageUrl = (post: any) => {
     return post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
@@ -159,6 +161,9 @@ export default function Home() {
 
       {/* Breaking News Ticker Section */}
       <BreakingNews language={language} t={t} />
+
+      {/* Horizontal News Slider Section */}
+      <NewsSlider posts={sliderPosts} title={language === 'tr' ? 'Haberler' : 'News'} t={t} />
 
       {/* Featured Categories Titles */}
       <CategorySection
