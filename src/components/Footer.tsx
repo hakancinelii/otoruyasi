@@ -12,7 +12,7 @@ export default function Footer() {
         <div style={{ maxWidth: '300px' }}>
           <h3 style={{ color: '#fff', fontSize: '24px', marginBottom: '20px', fontWeight: 800 }}>OTO RÜYASI</h3>
           <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>
-            {t('home') === 'Ana Sayfa' ? "Türkiye'nin lider otomobil platformu. Sektörün nabzını tutan test sürüşleri, haberler ve dijital dergi." : "Turkey's leading automobile platform. Test drives, news and digital magazine that keep the pulse of the industry."}
+            {t('home') === 'Ana Sayfa' ? "Türkiye'nin lider otomobil platformu. Sektörün nabzını tutan test sürüşlerini, otomotiv dünyasının en güncel gelişmelerini sitemizde bulabilirsiniz." : "Turkey's leading automobile platform. Test drives, news and digital magazine that keep the pulse of the industry."}
           </p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '60px' }}>
