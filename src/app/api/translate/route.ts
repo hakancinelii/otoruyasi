@@ -39,7 +39,7 @@ async function callGeminiAPI(text: string, lang: string, model: string) {
 
   const data = await response.json();
   const translated = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-  
+
   if (!translated) throw new Error("AI returned empty content");
   return translated;
 }
@@ -66,10 +66,9 @@ export async function POST(req: Request) {
     };
     const target = langNames[targetLang] || targetLang;
 
-    // Use "-latest" aliases to ensure we always use the current stable version
-    // This prevents "no longer available to new users" errors.
+    // Updated April 2026: Use current Gemini model names
     let translatedText: string | undefined;
-    const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+    const models = ["gemini-2.5-flash", "gemini-2.5-pro"];
 
     for (const model of models) {
       try {
