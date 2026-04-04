@@ -127,8 +127,8 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   }
 
   const currentData = translatedPosts.length > 0 ? translatedPosts : posts;
-  const mosaicPosts = currentData.slice(0, 4);
-  const gridPosts = currentData.slice(4);
+  const mosaicPosts = currentData.slice(0, 7);
+  const gridPosts = currentData.slice(7);
 
   return (
     <main className="container" style={{ paddingBottom: '100px' }}>

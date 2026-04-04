@@ -217,7 +217,7 @@ export default function Home() {
       <div className="main-content-layout" style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
         <div className="left-news-column" style={{ flex: 3 }}>
           <section className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
-            {gridPosts.map((post: any) => {
+            {gridPosts.slice(0, 6).map((post: any) => {
               return (
                 <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', transition: 'transform 0.3s' }}>
                   <div className="card-img-wrapper">
@@ -235,20 +235,6 @@ export default function Home() {
               );
             })}
           </section>
-          
-          {/* Pagination Load More inside left column */}
-          {hasMore && (
-            <div style={{ textAlign: 'center', marginTop: '40px' }}>
-              <button
-                onClick={handleLoadMore}
-                disabled={loadingMore}
-                className="btn-primary"
-                style={{ padding: '16px 50px', fontSize: '18px', fontWeight: 800, background: 'var(--accent-color)', color: '#000', cursor: loadingMore ? 'not-allowed' : 'pointer', border: 'none', borderRadius: '12px', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}
-              >
-                {loadingMore ? t('loading') : t('load_more')}
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Vertical Sidebars for Editors */}
@@ -281,6 +267,43 @@ export default function Home() {
            />
         </aside>
       </div>
+
+      {/* Full Width Grid for remaining news posts after sidebar content finishes */}
+      {gridPosts.length > 6 && (
+        <div className="full-width-news" style={{ marginTop: '30px' }}>
+          <section className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+            {gridPosts.slice(6).map((post: any) => (
+              <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', transition: 'transform 0.3s' }}>
+                <div className="card-img-wrapper">
+                  <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
+                </div>
+                <div className="card-content">
+                  <h3 className="card-title" style={{ fontSize: '18px', lineHeight: '1.4' }} dangerouslySetInnerHTML={{ __html: post.title.rendered }}></h3>
+                  <p className="card-excerpt" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.replace(/<[^>]+>/g, '').substring(0, 110) + '...' }}></p>
+                  <div className="card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '15px', marginTop: '15px' }}>
+                    <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}</span>
+                    <span style={{ color: 'var(--accent-color)', fontWeight: 700 }}>{t('read_more')}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </section>
+
+          {/* Pagination Load More */}
+          {hasMore && (
+            <div style={{ textAlign: 'center', marginTop: '60px' }}>
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="btn-primary"
+                style={{ padding: '16px 50px', fontSize: '18px', fontWeight: 800, background: 'var(--accent-color)', color: '#000', cursor: loadingMore ? 'not-allowed' : 'pointer', border: 'none', borderRadius: '12px', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}
+              >
+                {loadingMore ? t('loading') : t('load_more')}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       <style jsx>{`
         @media (max-width: 1024px) {
