@@ -12,10 +12,8 @@ export function middleware(request: NextRequest) {
   );
 
   if (langPrefix) {
-    // Strip the language prefix and rewrite to the base route
     const strippedPath = pathname.replace(`/${langPrefix}`, '') || '/';
-    const url = request.nextUrl.clone();
-    url.pathname = strippedPath;
+    const url = new URL(strippedPath, request.url);
 
     const response = NextResponse.rewrite(url);
     // Set cookie so LanguageContext knows the language
