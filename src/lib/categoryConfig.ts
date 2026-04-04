@@ -60,6 +60,12 @@ export const CATEGORY_CONFIG = {
     titleEn: 'Concept',
     showOnHome: true,
   },
+  carPrices: {
+    id: '7',
+    titleTr: 'Otomobil Fiyatları',
+    titleEn: 'Car Prices',
+    showOnHome: true,
+  },
   allNews: {
     id: '4',
     titleTr: 'Tüm Haberler',
@@ -77,6 +83,7 @@ export const HOME_CATEGORY_ORDER: CategoryConfig[] = [
   CATEGORY_CONFIG.fuel,
   CATEGORY_CONFIG.tires,
   CATEGORY_CONFIG.concept,
+  CATEGORY_CONFIG.carPrices,
 ];
 
 export const NAVBAR_NEWS_CATEGORIES: CategoryConfig[] = [
@@ -97,4 +104,5 @@ export const SITEMAP_CATEGORY_IDS = [
   CATEGORY_CONFIG.fuel.id,
   CATEGORY_CONFIG.tires.id,
   CATEGORY_CONFIG.concept.id,
+  CATEGORY_CONFIG.carPrices.id,
 ];
