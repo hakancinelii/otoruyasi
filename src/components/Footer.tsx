@@ -39,6 +39,50 @@ export default function Footer() {
               <li><Link href={localizedPath('/gizlilik-politikasi')} style={{ color: 'inherit', textDecoration: 'none' }}>{t('privacy')}</Link></li>
             </ul>
           </div>
+          <div style={{ minWidth: '220px' }}>
+            <h4 style={{ color: '#fff', marginBottom: '16px' }}>Grup Sitelerimiz</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <a
+                href="https://emlakhabercim.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: '44px',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  background: 'var(--accent-color)',
+                  color: '#000',
+                  fontWeight: 800,
+                  textDecoration: 'none'
+                }}
+              >
+                Emlak Habercim
+              </a>
+              <a
+                href="https://ticariport.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: '44px',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--border-color)',
+                  color: '#fff',
+                  fontWeight: 800,
+                  textDecoration: 'none'
+                }}
+              >
+                Ticariport
+              </a>
+            </div>
+          </div>
         </div>
       </div>
       <div className="container" style={{ borderTop: '1px solid var(--border-color)', marginTop: '40px', paddingTop: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
