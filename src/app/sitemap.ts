@@ -6,7 +6,7 @@ const LANGS = ['', '/en', '/de', '/ru'];
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages with all language variants
   const staticPages = [
-    '', '/karsilastirma', '/videolar', '/instagram', 
+    '', '/karsilastirma', '/videolar', '/instagram',
     '/is-birligi', '/abonelik', '/giris', '/arama'
   ];
 
@@ -26,10 +26,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       'https://cms.otoruyasi.com/wp-json/wp/v2/posts?per_page=100&_fields=id,modified',
       { next: { revalidate: 3600 } } // Cache for 1 hour
     );
-    
+
     if (res.ok) {
       const posts: { id: number; modified: string }[] = await res.json();
-      
+
       postEntries = posts.flatMap((post) =>
         LANGS.map((lang) => ({
           url: `${BASE_URL}${lang}/haber/${post.id}`,
