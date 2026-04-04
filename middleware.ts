@@ -4,32 +4,35 @@ import type { NextRequest } from 'next/server';
 const SUPPORTED_LANGS = ['en', 'de', 'ru'];
 
 export function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+  const { pathname } = request.nextUrl;
 
-  // Check if pathname starts with a supported language prefix
-  const langPrefix = SUPPORTED_LANGS.find(
-    (lang) => pathname.startsWith(`/${lang}/`) || pathname === `/${lang}`
-  );
+  // Find if the path starts with a language code
+  const lang = SUPPORTED_LANGS.find(l => pathname.startsWith(`/${l}/`) || pathname === `/${l}`);
 
-  if (langPrefix) {
-    const strippedPath = pathname.replace(`/${langPrefix}`, '') || '/';
-    const url = new URL(strippedPath, request.url);
+  if (lang) {
+    // Determine the rewrite target path
+    let targetPath = pathname.replace(`/${lang}`, '') || '/';
+    
+    // Ensure the target path is clean
+    if (targetPath === '') targetPath = '/';
 
+    const url = request.nextUrl.clone();
+    url.pathname = targetPath;
+    
+    // Create the response and set the language cookie
     const response = NextResponse.rewrite(url);
-    // Set cookie so LanguageContext knows the language
-    response.cookies.set('NEXT_LOCALE', langPrefix, {
+    response.cookies.set('NEXT_LOCALE', lang, {
       path: '/',
-      maxAge: 60 * 60 * 24 * 365, // 1 year
+      maxAge: 31536000,
     });
-
+    
     return response;
   }
 
-  // All other paths (Turkish = default) pass through untouched
   return NextResponse.next();
 }
 
 export const config = {
-  // Only run middleware on page routes, skip API/static/assets
-  matcher: ['/((?!api|_next/static|_next/image|favicon\\.ico|logo\\.png|.*\\..*).*)',],
+  // Only match paths that are pages (not static assets, api, etc)
+  matcher: ['/((?!api|_next/static|_next/image|favicon\\.ico|logo\\.png|.*\\..*).*)'],
 };
