@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 const API_KEY = process.env.GEMINI_API_KEY;
 const SUPPORTED_LANGS = new Set(["tr", "en", "de", "ru"]);
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const compareCache = new Map<string, { result: ComparePayload; expiresAt: number }>();
 
 type ComparePayload = {
@@ -18,27 +18,6 @@ type ComparePayload = {
   };
   analysis: string;
 };
-
-function isValidComparePayload(value: unknown): value is ComparePayload {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as ComparePayload;
-
-  const isValidEntry = (entry: ComparePayload["car1"]) => {
-    return (
-      entry &&
-      typeof entry.score === "number" &&
-      Array.isArray(entry.points) &&
-      entry.points.every((point) => typeof point === "string")
-    );
-  };
-
-  return (
-    isValidEntry(candidate.car1) &&
-    isValidEntry(candidate.car2) &&
-    typeof candidate.analysis === "string"
-  );
-}
 
 function normalizeCompareInput(car1: string, car2: string, targetLang: string) {
   return `${car1.trim()}::${car2.trim()}::${targetLang}`.replace(/\s+/g, " ");
@@ -80,40 +59,8 @@ function setCachedCompare(cacheKey: string, result: ComparePayload) {
   });
 }
 
-function extractJsonPayload(text: string) {
-  const codeBlockMatch = text.match(/```json\s*([\s\S]*?)```/i) || text.match(/```\s*([\s\S]*?)```/i);
-  if (codeBlockMatch?.[1]) {
-    return codeBlockMatch[1].trim();
-  }
-
-  const firstBrace = text.indexOf("{");
-  const lastBrace = text.lastIndexOf("}");
-
-  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-    return text.slice(firstBrace, lastBrace + 1).trim();
-  }
-
-  return text.trim();
-}
-
-function parseComparePayload(text: string) {
-  const cleaned = extractJsonPayload(text);
-  const parsed = JSON.parse(cleaned);
-
-  if (!isValidComparePayload(parsed)) {
-    console.error("Invalid AI comparison payload:", parsed);
-    throw new Error("AI response format error");
-  }
-
-  return parsed;
-}
-
 function isValidCarValue(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
-}
-
-function getCompareErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
 }
 
 function jsonError(message: string, status = 500) {
@@ -124,58 +71,8 @@ function jsonSuccess(result: ComparePayload) {
   return NextResponse.json(result);
 }
 
-function isPromptTooLong(car1: string, car2: string) {
-  return `${car1} ${car2}`.length > 200;
-}
-
 function safeTargetLanguage(targetLang: unknown) {
   return typeof targetLang === "string" && SUPPORTED_LANGS.has(targetLang) ? targetLang : "tr";
-}
-
-function logModelFailure(modelName: string, error: unknown) {
-  console.warn(`Comparison failed with model ${modelName}:`, getCompareErrorMessage(error));
-}
-
-function logApiError(error: unknown) {
-  console.error("Comparison API Error:", getCompareErrorMessage(error));
-}
-
-function logAiHttpError(message: string) {
-  console.error("AI Error:", message);
-}
-
-function logParseError(text: string) {
-  console.error("Failed to parse AI JSON:", text);
-}
-
-function getModelList() {
-  return ["gemini-2.5-flash", "gemini-2.5-pro"];
-}
-
-function buildComparePrompt(car1: string, car2: string, target: string) {
-  return `
-    Sen OTO RÜYASI Dijital Dergi'nin baş editörü ve profesyonel bir otomobil testi uzmanısın.
-    Şu iki aracı Türkiye pazarı dinamiklerini (ikinci el değeri, motor/yakıt seçenekleri, servis yaygınlığı)
-    göz önüne alarak profesyonelce karşılaştır: "${car1}" ve "${car2}".
-
-    YAZI DİLİ: Lütfen tüm yanıtı ${target} dilinde oluştur.
-
-    Bana aşağıdaki JSON formatında bir yanıt dön. Açıklama, markdown veya ek metin yazma. Yalnızca JSON dön:
-
-    {
-      "car1": {
-        "score": 0.0,
-        "points": ["Artı/Eksi Madde 1", "Madde 2", "Madde 3", "Madde 4"]
-      },
-      "car2": {
-        "score": 0.0,
-        "points": ["Artı/Eksi Madde 1", "Madde 2", "Madde 3", "Madde 4"]
-      },
-      "analysis": "Buraya her iki aracı detaylıca kıyaslayan, yaklaşık 250 kelimelik, sürüş kalitesi, Türkiye pazarındaki durumu ve hangi kullanıcı kitlesine hangisinin uygun olduğunu anlatan akıcı ve uzman bir dil ile yazılmış analiz metni."
-    }
-
-    Puanlar 1-10 arasında olsun. Tüm JSON içerisindeki metinler ${target} dilinde olmalıdır.
-  `;
 }
 
 function getTargetLanguageName(lang: string) {
@@ -183,48 +80,10 @@ function getTargetLanguageName(lang: string) {
     en: "English",
     ru: "Russian",
     de: "German",
-    tr: "Turkish"
+    tr: "Turkish",
   };
 
   return langNames[lang] || "Turkish";
-}
-
-function getCompareResponseText(data: any) {
-  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-}
-
-function ensureCompareResponseText(text: string) {
-  if (!text) throw new Error("AI returned empty content");
-  return text;
-}
-
-function handleCompareHttpError(errorData: any, status: number) {
-  const message = errorData.error?.message || `HTTP ${status}`;
-  logAiHttpError(message);
-  throw new Error(message);
-}
-
-function buildCompareRequestBody(prompt: string) {
-  return JSON.stringify({
-    contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 0.1,
-      maxOutputTokens: 2048,
-      topP: 1,
-    }
-  });
-}
-
-function getCompareHeaders() {
-  return { "Content-Type": "application/json" };
-}
-
-function getCompareUrl(model: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
-}
-
-function ensureApiKey() {
-  if (!API_KEY) throw new Error("GEMINI_API_KEY is not set");
 }
 
 function getMissingCarsError() {
@@ -247,8 +106,8 @@ function getAllModelsFailedError() {
   return "Tüm yapay zeka modelleri başarısız oldu.";
 }
 
-function getCacheableResult(result: ComparePayload) {
-  return result;
+function isPromptTooLong(car1: string, car2: string) {
+  return `${car1} ${car2}`.length > 200;
 }
 
 function validateCompareInputs(car1: unknown, car2: unknown) {
@@ -263,373 +122,184 @@ function validateCompareInputs(car1: unknown, car2: unknown) {
   return null;
 }
 
-function getApiKeyErrorResponse() {
-  return jsonError(getApiKeyMissingError(), 500);
+function extractScore(text: string, label: string) {
+  const regex = new RegExp(`${label}\\s*score\\s*:\\s*(\\d+(?:[.,]\\d+)?)`, "i");
+  const match = text.match(regex);
+  if (!match) throw new Error(`Missing ${label} score`);
+  return Number(match[1].replace(",", "."));
 }
 
-function getBusyErrorResponse() {
-  return jsonError(getBusyError(), 500);
+function extractPoints(text: string, label: string) {
+  const regex = new RegExp(`${label}\\s*points\\s*:\\s*([\\s\\S]*?)(?=car[12]\\s*score:|analysis:|$)`, "i");
+  const match = text.match(regex);
+  if (!match) throw new Error(`Missing ${label} points`);
+
+  const points = match[1]
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => line.replace(/^[-•*+]\s*/, "").trim())
+    .filter(Boolean);
+
+  if (!points.length) throw new Error(`Empty ${label} points`);
+  return points;
 }
 
-function getCachedCompareResponse(cacheKey: string) {
-  const cached = getCachedCompare(cacheKey);
-  return cached ? jsonSuccess(cached) : null;
+function extractAnalysis(text: string) {
+  const regex = /analysis\s*:\s*([\s\S]*)$/i;
+  const match = text.match(regex);
+  if (!match?.[1]?.trim()) throw new Error("Missing analysis");
+  return match[1].trim();
 }
 
-function setCompareCacheResponse(cacheKey: string, result: ComparePayload) {
-  setCachedCompare(cacheKey, getCacheableResult(result));
-}
+function parseComparePayload(text: string): ComparePayload {
+  const cleaned = text
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
 
-function getValidatedComparePayload(text: string) {
-  try {
-    return parseComparePayload(text);
-  } catch (error) {
-    logParseError(text);
-    throw error;
+  if (cleaned.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(cleaned) as ComparePayload;
+      if (
+        parsed?.car1 && typeof parsed.car1.score === "number" && Array.isArray(parsed.car1.points) &&
+        parsed?.car2 && typeof parsed.car2.score === "number" && Array.isArray(parsed.car2.points) &&
+        typeof parsed.analysis === "string"
+      ) {
+        return parsed;
+      }
+    } catch {
+      // fall through to label-based parsing
+    }
   }
-}
 
-function getCompareModels() {
-  return getModelList();
-}
-
-function getCompareCacheKeyForRequest(car1: string, car2: string, targetLang: string) {
-  return getCompareCacheKey(car1, car2, targetLang);
-}
-
-function prepareCompareRequest(car1: string, car2: string, lang: string) {
-  return buildComparePrompt(car1, car2, getTargetLanguageName(lang));
-}
-
-function getCompareResultFromText(text: string) {
-  return getValidatedComparePayload(text);
-}
-
-function getSafeCompareResponse(data: any) {
-  return ensureCompareResponseText(getCompareResponseText(data));
-}
-
-function getCompareSuccessResponse(result: ComparePayload) {
-  return jsonSuccess(result);
-}
-
-function getCompareFailureResponse() {
-  return getBusyErrorResponse();
-}
-
-function getCompareValidationResponse(car1: unknown, car2: unknown) {
-  return validateCompareInputs(car1, car2);
-}
-
-function getCompareTargetLang(targetLang: unknown) {
-  return safeTargetLanguage(targetLang);
-}
-
-function runCompareCacheCleanup() {
-  pruneExpiredCompareCache();
-}
-
-function getCompareCacheHit(cacheKey: string) {
-  return getCachedCompareResponse(cacheKey);
-}
-
-function setCompareCacheHit(cacheKey: string, result: ComparePayload) {
-  setCompareCacheResponse(cacheKey, result);
-}
-
-function getCompareModelsToTry() {
-  return getCompareModels();
-}
-
-function getComparePrompt(car1: string, car2: string, lang: string) {
-  return prepareCompareRequest(car1, car2, lang);
-}
-
-function getCompareJsonResult(text: string) {
-  return getCompareResultFromText(text);
-}
-
-function getCompareApiUrl(model: string) {
-  return getCompareUrl(model);
-}
-
-function getCompareApiBody(prompt: string) {
-  return buildCompareRequestBody(prompt);
-}
-
-function getCompareApiHeaders() {
-  return getCompareHeaders();
-}
-
-function ensureCompareApiKey() {
-  ensureApiKey();
-}
-
-function ensureCompareCars(car1: unknown, car2: unknown) {
-  return getCompareValidationResponse(car1, car2);
-}
-
-function getCompareApiKeyMissingResponse() {
-  return getApiKeyErrorResponse();
-}
-
-function getCompareBusyResponse() {
-  return getCompareFailureResponse();
-}
-
-function getCompareModelsFailedError() {
-  return new Error(getAllModelsFailedError());
-}
-
-function getCompareSafeLang(targetLang: unknown) {
-  return getCompareTargetLang(targetLang);
-}
-
-function getCompareCacheEntryKey(car1: string, car2: string, targetLang: string) {
-  return getCompareCacheKeyForRequest(car1, car2, targetLang);
-}
-
-function getCompareCacheResponse(cacheKey: string) {
-  return getCompareCacheHit(cacheKey);
-}
-
-function storeCompareCacheResponse(cacheKey: string, result: ComparePayload) {
-  setCompareCacheHit(cacheKey, result);
-}
-
-function cleanupCompareCache() {
-  runCompareCacheCleanup();
-}
-
-function parseCompareResponseText(text: string) {
-  return getCompareJsonResult(text);
-}
-
-function createCompareSuccessResponse(result: ComparePayload) {
-  return getCompareSuccessResponse(result);
-}
-
-function createCompareBusyResponse() {
-  return getCompareBusyResponse();
-}
-
-function createCompareKeyMissingResponse() {
-  return getCompareApiKeyMissingResponse();
-}
-
-function createCompareValidationFailure(car1: unknown, car2: unknown) {
-  return ensureCompareCars(car1, car2);
-}
-
-function getCompareLanguage(targetLang: unknown) {
-  return getCompareSafeLang(targetLang);
-}
-
-function getCompareError(error: unknown) {
-  return getCompareErrorMessage(error);
-}
-
-function warnCompareModel(modelName: string, error: unknown) {
-  logModelFailure(modelName, error);
-}
-
-function errorCompareApi(error: unknown) {
-  logApiError(error);
-}
-
-function throwAllModelsFailed() {
-  throw getCompareModelsFailedError();
-}
-
-function getCompareRequestConfig(prompt: string) {
   return {
-    method: "POST",
-    headers: getCompareApiHeaders(),
-    body: getCompareApiBody(prompt),
+    car1: {
+      score: extractScore(cleaned, "car1"),
+      points: extractPoints(cleaned, "car1"),
+    },
+    car2: {
+      score: extractScore(cleaned, "car2"),
+      points: extractPoints(cleaned, "car2"),
+    },
+    analysis: extractAnalysis(cleaned),
   };
 }
 
-function getComparePromptForModel(car1: string, car2: string, lang: string) {
-  return getComparePrompt(car1, car2, lang);
-}
+function buildComparePrompt(car1: string, car2: string, target: string) {
+  return `You are OTO RUYASI's chief automotive editor and an expert road test journalist.
+Compare these two cars for the Turkish market: "${car1}" and "${car2}".
+Write everything in ${target}.
 
-function parseModelCompareResponse(text: string) {
-  return parseCompareResponseText(text);
-}
+IMPORTANT FORMAT RULES:
+- Do NOT use markdown.
+- Do NOT wrap the answer in code fences.
+- Do NOT return JSON.
+- Return plain text exactly in this structure:
 
-function createCompareResultResponse(result: ComparePayload) {
-  return createCompareSuccessResponse(result);
-}
+car1 score: <number between 1 and 10>
+car1 points:
+- point 1
+- point 2
+- point 3
+- point 4
 
-function createCompareErrorResponse() {
-  return createCompareBusyResponse();
-}
+car2 score: <number between 1 and 10>
+car2 points:
+- point 1
+- point 2
+- point 3
+- point 4
 
-function getCompareKey(car1: string, car2: string, targetLang: string) {
-  return getCompareCacheEntryKey(car1, car2, targetLang);
-}
+analysis:
+<single detailed analysis paragraph around 180-250 words>
 
-function getCompareCached(cacheKey: string) {
-  return getCompareCacheResponse(cacheKey);
-}
-
-function setCompareCached(cacheKey: string, result: ComparePayload) {
-  storeCompareCacheResponse(cacheKey, result);
-}
-
-function cleanupCache() {
-  cleanupCompareCache();
-}
-
-function getValidatedLang(targetLang: unknown) {
-  return getCompareLanguage(targetLang);
-}
-
-function getValidationErrorResponse(car1: unknown, car2: unknown) {
-  return createCompareValidationFailure(car1, car2);
-}
-
-function getMissingApiKeyResponse() {
-  return createCompareKeyMissingResponse();
-}
-
-function getGenericBusyResponse() {
-  return createCompareErrorResponse();
-}
-
-function logCompareError(error: unknown) {
-  errorCompareApi(error);
-}
-
-function logCompareModelFailure(modelName: string, error: unknown) {
-  warnCompareModel(modelName, error);
-}
-
-function throwModelsFailed() {
-  throwAllModelsFailed();
-}
-
-function buildModelComparePrompt(car1: string, car2: string, lang: string) {
-  return getComparePromptForModel(car1, car2, lang);
-}
-
-function buildModelCompareConfig(prompt: string) {
-  return getCompareRequestConfig(prompt);
-}
-
-function parseModelResponse(text: string) {
-  return parseModelCompareResponse(text);
-}
-
-function getSuccessResponse(result: ComparePayload) {
-  return createCompareResultResponse(result);
-}
-
-function getErrorResponse() {
-  return getGenericBusyResponse();
-}
-
-function getCacheKey(car1: string, car2: string, targetLang: string) {
-  return getCompareKey(car1, car2, targetLang);
-}
-
-function getCacheResponse(cacheKey: string) {
-  return getCompareCached(cacheKey);
-}
-
-function setCacheResponse(cacheKey: string, result: ComparePayload) {
-  setCompareCached(cacheKey, result);
-}
-
-function cleanupCacheEntries() {
-  cleanupCache();
-}
-
-function getSafeLang(targetLang: unknown) {
-  return getValidatedLang(targetLang);
-}
-
-function getValidationResponse(car1: unknown, car2: unknown) {
-  return getValidationErrorResponse(car1, car2);
-}
-
-function getApiKeyResponse() {
-  return getMissingApiKeyResponse();
-}
-
-function getBusyResponse() {
-  return getErrorResponse();
-}
-
-function reportCompareError(error: unknown) {
-  logCompareError(error);
-}
-
-function reportModelFailure(modelName: string, error: unknown) {
-  logCompareModelFailure(modelName, error);
+Keep the structure exactly as requested.`;
 }
 
 async function callExperienceAI(car1: string, car2: string, lang: string, model: string) {
-  ensureCompareApiKey();
+  if (!API_KEY) throw new Error("GEMINI_API_KEY is not set");
 
-  const prompt = buildModelComparePrompt(car1, car2, lang);
-  const response = await fetch(getCompareApiUrl(model), buildModelCompareConfig(prompt));
+  const prompt = buildComparePrompt(car1, car2, getTargetLanguageName(lang));
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 2048,
+        topP: 1,
+      },
+    }),
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    handleCompareHttpError(errorData, response.status);
+    const message = errorData.error?.message || `HTTP ${response.status}`;
+    console.error("AI Error:", message);
+    throw new Error(message);
   }
 
   const data = await response.json();
-  const text = getSafeCompareResponse(data);
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
-  return parseModelResponse(text);
+  if (!text) {
+    throw new Error("AI returned empty content");
+  }
+
+  return parseComparePayload(text);
 }
 
 export async function POST(req: Request) {
   try {
     const { car1, car2, targetLang = "tr" } = await req.json();
 
-    const validationError = getValidationResponse(car1, car2);
+    const validationError = validateCompareInputs(car1, car2);
     if (validationError) {
       return validationError;
     }
 
     if (!API_KEY) {
-      return getApiKeyResponse();
+      return jsonError(getApiKeyMissingError(), 500);
     }
 
     const safeCar1 = car1.trim();
     const safeCar2 = car2.trim();
-    const safeLang = getSafeLang(targetLang);
+    const safeLang = safeTargetLanguage(targetLang);
 
-    cleanupCacheEntries();
+    pruneExpiredCompareCache();
 
-    const cacheKey = getCacheKey(safeCar1, safeCar2, safeLang);
-    const cachedResponse = getCacheResponse(cacheKey);
-    if (cachedResponse) {
-      return cachedResponse;
+    const cacheKey = getCompareCacheKey(safeCar1, safeCar2, safeLang);
+    const cached = getCachedCompare(cacheKey);
+    if (cached) {
+      return jsonSuccess(cached);
     }
 
+    const models = ["gemini-2.5-flash", "gemini-2.5-pro"];
     let result: ComparePayload | null = null;
 
-    for (const modelName of getCompareModels()) {
+    for (const modelName of models) {
       try {
         result = await callExperienceAI(safeCar1, safeCar2, safeLang, modelName);
         if (result) break;
       } catch (error) {
-        reportModelFailure(modelName, error);
+        const message = error instanceof Error ? error.message : String(error);
+        console.warn(`Comparison failed with model ${modelName}:`, message);
       }
     }
 
     if (!result) {
-      throwModelsFailed();
+      throw new Error(getAllModelsFailedError());
     }
 
-    setCacheResponse(cacheKey, result);
-    return getSuccessResponse(result);
+    setCachedCompare(cacheKey, result);
+    return jsonSuccess(result);
   } catch (error) {
-    reportCompareError(error);
-    return getBusyResponse();
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Comparison API Error:", message);
+    return jsonError(getBusyError(), 500);
   }
 }
