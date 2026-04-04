@@ -1,6 +1,40 @@
 import { NextResponse } from "next/server";
 
 const API_KEY = process.env.GEMINI_API_KEY;
+const SUPPORTED_LANGS = new Set(["tr", "en", "de", "ru"]);
+
+type ComparePayload = {
+  car1: {
+    score: number;
+    points: string[];
+  };
+  car2: {
+    score: number;
+    points: string[];
+  };
+  analysis: string;
+};
+
+function isValidComparePayload(value: unknown): value is ComparePayload {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as ComparePayload;
+
+  const isValidEntry = (entry: ComparePayload["car1"]) => {
+    return (
+      entry &&
+      typeof entry.score === "number" &&
+      Array.isArray(entry.points) &&
+      entry.points.every((point) => typeof point === "string")
+    );
+  };
+
+  return (
+    isValidEntry(candidate.car1) &&
+    isValidEntry(candidate.car2) &&
+    typeof candidate.analysis === "string"
+  );
+}
 
 async function callExperienceAI(car1: string, car2: string, lang: string, model: string) {
   if (!API_KEY) throw new Error("GEMINI_API_KEY is not set");
@@ -63,10 +97,17 @@ async function callExperienceAI(car1: string, car2: string, lang: string, model:
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
   
   try {
-     return JSON.parse(text);
+    const parsed = JSON.parse(text);
+
+    if (!isValidComparePayload(parsed)) {
+      console.error("Invalid AI comparison payload:", parsed);
+      throw new Error("AI response format error");
+    }
+
+    return parsed;
   } catch (parseError) {
-     console.error("Failed to parse AI JSON:", text);
-     throw new Error("AI response format error");
+    console.error("Failed to parse AI JSON:", text);
+    throw new Error("AI response format error");
   }
 }
 
@@ -79,18 +120,20 @@ export async function POST(req: Request) {
     }
 
     if (!API_KEY) {
-       return NextResponse.json({ error: "Gemini API anahtarı ayarlanmamış." }, { status: 500 });
+      return NextResponse.json({ error: "Gemini API anahtarı ayarlanmamış." }, { status: 500 });
     }
 
+    const safeLang = typeof targetLang === "string" && SUPPORTED_LANGS.has(targetLang) ? targetLang : "tr";
     const models = ["gemini-2.5-flash", "gemini-2.5-pro"];
-    let result: any = null;
+    let result: ComparePayload | null = null;
 
     for (const modelName of models) {
       try {
-        result = await callExperienceAI(car1, car2, targetLang, modelName);
+        result = await callExperienceAI(car1, car2, safeLang, modelName);
         if (result) break;
-      } catch (e: any) {
-        console.warn(`Comparison failed with model ${modelName}:`, e.message);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e);
+        console.warn(`Comparison failed with model ${modelName}:`, message);
       }
     }
 
@@ -99,8 +142,9 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(result);
-  } catch (error: any) {
-    console.error("Comparison API Error:", error.message || error);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Comparison API Error:", message || error);
     return NextResponse.json({ error: "Yapay zeka şu an meşgul, lütfen az sonra tekrar deneyiniz." }, { status: 500 });
   }
 }
