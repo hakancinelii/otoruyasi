@@ -29,7 +29,6 @@ export default function Footer() {
               <li><Link href={`/kategori/${CATEGORY_CONFIG.fuel.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Akaryakıt</Link></li>
               <li><Link href={`/kategori/${CATEGORY_CONFIG.tires.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Lastik</Link></li>
               <li><Link href={`/kategori/${CATEGORY_CONFIG.concept.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Konsept</Link></li>
-              <li><Link href="/kategori/7" style={{ color: 'inherit', textDecoration: 'none' }}>Otomobil Fiyatları</Link></li>
             </ul>
           </div>
           <div>
