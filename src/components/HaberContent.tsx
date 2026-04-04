@@ -118,11 +118,34 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
 
       <img src={imageUrl} alt={post.title.rendered} style={{ width: '100%', borderRadius: '24px', marginBottom: '40px' }} />
 
-      <div className="haber-icerik" style={{ fontSize: '18px', lineHeight: '1.8' }} dangerouslySetInnerHTML={{ __html: translatedContent }} />
-      
+      <div className="haber-icerik" style={{ fontSize: '18px', lineHeight: '1.8', overflowX: 'auto' }} dangerouslySetInnerHTML={{ __html: translatedContent }} />
+
       <style jsx global>{`
         .haber-icerik p { margin-bottom: 25px; }
         .haber-icerik img { max-width: 100%; height: auto; border-radius: 12px; margin: 20px 0; }
+        .haber-icerik table {
+          width: 100%;
+          min-width: max-content;
+          border-collapse: collapse;
+          margin: 24px 0;
+          font-size: 15px;
+          line-height: 1.6;
+        }
+        .haber-icerik th,
+        .haber-icerik td {
+          border: 1px solid var(--border-color);
+          padding: 12px 14px;
+          text-align: left;
+          vertical-align: top;
+        }
+        .haber-icerik thead th {
+          background: rgba(255, 255, 255, 0.06);
+          color: var(--text-color);
+          font-weight: 700;
+        }
+        .haber-icerik tbody tr:nth-child(even) {
+          background: rgba(255, 255, 255, 0.03);
+        }
       `}</style>
     </article>
   );
