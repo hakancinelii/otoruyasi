@@ -6,6 +6,7 @@ import { LanguageProvider } from '../context/LanguageContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import GoogleAnalytics from '../components/GoogleAnalytics';
+import AutoRefresh from '../components/AutoRefresh';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -51,6 +52,7 @@ export default function RootLayout({
     <html lang="tr">
       <body className={inter.className}>
         <GoogleAnalytics />
+        <AutoRefresh />
         <AuthProvider>
           <LanguageProvider>
             <Navbar />

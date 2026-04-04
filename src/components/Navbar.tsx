@@ -6,6 +6,7 @@ import SearchBar from './SearchBar';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Language } from '../i18n/translations';
+import { NAVBAR_NEWS_CATEGORIES } from '../lib/categoryConfig';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -65,13 +66,10 @@ export default function Navbar() {
     { label: t('collaboration'), href: '/is-birligi' }
   ];
 
-  const newsCategories = [
-    { id: '5802', label: language === 'tr' ? 'Kampanyalar' : 'Campaigns' },
-    { id: '7368', label: language === 'tr' ? 'Motor Sporları' : 'Motorsports' },
-    { id: '12', label: language === 'tr' ? 'Röportajlar' : 'Interviews' },
-    { id: '16714', label: language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles' },
-    { id: '4', label: language === 'tr' ? 'Tüm Haberler' : 'All News', accent: true }
-  ];
+  const newsCategories = NAVBAR_NEWS_CATEGORIES.map((category) => ({
+    id: category.id,
+    label: language === 'tr' ? category.titleTr : category.titleEn,
+  }));
 
   return (
     <header className={`header ${isVisible ? 'header-visible' : 'header-hidden'}`}>

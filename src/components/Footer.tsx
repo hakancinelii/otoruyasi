@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useLanguage } from '../context/LanguageContext';
+import { CATEGORY_CONFIG } from '../lib/categoryConfig';
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { t, localizedPath } = useLanguage();
 
   return (
     <footer style={{ background: '#111315', padding: '60px 0', marginTop: '60px', borderTop: '1px solid var(--border-color)' }}>
@@ -19,17 +20,17 @@ export default function Footer() {
           <div>
             <h4 style={{ color: '#fff', marginBottom: '16px' }}>{t('categories')}</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <li><Link href="/kategori/5" style={{ color: 'inherit', textDecoration: 'none' }}>Oto Test</Link></li>
-              <li><Link href="/kategori/16714" style={{ color: 'inherit', textDecoration: 'none' }}>Elektrikli Araçlar</Link></li>
-              <li><Link href="/kategori/5801" style={{ color: 'inherit', textDecoration: 'none' }}>Kampanyalar</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.testDrives.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Oto Test</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.electricVehicles.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Elektrikli Araçlar</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.campaigns.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Kampanyalar</Link></li>
               <li><Link href="/kategori/7" style={{ color: 'inherit', textDecoration: 'none' }}>Otomobil Fiyatları</Link></li>
             </ul>
           </div>
           <div>
             <h4 style={{ color: '#fff', marginBottom: '16px' }}>{t('quick_links')}</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <li><Link href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{t('contact')}</Link></li>
-              <li><Link href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{t('privacy')}</Link></li>
+              <li><Link href={localizedPath('/iletisim')} style={{ color: 'inherit', textDecoration: 'none' }}>{t('contact')}</Link></li>
+              <li><Link href={localizedPath('/gizlilik-politikasi')} style={{ color: 'inherit', textDecoration: 'none' }}>{t('privacy')}</Link></li>
             </ul>
           </div>
         </div>

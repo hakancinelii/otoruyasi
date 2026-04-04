@@ -9,6 +9,7 @@ import AdBanner from '../components/AdBanner';
 import CategorySection from '../components/CategorySection';
 import BreakingNews from '../components/BreakingNews';
 import NewsSlider from '../components/NewsSlider';
+import { HOME_CATEGORY_ORDER } from '../lib/categoryConfig';
 
 import SidebarCategorySection from '../components/SidebarCategorySection';
 
@@ -166,47 +167,15 @@ export default function Home() {
 
       <NewsSlider posts={sliderPosts} title={language === 'tr' ? 'Haberler' : 'News'} t={t} />
 
-      <CategorySection
-        categoryId="16714"
-        title={language === 'tr' ? 'Elektrikli Araçlar' : 'Electric Vehicles'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="5"
-        title={language === 'tr' ? 'Test Sürüşleri' : 'Test Drives'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="7368"
-        title={language === 'tr' ? 'Motor Sporları' : 'Motorsports'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="3"
-        title={language === 'tr' ? 'Gündem' : 'Agenda'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="12"
-        title={language === 'tr' ? 'Röportajlar' : 'Interviews'}
-        language={language}
-        t={t}
-      />
-
-      <CategorySection
-        categoryId="5802"
-        title={language === 'tr' ? 'Kampanyalar' : 'Campaigns'}
-        language={language}
-        t={t}
-      />
+      {HOME_CATEGORY_ORDER.map((category) => (
+        <CategorySection
+          key={category.id}
+          categoryId={category.id}
+          title={language === 'tr' ? category.titleTr : category.titleEn}
+          language={language}
+          t={t}
+        />
+      ))}
 
       {/* Last News Grid with Sidebar Layout */}
       <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '100px' }}>

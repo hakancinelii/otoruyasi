@@ -24,12 +24,15 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
           if (!res.ok) throw new Error('API yanıt vermedi.');
           const data = await res.json();
           setPost(data);
-          
-          if (language === 'tr') {
+
+          const shouldTranslate = language !== 'tr' && Math.floor((new Date().getTime() - new Date(data.date).getTime()) / (1000 * 60 * 60 * 24)) <= 28;
+
+          if (shouldTranslate) {
+            translateContent(data, language);
+          } else {
             setTranslatedTitle(data.title.rendered);
             setTranslatedContent(data.content.rendered);
-          } else {
-            translateContent(data, language);
+            setTranslationError('');
           }
         } catch (error) {
           console.error('Hata:', error);
@@ -43,7 +46,7 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
 
   useEffect(() => {
     if (post) {
-      if (language !== 'tr') {
+      if (language !== 'tr' && isRecent) {
         translateContent(post, language);
       } else {
         setTranslatedTitle(post.title.rendered);
@@ -51,7 +54,7 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
         setTranslationError('');
       }
     }
-  }, [language, post]);
+  }, [language, post, isRecent]);
 
   const translateContent = async (data: any, lang: string) => {
     setTranslatedTitle('');
