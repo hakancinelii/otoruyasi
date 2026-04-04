@@ -56,8 +56,8 @@ export const CATEGORY_CONFIG = {
   },
   concept: {
     id: '5802',
-    titleTr: 'Konsept Gelecek',
-    titleEn: 'Concept Future',
+    titleTr: 'Konsept',
+    titleEn: 'Concept',
     showOnHome: true,
   },
   allNews: {

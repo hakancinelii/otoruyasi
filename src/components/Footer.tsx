@@ -20,9 +20,15 @@ export default function Footer() {
           <div>
             <h4 style={{ color: '#fff', marginBottom: '16px' }}>{t('categories')}</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <li><Link href={`/kategori/${CATEGORY_CONFIG.testDrives.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Oto Test</Link></li>
               <li><Link href={`/kategori/${CATEGORY_CONFIG.electricVehicles.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Elektrikli Araçlar</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.testDrives.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Oto Test</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.motorsports.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Motor Sporları</Link></li>
               <li><Link href={`/kategori/${CATEGORY_CONFIG.campaigns.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Kampanyalar</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.interviews.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Röportajlar</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.commercialVehicles.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Ticari Araçlar</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.fuel.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Akaryakıt</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.tires.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Lastik</Link></li>
+              <li><Link href={`/kategori/${CATEGORY_CONFIG.concept.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Konsept</Link></li>
               <li><Link href="/kategori/7" style={{ color: 'inherit', textDecoration: 'none' }}>Otomobil Fiyatları</Link></li>
             </ul>
           </div>
