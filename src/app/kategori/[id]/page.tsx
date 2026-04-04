@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { GridSkeleton, HeroSkeleton } from '../../../components/Skeleton';
 import { useLanguage } from '../../../context/LanguageContext';
 import NewsMosaic from '../../../components/NewsMosaic';
+import { getCategoryTitleById } from '../../../lib/categoryConfig';
 
 export default function KategoriPage({ params }: { params: { id: string } }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -129,6 +130,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
   const currentData = translatedPosts.length > 0 ? translatedPosts : posts;
   const mosaicPosts = currentData.slice(0, 7);
   const gridPosts = currentData.slice(7);
+  const categoryTitle = getCategoryTitleById(params.id, language);
 
   return (
     <main className="container" style={{ paddingBottom: '100px' }}>
@@ -140,7 +142,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
       />
 
       <div style={{ marginBottom: '30px', marginTop: '60px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>{t('news')}</h1>
+        <h1 style={{ fontSize: '32px', margin: 0, fontWeight: 800 }}>{categoryTitle}</h1>
         {(isTranslatingGrid || isTranslatingMosaic) && <span style={{ color: 'var(--accent-color)', fontSize: '14px' }}>AI {t('translating')}...</span>}
       </div>
 

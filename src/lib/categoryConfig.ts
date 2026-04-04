@@ -78,12 +78,12 @@ export const HOME_CATEGORY_ORDER: CategoryConfig[] = [
   CATEGORY_CONFIG.testDrives,
   CATEGORY_CONFIG.motorsports,
   CATEGORY_CONFIG.campaigns,
-  CATEGORY_CONFIG.interviews,
   CATEGORY_CONFIG.commercialVehicles,
   CATEGORY_CONFIG.fuel,
   CATEGORY_CONFIG.tires,
   CATEGORY_CONFIG.concept,
   CATEGORY_CONFIG.carPrices,
+  CATEGORY_CONFIG.interviews,
 ];
 
 export const NAVBAR_NEWS_CATEGORIES: CategoryConfig[] = [
@@ -106,3 +106,18 @@ export const SITEMAP_CATEGORY_IDS = [
   CATEGORY_CONFIG.concept.id,
   CATEGORY_CONFIG.carPrices.id,
 ];
+
+export const CATEGORY_BY_ID = Object.values(CATEGORY_CONFIG).reduce<Record<string, CategoryConfig>>((acc, category) => {
+  acc[category.id] = category;
+  return acc;
+}, {});
+
+export function getCategoryTitleById(id: string, language: string) {
+  const category = CATEGORY_BY_ID[id];
+
+  if (!category) {
+    return language === 'tr' ? 'Haberler' : 'News';
+  }
+
+  return language === 'tr' ? category.titleTr : category.titleEn;
+}
