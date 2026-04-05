@@ -12,6 +12,11 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Oto Rüyası | Araç İncelemeleri, Otomobil Test Sürüşleri ve Yapay Zeka ile Araç Karşılaştırmaları',
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   description: 'En yeni otomobilleri keşfedin! Araç incelemeleri, test sürüşleri, güncel otomobil haberleri ve yapay zeka ile en doğru araç karşılaştırmaları Oto Rüyası\'nda sizi bekliyor.',
   keywords: 'oto rüyası, araç karşılaştırma, otomobil test sürüşü, araba incelemeleri, yapay zeka araç analizi, otomobil haberleri, AI car comparison',
   openGraph: {

@@ -28,6 +28,33 @@ const CAR_DATABASE: Record<string, string[]> = {
   Tesla: ['Model 3', 'Model Y', 'Model S', 'Model X']
 };
 
+const BRAND_VISUALS: Record<string, { monogram: string; accent: string; glow: string }> = {
+  Audi: { monogram: 'A', accent: '#C0C7D1', glow: 'rgba(192, 199, 209, 0.25)' },
+  BMW: { monogram: 'BMW', accent: '#4DA3FF', glow: 'rgba(77, 163, 255, 0.25)' },
+  'Mercedes-Benz': { monogram: 'MB', accent: '#D7DCE2', glow: 'rgba(215, 220, 226, 0.24)' },
+  Peugeot: { monogram: 'P', accent: '#8FA1FF', glow: 'rgba(143, 161, 255, 0.24)' },
+  Toyota: { monogram: 'T', accent: '#FF6B6B', glow: 'rgba(255, 107, 107, 0.24)' },
+  Volkswagen: { monogram: 'VW', accent: '#6DB2FF', glow: 'rgba(109, 178, 255, 0.24)' },
+  Tesla: { monogram: 'T', accent: '#FF5A5F', glow: 'rgba(255, 90, 95, 0.24)' },
+};
+
+function getBrandVisual(brand: string) {
+  return BRAND_VISUALS[brand] || {
+    monogram: brand.slice(0, 2).toUpperCase(),
+    accent: 'var(--accent-color)',
+    glow: 'rgba(252, 163, 17, 0.24)',
+  };
+}
+
+function getChoiceLabel(index: 1 | 2, language: string) {
+  return `${index}. ${language === 'tr' ? 'Seçenek' : 'Choice'}`;
+}
+
+function getVehicleLabel(index: 1 | 2, language: string) {
+  return `${index}. ${language === 'tr' ? 'Araç' : 'Vehicle'}`;
+}
+
+
 interface CompareResult {
   car1: {
     score: number;
@@ -251,8 +278,16 @@ export default function KarsilastirmaPage() {
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>
             <div className="card" style={{ flex: '1', minWidth: '320px', padding: '40px', textAlign: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.18)' }}>
-              <div style={{ fontSize: '14px', color: 'var(--accent-color)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px' }}>1. {language === 'tr' ? 'Seçenek' : 'Choice'}</div>
-              <h3 style={{ fontSize: '28px', margin: '0 0 15px', fontWeight: 800 }}>{car1Brand} {car1Model}</h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '18px' }}>
+                <div>
+                  <div style={{ fontSize: '14px', color: 'var(--accent-color)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px' }}>{getChoiceLabel(1, language)}</div>
+                  <h3 style={{ fontSize: '28px', margin: 0, fontWeight: 800 }}>{car1Brand} {car1Model}</h3>
+                </div>
+                <div style={{ minWidth: '72px', height: '72px', borderRadius: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: getBrandVisual(car1Brand).glow, border: `1px solid ${getBrandVisual(car1Brand).accent}`, color: getBrandVisual(car1Brand).accent, fontWeight: 900, fontSize: '24px', letterSpacing: '0.04em', boxShadow: `0 16px 32px ${getBrandVisual(car1Brand).glow}` }}>
+                  {getBrandVisual(car1Brand).monogram}
+                </div>
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>{car1Brand}</div>
               <div style={{ fontSize: '48px', fontWeight: 900, color: 'var(--text-color)', marginBottom: '5px' }}>{results.car1.score}<span style={{ fontSize: '20px', color: 'var(--text-muted)' }}>/10</span></div>
               <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{t('ai_score')}</p>
 
@@ -267,8 +302,16 @@ export default function KarsilastirmaPage() {
             </div>
 
             <div className="card" style={{ flex: '1', minWidth: '320px', padding: '40px', textAlign: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.18)' }}>
-              <div style={{ fontSize: '14px', color: 'var(--accent-color)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px' }}>2. {language === 'tr' ? 'Seçenek' : 'Choice'}</div>
-              <h3 style={{ fontSize: '28px', margin: '0 0 15px', fontWeight: 800 }}>{car2Brand} {car2Model}</h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '18px' }}>
+                <div>
+                  <div style={{ fontSize: '14px', color: 'var(--accent-color)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px' }}>{getChoiceLabel(2, language)}</div>
+                  <h3 style={{ fontSize: '28px', margin: 0, fontWeight: 800 }}>{car2Brand} {car2Model}</h3>
+                </div>
+                <div style={{ minWidth: '72px', height: '72px', borderRadius: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: getBrandVisual(car2Brand).glow, border: `1px solid ${getBrandVisual(car2Brand).accent}`, color: getBrandVisual(car2Brand).accent, fontWeight: 900, fontSize: '24px', letterSpacing: '0.04em', boxShadow: `0 16px 32px ${getBrandVisual(car2Brand).glow}` }}>
+                  {getBrandVisual(car2Brand).monogram}
+                </div>
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>{car2Brand}</div>
               <div style={{ fontSize: '48px', fontWeight: 900, color: 'var(--text-color)', marginBottom: '5px' }}>{results.car2.score}<span style={{ fontSize: '20px', color: 'var(--text-muted)' }}>/10</span></div>
               <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{t('ai_score')}</p>
 
