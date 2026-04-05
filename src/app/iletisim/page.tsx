@@ -87,7 +87,7 @@ export default function IletisimPage() {
         <div className="card" style={{ padding: '32px' }}>
           <h2 style={{ fontSize: '24px', marginTop: 0, marginBottom: '20px' }}>{content.advertising}</h2>
           <p style={{ marginBottom: '10px', color: 'var(--text-muted)' }}>{content.email}</p>
-          <a href="mailto:isbirligi@otoruyasi.com" style={{ fontSize: '18px', fontWeight: 700, color: 'var(--accent-color)' }}>isbirligi@otoruyasi.com</a>
+          <a href="mailto:otoruyasi@gmail.com" style={{ fontSize: '18px', fontWeight: 700, color: 'var(--accent-color)' }}>otoruyasi@gmail.com</a>
           <p style={{ marginTop: '24px', marginBottom: '10px', color: 'var(--text-muted)' }}>{content.agency}</p>
           <p style={{ fontSize: '17px', fontWeight: 700, margin: 0 }}>AR FİLM REKLAM PRODÜKSİYON</p>
           <a href="https://www.arajans.com.tr" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '10px', color: 'var(--accent-color)', fontWeight: 600 }}>

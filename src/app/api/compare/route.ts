@@ -17,6 +17,11 @@ type ComparePayload = {
     points: string[];
   };
   analysis: string;
+  summary: {
+    winner: "car1" | "car2" | "tie";
+    scoreDelta: number;
+    shortVerdict: string;
+  };
 };
 
 function normalizeCompareInput(car1: string, car2: string, targetLang: string) {
@@ -173,7 +178,33 @@ function extractAnalysis(text: string) {
   return match[1].trim();
 }
 
-function normalizeParsedPayload(payload: ComparePayload): ComparePayload {
+function buildSummary(car1Name: string, car2Name: string, payload: { car1: { score: number }, car2: { score: number } }, targetLang: string) {
+  const scoreDelta = Math.abs(payload.car1.score - payload.car2.score);
+  const winner = payload.car1.score === payload.car2.score ? "tie" : payload.car1.score > payload.car2.score ? "car1" : "car2";
+
+  if (winner === "tie") {
+    return {
+      winner,
+      scoreDelta,
+      shortVerdict: targetLang === "tr"
+        ? `${car1Name} ve ${car2Name} birbirine çok yakın görünüyor; seçim kullanım önceliğine göre değişir.`
+        : `${car1Name} and ${car2Name} are very close; the final pick depends on usage priorities.`,
+    };
+  }
+
+  const winnerName = winner === "car1" ? car1Name : car2Name;
+  const loserName = winner === "car1" ? car2Name : car1Name;
+
+  return {
+    winner,
+    scoreDelta,
+    shortVerdict: targetLang === "tr"
+      ? `${winnerName}, ${loserName} karşısında daha güçlü genel denge sunuyor.`
+      : `${winnerName} delivers a stronger overall balance against ${loserName}.`,
+  };
+}
+
+function normalizeParsedPayload(payload: ComparePayload, car1Name: string, car2Name: string, targetLang: string): ComparePayload {
   return {
     car1: {
       score: Math.max(0, Math.min(10, payload.car1.score)),
@@ -184,10 +215,11 @@ function normalizeParsedPayload(payload: ComparePayload): ComparePayload {
       points: payload.car2.points.slice(0, 6),
     },
     analysis: payload.analysis,
+    summary: buildSummary(car1Name, car2Name, payload, targetLang),
   };
 }
 
-function coerceJsonPayload(parsed: any): ComparePayload | null {
+function coerceJsonPayload(parsed: any, car1Name: string, car2Name: string, targetLang: string): ComparePayload | null {
   const first = parsed?.car1 || parsed?.arac1 || parsed?.vehicle1;
   const second = parsed?.car2 || parsed?.arac2 || parsed?.vehicle2;
   const analysis = parsed?.analysis || parsed?.analiz || parsed?.yorum || parsed?.degerlendirme || parsed?.["değerlendirme"];
@@ -212,13 +244,18 @@ function coerceJsonPayload(parsed: any): ComparePayload | null {
       points: secondPoints.map((point: unknown) => String(point)),
     },
     analysis,
-  });
+    summary: {
+      winner: "tie",
+      scoreDelta: 0,
+      shortVerdict: "",
+    },
+  }, car1Name, car2Name, targetLang);
 }
 
-function tryParseJsonPayload(cleaned: string) {
+function tryParseJsonPayload(cleaned: string, car1Name: string, car2Name: string, targetLang: string) {
   try {
     const parsed = JSON.parse(cleaned);
-    return coerceJsonPayload(parsed);
+    return coerceJsonPayload(parsed, car1Name, car2Name, targetLang);
   } catch {
     return null;
   }
@@ -249,10 +286,10 @@ function fallbackExtractPoints(text: string, label: "car1" | "car2") {
   return collected.slice(0, 6);
 }
 
-function parseComparePayload(text: string): ComparePayload {
+function parseComparePayload(text: string, car1Name: string, car2Name: string, targetLang: string): ComparePayload {
   const cleaned = normalizeRawResponse(text);
 
-  const jsonPayload = tryParseJsonPayload(cleaned);
+  const jsonPayload = tryParseJsonPayload(cleaned, car1Name, car2Name, targetLang);
   if (jsonPayload) {
     return jsonPayload;
   }
@@ -268,7 +305,12 @@ function parseComparePayload(text: string): ComparePayload {
         points: extractPoints(cleaned, "car2"),
       },
       analysis: extractAnalysis(cleaned),
-    });
+      summary: {
+        winner: "tie",
+        scoreDelta: 0,
+        shortVerdict: "",
+      },
+    }, car1Name, car2Name, targetLang);
   } catch {
     return normalizeParsedPayload({
       car1: {
@@ -280,7 +322,12 @@ function parseComparePayload(text: string): ComparePayload {
         points: fallbackExtractPoints(cleaned, "car2"),
       },
       analysis: extractAnalysis(cleaned),
-    });
+      summary: {
+        winner: "tie",
+        scoreDelta: 0,
+        shortVerdict: "",
+      },
+    }, car1Name, car2Name, targetLang);
   }
 }
 
@@ -369,7 +416,7 @@ async function callExperienceAI(car1: string, car2: string, lang: string, model:
     throw new Error("AI returned empty content");
   }
 
-  return parseComparePayload(text);
+  return parseComparePayload(text, car1, car2, lang);
 }
 
 export async function POST(req: Request) {

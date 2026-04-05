@@ -38,6 +38,11 @@ interface CompareResult {
     points: string[];
   };
   analysis: string;
+  summary?: {
+    winner: 'car1' | 'car2' | 'tie';
+    scoreDelta: number;
+    shortVerdict: string;
+  };
 }
 
 export default function KarsilastirmaPage() {
@@ -206,6 +211,37 @@ export default function KarsilastirmaPage() {
       {results && !errorMessage && (
         <div style={{ marginTop: '60px', animation: 'fadeIn 0.6s ease' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '30px', fontSize: '32px', fontWeight: 800 }}>{t('ai_result_title')}</h2>
+
+          <div className="card" style={{ marginBottom: '30px', padding: '32px', maxWidth: '1000px', margin: '0 auto 30px', border: '2px solid var(--accent-color)', background: 'rgba(252, 163, 17, 0.04)', borderRadius: '28px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', flexWrap: 'wrap', marginBottom: '18px' }}>
+              <div>
+                <div style={{ fontSize: '13px', color: 'var(--accent-color)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
+                  {results.summary?.winner === 'tie'
+                    ? (language === 'tr' ? 'Dengeli Sonuç' : 'Balanced Result')
+                    : (language === 'tr' ? 'Öne Çıkan Araç' : 'Leading Choice')}
+                </div>
+                <h3 style={{ fontSize: 'clamp(28px, 4vw, 40px)', margin: 0, fontWeight: 900 }}>
+                  {results.summary?.winner === 'car1'
+                    ? `${car1Brand} ${car1Model}`
+                    : results.summary?.winner === 'car2'
+                      ? `${car2Brand} ${car2Model}`
+                      : (language === 'tr' ? 'Karşılaştırma Başa Baş' : 'Comparison Is Neck and Neck')}
+                </h3>
+              </div>
+              <div style={{ minWidth: '180px', padding: '18px 22px', borderRadius: '18px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                <div style={{ fontSize: '12px', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '8px' }}>
+                  {language === 'tr' ? 'Puan Farkı' : 'Score Delta'}
+                </div>
+                <div style={{ fontSize: '34px', fontWeight: 900, color: 'var(--accent-color)' }}>
+                  {results.summary?.scoreDelta?.toFixed(1) ?? '0.0'}
+                </div>
+              </div>
+            </div>
+            <p style={{ margin: 0, color: 'var(--text-color)', fontSize: '18px', lineHeight: '1.8' }}>
+              {results.summary?.shortVerdict || results.analysis}
+            </p>
+          </div>
+
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>
             <div className="card" style={{ flex: '1', minWidth: '320px', padding: '40px', textAlign: 'center', background: 'var(--card-bg)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
               <div style={{ fontSize: '14px', color: 'var(--accent-color)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px' }}>1. {language === 'tr' ? 'Seçenek' : 'Choice'}</div>
