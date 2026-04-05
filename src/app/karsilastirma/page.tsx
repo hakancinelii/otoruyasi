@@ -43,6 +43,13 @@ interface CompareResult {
     scoreDelta: number;
     shortVerdict: string;
   };
+  analysisBlocks?: {
+    idealFor: string;
+    dailyUse: string;
+    comfortFeel: string;
+    longTermOwnership: string;
+    shortDecision: string;
+  };
 }
 
 export default function KarsilastirmaPage() {
@@ -243,7 +250,7 @@ export default function KarsilastirmaPage() {
           </div>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>
-            <div className="card" style={{ flex: '1', minWidth: '320px', padding: '40px', textAlign: 'center', background: 'var(--card-bg)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+            <div className="card" style={{ flex: '1', minWidth: '320px', padding: '40px', textAlign: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.18)' }}>
               <div style={{ fontSize: '14px', color: 'var(--accent-color)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px' }}>1. {language === 'tr' ? 'Seçenek' : 'Choice'}</div>
               <h3 style={{ fontSize: '28px', margin: '0 0 15px', fontWeight: 800 }}>{car1Brand} {car1Model}</h3>
               <div style={{ fontSize: '48px', fontWeight: 900, color: 'var(--text-color)', marginBottom: '5px' }}>{results.car1.score}<span style={{ fontSize: '20px', color: 'var(--text-muted)' }}>/10</span></div>
@@ -259,7 +266,7 @@ export default function KarsilastirmaPage() {
               </ul>
             </div>
 
-            <div className="card" style={{ flex: '1', minWidth: '320px', padding: '40px', textAlign: 'center', background: 'var(--card-bg)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+            <div className="card" style={{ flex: '1', minWidth: '320px', padding: '40px', textAlign: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.18)' }}>
               <div style={{ fontSize: '14px', color: 'var(--accent-color)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px' }}>2. {language === 'tr' ? 'Seçenek' : 'Choice'}</div>
               <h3 style={{ fontSize: '28px', margin: '0 0 15px', fontWeight: 800 }}>{car2Brand} {car2Model}</h3>
               <div style={{ fontSize: '48px', fontWeight: 900, color: 'var(--text-color)', marginBottom: '5px' }}>{results.car2.score}<span style={{ fontSize: '20px', color: 'var(--text-muted)' }}>/10</span></div>
@@ -275,6 +282,23 @@ export default function KarsilastirmaPage() {
               </ul>
             </div>
           </div>
+
+          {results.analysisBlocks && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', maxWidth: '1000px', margin: '40px auto 0' }}>
+              {[
+                { title: t('ai_ideal_for'), text: results.analysisBlocks.idealFor },
+                { title: t('ai_daily_use'), text: results.analysisBlocks.dailyUse },
+                { title: t('ai_comfort_feel'), text: results.analysisBlocks.comfortFeel },
+                { title: t('ai_long_term'), text: results.analysisBlocks.longTermOwnership },
+                { title: t('ai_short_decision'), text: results.analysisBlocks.shortDecision },
+              ].map((block) => (
+                <div key={block.title} className="card" style={{ padding: '26px', background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)', borderRadius: '22px', border: '1px solid var(--border-color)', boxShadow: '0 18px 36px rgba(0,0,0,0.18)' }}>
+                  <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-color)', fontWeight: 800, marginBottom: '12px' }}>{block.title}</div>
+                  <p style={{ margin: 0, color: 'var(--text-color)', lineHeight: '1.7', fontSize: '16px' }}>{block.text}</p>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="card" style={{ marginTop: '40px', padding: '40px', textAlign: 'left', maxWidth: '1000px', margin: '40px auto 0', border: '2px solid var(--accent-color)', background: 'rgba(252, 163, 17, 0.03)', borderRadius: '28px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>

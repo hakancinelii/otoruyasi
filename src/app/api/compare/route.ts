@@ -22,6 +22,13 @@ type ComparePayload = {
     scoreDelta: number;
     shortVerdict: string;
   };
+  analysisBlocks: {
+    idealFor: string;
+    dailyUse: string;
+    comfortFeel: string;
+    longTermOwnership: string;
+    shortDecision: string;
+  };
 };
 
 function normalizeCompareInput(car1: string, car2: string, targetLang: string) {
@@ -204,7 +211,32 @@ function buildSummary(car1Name: string, car2Name: string, payload: { car1: { sco
   };
 }
 
+function buildAnalysisBlocks(car1Name: string, car2Name: string, summary: ComparePayload["summary"], analysis: string, targetLang: string): ComparePayload["analysisBlocks"] {
+  if (targetLang === "tr") {
+    return {
+      idealFor: summary.winner === "tie"
+        ? `${car1Name} ve ${car2Name}, farklı kullanıcı tiplerine göre mantıklı seçenekler sunuyor.`
+        : `${summary.winner === "car1" ? car1Name : car2Name}, kendi segmentinde daha net bir kullanıcı profiline hitap ediyor.`,
+      dailyUse: `${car1Name} ve ${car2Name}, günlük kullanım beklentilerinde farklı güçlü taraflar gösteriyor; detayları AI analizine göre okumak karar kalitesini artırır.`,
+      comfortFeel: `${summary.winner === "car1" ? car1Name : summary.winner === "car2" ? car2Name : `${car1Name} ile ${car2Name}`}, premium his ve konfor tarafında daha ikna edici bir toplam denge veriyor.`,
+      longTermOwnership: `Uzun dönem sahiplikte bakım maliyeti, ikinci el algısı ve kullanım alışkanlığı seçimi doğrudan etkileyebilir.`,
+      shortDecision: summary.shortVerdict || analysis,
+    };
+  }
+
+  return {
+    idealFor: summary.winner === "tie"
+      ? `${car1Name} and ${car2Name} both make sense depending on the user profile.`
+      : `${summary.winner === "car1" ? car1Name : car2Name} is better aligned with a clearer user profile in this matchup.`,
+    dailyUse: `${car1Name} and ${car2Name} show different strengths in everyday driving, so the AI context matters for the final pick.`,
+    comfortFeel: `${summary.winner === "car1" ? car1Name : summary.winner === "car2" ? car2Name : `${car1Name} and ${car2Name}`}, delivers the more convincing premium and comfort balance.`,
+    longTermOwnership: `Long-term ownership can be shaped by running costs, resale perception and usage habits.`,
+    shortDecision: summary.shortVerdict || analysis,
+  };
+}
+
 function normalizeParsedPayload(payload: ComparePayload, car1Name: string, car2Name: string, targetLang: string): ComparePayload {
+  const summary = buildSummary(car1Name, car2Name, payload, targetLang);
   return {
     car1: {
       score: Math.max(0, Math.min(10, payload.car1.score)),
@@ -215,7 +247,8 @@ function normalizeParsedPayload(payload: ComparePayload, car1Name: string, car2N
       points: payload.car2.points.slice(0, 6),
     },
     analysis: payload.analysis,
-    summary: buildSummary(car1Name, car2Name, payload, targetLang),
+    summary,
+    analysisBlocks: buildAnalysisBlocks(car1Name, car2Name, summary, payload.analysis, targetLang),
   };
 }
 
