@@ -10,8 +10,12 @@ export default function Footer() {
   return (
     <footer style={{ background: '#111315', padding: '60px 0', marginTop: '60px', borderTop: '1px solid var(--border-color)' }}>
       <div className="container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '40px' }}>
-        <div style={{ maxWidth: '300px' }}>
-          <h3 style={{ color: '#fff', fontSize: '24px', marginBottom: '20px', fontWeight: 800 }}>OTO RÜYASI</h3>
+        <div className="footer-brand-column">
+          <img
+            src="/logo.png"
+            alt="Oto Rüyası"
+            className="footer-brand-logo"
+          />
           <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>
             {t('home') === 'Ana Sayfa' ? "Türkiye'nin lider otomobil platformu. Sektörün nabzını tutan test sürüşlerini, otomotiv dünyasının en güncel gelişmelerini sitemizde bulabilirsiniz." : "Turkey's leading automobile platform. Test drives, news and digital magazine that keep the pulse of the industry."}
           </p>
@@ -87,6 +91,21 @@ export default function Footer() {
       <div className="container" style={{ borderTop: '1px solid var(--border-color)', marginTop: '40px', paddingTop: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
         &copy; {new Date().getFullYear()} Oto Rüyası Dijital Yayıncılık. {t('all_rights_reserved')}
       </div>
+
+      <style jsx>{`
+        .footer-brand-column {
+          max-width: 360px;
+        }
+
+        .footer-brand-logo {
+          width: 100%;
+          max-width: 280px;
+          height: auto;
+          margin-bottom: 20px;
+          display: block;
+          object-fit: contain;
+        }
+      `}</style>
     </footer>
   );
 }
