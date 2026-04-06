@@ -167,7 +167,26 @@ export default function Home() {
 
       <BreakingNews language={language} t={t} />
 
-      <NewsSlider posts={sliderPosts} title={language === 'tr' ? 'Haberler' : 'News'} t={t} />
+      <div className="news-slider-ad-layout" style={{ display: 'flex', gap: '30px', alignItems: 'stretch', marginBottom: '30px' }}>
+        <div style={{ flex: 3, minWidth: 0 }}>
+          <NewsSlider posts={sliderPosts} title={language === 'tr' ? 'Haberler' : 'News'} t={t} />
+        </div>
+        <aside className="slider-ad-sidebar desktop-only" style={{ flex: 1, minWidth: '320px', display: 'flex', alignItems: 'stretch' }}>
+          <AdBanner slots={["home_sidebar_right"]} layout="stack" maxWidth={320} />
+        </aside>
+      </div>
+
+      <style jsx>{`
+        @media (max-width: 1024px) {
+          .news-slider-ad-layout {
+            display: block !important;
+          }
+          .slider-ad-sidebar {
+            display: none !important;
+          }
+        }
+      `}</style>
+
 
       {HOME_CATEGORY_ORDER.map((category) => (
         <CategorySection
@@ -236,7 +255,6 @@ export default function Home() {
               language={language}
               t={t}
            />
-           <AdBanner slots={["home_sidebar_right"]} layout="stack" maxWidth={320} />
         </aside>
       </div>
 
