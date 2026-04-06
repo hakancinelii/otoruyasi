@@ -230,12 +230,13 @@ export default function Home() {
               language={language} 
               t={t} 
            />
-           <SidebarCategorySection 
-              categoryId="1" 
-              title="Çok Okunanlar" 
-              language={language} 
-              t={t} 
+           <SidebarCategorySection
+              categoryId="1"
+              title="Çok Okunanlar"
+              language={language}
+              t={t}
            />
+           <AdBanner slots={["home_sidebar_right"]} layout="stack" maxWidth={320} />
         </aside>
       </div>
 
