@@ -155,7 +155,9 @@ export default function Home() {
   return (
     <main className="container" style={{ paddingBottom: '100px' }}>
 
-      <AdBanner />
+      <AdBanner slots={['home_top_primary']} maxWidth={1000} />
+
+      <AdBanner slots={['home_top_secondary', 'home_top_tertiary']} layout="grid" maxWidth={480} />
 
       <NewsMosaic
         posts={mosaicPosts}
