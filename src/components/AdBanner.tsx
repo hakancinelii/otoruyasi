@@ -26,12 +26,19 @@ type AdCategory = {
 
 function decodeHtml(html: string) {
   return html
+    .replace(/&#8221;|&#8243;|&rdquo;/g, '"')
+    .replace(/&#8220;|&#8242;|&ldquo;/g, '"')
+    .replace(/&#8217;|&rsquo;|&#039;/g, "'")
+    .replace(/&#8216;|&lsquo;/g, "'")
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
     .replace(/&nbsp;/g, ' ');
+}
+
+function stripParagraphBreaks(html: string) {
+  return decodeHtml(html).replace(/<\/?p>/gi, ' ').replace(/<br\s*\/?>/gi, ' ');
 }
 
 function stripHtml(html: string) {
@@ -49,7 +56,7 @@ function getSlotValue(post: AdPost) {
   }
 
   const rendered = post.content.rendered || '';
-  const rawContent = decodeHtml(rendered);
+  const rawContent = stripParagraphBreaks(rendered);
   const plainText = stripHtml(rendered);
 
   const match =
