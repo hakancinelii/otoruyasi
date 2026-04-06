@@ -159,6 +159,12 @@ export default function Home() {
 
       <AdBanner slots={['home_top_secondary', 'home_top_tertiary']} layout="grid" maxWidth={480} />
 
+      <AdBanner
+        slots={['home_after_main_banner_1', 'home_after_main_banner_2', 'home_after_main_banner_3']}
+        layout="stack"
+        maxWidth={728}
+      />
+
       <NewsMosaic
         posts={mosaicPosts}
         isTranslating={isTranslatingMosaic}
@@ -166,6 +172,12 @@ export default function Home() {
       />
 
       <BreakingNews language={language} t={t} />
+
+      <AdBanner
+        slots={['home_after_breaking_news_1', 'home_after_breaking_news_2', 'home_after_breaking_news_3']}
+        layout="stack"
+        maxWidth={728}
+      />
 
       <div className="news-slider-ad-layout" style={{ display: 'flex', gap: '30px', alignItems: 'stretch', marginBottom: '30px' }}>
         <div style={{ flex: 3, minWidth: 0 }}>
