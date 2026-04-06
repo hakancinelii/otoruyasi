@@ -81,7 +81,7 @@ export default function IletisimPage() {
           <p style={{ marginTop: '24px', marginBottom: '10px', color: 'var(--text-muted)' }}>{content.phone}</p>
           <p style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>+90 505 476 15 31</p>
           <p style={{ marginTop: '24px', marginBottom: '10px', color: 'var(--text-muted)' }}>{content.address}</p>
-          <p style={{ fontSize: '17px', fontWeight: 600, margin: 0, lineHeight: '1.6' }}>Zafer Mah. Fuzuli Sok. No: 9/14 Yenibosna / İstanbul</p>
+          <p style={{ fontSize: '17px', fontWeight: 600, margin: 0, lineHeight: '1.6' }}>Bahçelievler / İstanbul</p>
         </div>
 
         <div className="card" style={{ padding: '32px' }}>
