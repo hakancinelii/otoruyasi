@@ -241,26 +241,23 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
 
         @media (max-width: 768px) {
           .ad-banner-wrapper {
-            position: relative;
-            left: 50%;
-            right: 50%;
-            width: 100vw;
-            max-width: 100vw;
-            margin-left: -50vw;
-            margin-right: -50vw;
-            padding: 0 10px;
-            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            margin: 24px auto 16px auto;
+            padding: 0;
+            left: auto;
+            right: auto;
           }
 
           .ad-item,
           .ad-link,
           .ad-image {
-            width: 100vw;
-            max-width: 100vw;
+            width: 100%;
+            max-width: 100%;
           }
 
           .ad-image {
-            max-height: 180px;
+            max-height: none;
           }
         }
       `}</style>
