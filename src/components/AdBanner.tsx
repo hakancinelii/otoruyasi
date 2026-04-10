@@ -193,6 +193,8 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           display: inline-block;
           position: relative;
           width: 100%;
+          max-width: 100%;
+          min-width: 0;
         }
 
         .ad-label {
@@ -209,12 +211,16 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
 
         .ad-link {
           display: block;
+          overflow: hidden;
         }
 
         .ad-image {
+          display: block;
           width: 100%;
+          height: auto;
           max-height: 250px;
           object-fit: contain;
+          object-position: center;
           border-radius: 8px;
           border: 1px solid var(--border-color);
         }
@@ -224,6 +230,16 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           height: 0;
           overflow: hidden;
           position: absolute;
+        }
+
+        @media (max-width: 640px) {
+          .ad-banner-wrapper {
+            margin: 20px auto 18px auto;
+          }
+
+          .ad-image {
+            max-height: 180px;
+          }
         }
       `}</style>
     </div>
