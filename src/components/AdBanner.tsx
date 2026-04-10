@@ -239,9 +239,24 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           position: absolute;
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .ad-banner-wrapper {
-            margin: 20px auto 18px auto;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            width: 100vw;
+            max-width: 100vw;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            padding: 0 10px;
+            box-sizing: border-box;
+          }
+
+          .ad-item,
+          .ad-link,
+          .ad-image {
+            width: 100vw;
+            max-width: 100vw;
           }
 
           .ad-image {
