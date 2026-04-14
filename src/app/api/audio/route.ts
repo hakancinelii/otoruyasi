@@ -2,11 +2,13 @@ import { createHash } from 'crypto';
 import { NextResponse } from 'next/server';
 
 const API_KEY = process.env.GEMINI_API_KEY;
+const HF_TOKEN = process.env.HUGGINGFACE_API_TOKEN;
+const HF_MODEL = process.env.HUGGINGFACE_TTS_MODEL || 'facebook/mms-tts-tur';
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const SUPPORTED_LANGS = new Set(['tr', 'en', 'de', 'ru']);
 const SUPPORTED_VOICES = new Set(['female', 'male']);
-const audioScriptCache = new Map<string, { script: string; expiresAt: number }>();
+const audioCache = new Map<string, { script: string; audioUrl?: string; provider: 'browser' | 'huggingface'; expiresAt: number }>();
 
 function normalizeText(text: string) {
   return text.trim().replace(/\s+/g, ' ');
@@ -18,22 +20,22 @@ function getCacheKey(text: string, targetLang: string, voice: string) {
     .digest('hex');
 }
 
-function getCachedScript(cacheKey: string) {
-  const cached = audioScriptCache.get(cacheKey);
+function getCachedEntry(cacheKey: string) {
+  const cached = audioCache.get(cacheKey);
 
   if (!cached) return null;
 
   if (cached.expiresAt <= Date.now()) {
-    audioScriptCache.delete(cacheKey);
+    audioCache.delete(cacheKey);
     return null;
   }
 
-  return cached.script;
+  return cached;
 }
 
-function setCachedScript(cacheKey: string, script: string) {
-  audioScriptCache.set(cacheKey, {
-    script,
+function setCachedEntry(cacheKey: string, entry: { script: string; audioUrl?: string; provider: 'browser' | 'huggingface' }) {
+  audioCache.set(cacheKey, {
+    ...entry,
     expiresAt: Date.now() + CACHE_TTL_MS,
   });
 }
@@ -41,9 +43,9 @@ function setCachedScript(cacheKey: string, script: string) {
 function pruneExpiredCacheEntries() {
   const now = Date.now();
 
-  for (const [key, value] of audioScriptCache.entries()) {
+  for (const [key, value] of audioCache.entries()) {
     if (value.expiresAt <= now) {
-      audioScriptCache.delete(key);
+      audioCache.delete(key);
     }
   }
 }
@@ -64,8 +66,8 @@ function isTextTooLong(text: string) {
   return text.length > 16000;
 }
 
-function jsonResponse(script: string, error?: string) {
-  return NextResponse.json(error ? { script, error } : { script });
+function jsonResponse(data: { script: string; provider: 'browser' | 'huggingface'; audioUrl?: string; error?: string }) {
+  return NextResponse.json(data);
 }
 
 async function callGeminiAPI(text: string, lang: string, voice: string, model: string) {
@@ -113,6 +115,33 @@ ${text}`,
   return script;
 }
 
+async function tryHuggingFaceTTS(script: string) {
+  if (!HF_TOKEN) return null;
+
+  const response = await fetch(`https://router.huggingface.co/hf-inference/models/${HF_MODEL}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${HF_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ inputs: script }),
+  });
+
+  if (!response.ok) {
+    const message = await response.text().catch(() => 'HF request failed');
+    throw new Error(message || 'HF request failed');
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('audio')) {
+    return null;
+  }
+
+  const buffer = await response.arrayBuffer();
+  const base64 = Buffer.from(buffer).toString('base64');
+  return `data:${contentType};base64,${base64}`;
+}
+
 export async function POST(req: Request) {
   let body: { text?: unknown; targetLang?: unknown; voice?: unknown } | null = null;
 
@@ -122,32 +151,36 @@ export async function POST(req: Request) {
 
     if (!API_KEY) {
       console.error('GEMINI_API_KEY missing from environment');
-      return jsonResponse(isValidText(text) ? text : '', 'API key not configured');
+      return jsonResponse({ script: isValidText(text) ? text : '', provider: 'browser', error: 'API key not configured' });
     }
 
     if (!isValidText(text)) {
-      return jsonResponse('', 'No article text');
+      return jsonResponse({ script: '', provider: 'browser', error: 'No article text' });
     }
 
     if (!isValidTargetLang(targetLang)) {
-      return jsonResponse(text, 'Unsupported language');
+      return jsonResponse({ script: text, provider: 'browser', error: 'Unsupported language' });
     }
 
     if (!isValidVoice(voice)) {
-      return jsonResponse(text, 'Unsupported voice');
+      return jsonResponse({ script: text, provider: 'browser', error: 'Unsupported voice' });
     }
 
     if (isTextTooLong(text)) {
-      return jsonResponse(text, 'Text too long for audio script');
+      return jsonResponse({ script: text, provider: 'browser', error: 'Text too long for audio script' });
     }
 
     pruneExpiredCacheEntries();
 
     const cacheKey = getCacheKey(text, targetLang, voice);
-    const cachedScript = getCachedScript(cacheKey);
+    const cachedEntry = getCachedEntry(cacheKey);
 
-    if (cachedScript) {
-      return jsonResponse(cachedScript);
+    if (cachedEntry) {
+      return jsonResponse({
+        script: cachedEntry.script,
+        provider: cachedEntry.provider,
+        audioUrl: cachedEntry.audioUrl,
+      });
     }
 
     const langNames: Record<string, string> = {
@@ -170,14 +203,24 @@ export async function POST(req: Request) {
       }
     }
 
-    if (script) {
-      setCachedScript(cacheKey, script);
+    const finalScript = script || text;
+
+    try {
+      const audioUrl = await tryHuggingFaceTTS(finalScript);
+      if (audioUrl) {
+        setCachedEntry(cacheKey, { script: finalScript, audioUrl, provider: 'huggingface' });
+        return jsonResponse({ script: finalScript, provider: 'huggingface', audioUrl });
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn('Hugging Face TTS failed:', message);
     }
 
-    return jsonResponse(script || text);
+    setCachedEntry(cacheKey, { script: finalScript, provider: 'browser' });
+    return jsonResponse({ script: finalScript, provider: 'browser' });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error('Audio script error:', message);
-    return jsonResponse(isValidText(body?.text) ? body.text : '', 'Audio generation failed');
+    console.error('Audio generation error:', message);
+    return jsonResponse({ script: isValidText(body?.text) ? body.text : '', provider: 'browser', error: 'Audio generation failed' });
   }
 }
