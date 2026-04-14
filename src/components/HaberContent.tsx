@@ -118,11 +118,29 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
 
       <img src={imageUrl} alt={post.title.rendered} style={{ width: '100%', borderRadius: '24px', marginBottom: '40px' }} />
 
-      <div className="haber-icerik" style={{ fontSize: '18px', lineHeight: '1.8', overflowX: 'auto' }} dangerouslySetInnerHTML={{ __html: translatedContent }} />
+      <div className="haber-icerik" style={{ fontSize: '18px', lineHeight: '1.8', overflowX: 'auto', clear: 'both' }} dangerouslySetInnerHTML={{ __html: translatedContent }} />
 
       <style jsx global>{`
-        .haber-icerik p { margin-bottom: 25px; }
-        .haber-icerik img { max-width: 100%; height: auto; border-radius: 12px; margin: 20px 0; }
+        .haber-icerik { clear: both; }
+        .haber-icerik::after { content: ''; display: block; clear: both; }
+        .haber-icerik p { margin-bottom: 25px; clear: both; }
+        .haber-icerik img { max-width: 100%; height: auto; border-radius: 12px; margin: 20px 0; display: block; clear: both; float: none !important; }
+        .haber-icerik figure { margin: 24px 0; clear: both; display: block; float: none !important; }
+        .haber-icerik figure img { margin: 0; }
+        .haber-icerik div, .haber-icerik section, .haber-icerik article { clear: both; }
+        .haber-icerik br[clear] { clear: both; }
+        .haber-icerik iframe { max-width: 100%; display: block; margin: 24px 0; clear: both; }
+        .haber-icerik .alignleft,
+        .haber-icerik .alignright,
+        .haber-icerik [style*='float:left'],
+        .haber-icerik [style*='float: left'],
+        .haber-icerik [style*='float:right'],
+        .haber-icerik [style*='float: right'] {
+          float: none !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+        }
+        .haber-icerik table {
         .haber-icerik table {
           width: 100%;
           min-width: max-content;
