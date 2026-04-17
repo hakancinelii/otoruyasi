@@ -119,7 +119,7 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
 
   if (imageUrl) {
     return (
-      <div className="ad-item" style={{ maxWidth }}>
+      <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
         <span className="ad-label">Reklam</span>
         <a href={link} target="_blank" rel="noopener noreferrer" className="ad-link">
           <img src={imageUrl} alt={post.title.rendered} className="ad-image" />
@@ -131,7 +131,7 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
 
   if (rawContent) {
     return (
-      <div className="ad-item" style={{ maxWidth }}>
+      <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
         <span className="ad-label">Reklam</span>
         <div dangerouslySetInnerHTML={{ __html: rawContent }} />
       </div>
@@ -162,7 +162,7 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
   if (!filteredAds.length) return null;
 
   return (
-    <div className="container ad-banner-wrapper">
+    <div className="ad-banner-wrapper">
       <div className={layout === 'grid' ? 'ad-grid' : 'ad-stack'}>
         {filteredAds.map((post) => (
           <AdItem key={post.id} post={post} maxWidth={maxWidth} />
@@ -174,9 +174,10 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           text-align: center;
           margin: 40px auto 20px auto;
           width: 100%;
-          overflow-x: hidden;
+          max-width: 1200px;
+          overflow: visible;
           box-sizing: border-box;
-          padding: 0;
+          padding: 0 20px;
         }
 
         .ad-grid {
@@ -197,9 +198,9 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           display: block;
           position: relative;
           width: 100%;
-          max-width: 100vw;
           min-width: 0;
           box-sizing: border-box;
+          margin: 0 auto;
         }
 
         .ad-label {
@@ -217,13 +218,11 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
         .ad-link {
           display: block;
           width: 100%;
-          overflow: hidden;
         }
 
         .ad-image {
           display: block;
           width: 100%;
-          max-width: 100vw;
           height: auto;
           max-height: 250px;
           object-fit: contain;
@@ -241,23 +240,27 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
 
         @media (max-width: 768px) {
           .ad-banner-wrapper {
-            width: 100%;
-            max-width: 100%;
             margin: 24px auto 16px auto;
-            padding: 0;
-            left: auto;
-            right: auto;
+            padding: 0 16px;
           }
 
-          .ad-item,
-          .ad-link,
-          .ad-image {
+          .ad-item {
             width: 100%;
-            max-width: 100%;
+            max-width: 100% !important;
+          }
+
+          .ad-link {
+            width: 100%;
+            display: block;
+            overflow: visible;
           }
 
           .ad-image {
-            max-height: none;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            object-fit: contain !important;
+            border-radius: 6px;
           }
         }
       `}</style>

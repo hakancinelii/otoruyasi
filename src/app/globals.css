@@ -42,8 +42,7 @@ body {
   color: var(--text-color);
   margin: 0;
   padding: 0;
-  padding-top: 100px !important;
-  /* Fixed header gap */
+  padding-top: 148px !important;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -102,11 +101,6 @@ a:hover {
   transform: translateY(0) !important;
 }
 
-/* Sayfa içeriğinin header altında kalmaması için body'e üst boşluk ekliyoruz */
-body {
-  padding-top: 100px;
-  /* Header yüksekliği kadar boşluk */
-}
 
 /* News Mosaic Grid Layout (1 Large + 1 Medium + 2 Small) */
 .mosaic-container {
