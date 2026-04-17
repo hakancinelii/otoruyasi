@@ -245,15 +245,15 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
         @media (max-width: 768px) {
           .ad-banner-wrapper {
             margin: 24px auto 16px auto;
-            padding: 0 16px;
+            padding: 0;
             width: 100%;
             box-sizing: border-box;
           }
 
           .ad-item {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 auto;
+            width: 85% !important;
+            max-width: 85% !important;
+            margin: 0 auto !important;
           }
 
           .ad-link {
@@ -272,9 +272,17 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
             border-radius: 6px;
           }
 
+          .ad-content-raw {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 auto !important;
+          }
+
           .ad-content-raw img {
             max-width: 100% !important;
             height: auto !important;
+            display: block !important;
+            margin: 0 auto !important;
           }
         }
       `}</style>
