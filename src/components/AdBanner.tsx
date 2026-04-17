@@ -117,10 +117,10 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
   const link = getAdLink(rawContent);
   const trackingMarkup = getTrackingMarkup(rawContent);
 
-  if (imageUrl) {
+    if (imageUrl) {
     return (
       <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
-        <span className="ad-label">Reklam</span>
+        <span className="ad-label">REKLAM DEBUG</span>
         <a href={link} target="_blank" rel="noopener noreferrer" className="ad-link">
           <img src={imageUrl} alt={post.title.rendered} className="ad-image" />
         </a>
