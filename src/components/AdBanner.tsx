@@ -133,7 +133,11 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
     return (
       <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
         <span className="ad-label">Reklam</span>
-        <div dangerouslySetInnerHTML={{ __html: rawContent }} />
+        <div 
+          className="ad-content-raw"
+          dangerouslySetInnerHTML={{ __html: rawContent }} 
+          style={{ width: '100%', overflow: 'hidden' }}
+        />
       </div>
     );
   }
@@ -242,16 +246,19 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           .ad-banner-wrapper {
             margin: 24px auto 16px auto;
             padding: 0 16px;
+            width: 100%;
+            box-sizing: border-box;
           }
 
           .ad-item {
-            width: 100%;
+            width: 100% !important;
             max-width: 100% !important;
+            margin: 0 auto;
           }
 
           .ad-link {
-            width: 100%;
-            display: block;
+            width: 100% !important;
+            display: block !important;
             overflow: visible;
           }
 
@@ -259,8 +266,15 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
             width: 100% !important;
             max-width: 100% !important;
             height: auto !important;
+            min-width: 0 !important;
+            display: block !important;
             object-fit: contain !important;
             border-radius: 6px;
+          }
+
+          .ad-content-raw img {
+            max-width: 100% !important;
+            height: auto !important;
           }
         }
       `}</style>
