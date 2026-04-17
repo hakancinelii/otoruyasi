@@ -120,7 +120,7 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
     if (imageUrl) {
     return (
       <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
-        <span className="ad-label">REKLAM DEBUG</span>
+        <span className="ad-label">Reklam</span>
         <a href={link} target="_blank" rel="noopener noreferrer" className="ad-link">
           <img src={imageUrl} alt={post.title.rendered} className="ad-image" />
         </a>
@@ -252,10 +252,12 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           }
 
           .ad-item {
-            width: 50% !important;
-            max-width: 50% !important;
+            width: 100% !important;
+            max-width: 100% !important;
             margin: 0 auto !important;
             display: block !important;
+            padding: 5px !important;
+            box-sizing: border-box !important;
           }
 
           .ad-link {
