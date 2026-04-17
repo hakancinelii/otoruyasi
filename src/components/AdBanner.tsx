@@ -121,7 +121,8 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
     return (
       <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
         <span className="ad-label">Reklam</span>
-        <a href={link} target="_blank" rel="noopener noreferrer" className="ad-link">
+        <a href={link} target="_blank" rel="noopener noreferrer" className="ad-link ad-mobile-fix">
+          <div className="ad-mobile-bg" style={{ backgroundImage: `url(${imageUrl})` }} />
           <img src={imageUrl} alt={post.title.rendered} className="ad-image" />
         </a>
         {trackingMarkup && <div dangerouslySetInnerHTML={{ __html: trackingMarkup }} className="ad-tracking" />}
@@ -249,6 +250,7 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
             padding: 0 10px !important;
             display: block !important;
             overflow: hidden !important;
+            box-sizing: border-box !important;
           }
 
           .ad-item {
@@ -256,23 +258,24 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
             max-width: 100% !important;
             margin: 0 auto !important;
             display: block !important;
-            padding: 5px !important;
+            padding: 0 !important;
             box-sizing: border-box !important;
+            overflow: hidden !important;
           }
 
-          .ad-link {
+          .ad-mobile-bg {
             display: block !important;
             width: 100% !important;
+            height: 0 !important;
+            padding-bottom: 25% !important; /* Fixed height for mobile to ensure visibility */
+            background-size: contain !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            border-radius: 8px !important;
           }
 
           .ad-image {
-            display: block !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            object-fit: contain !important;
-            border-radius: 8px !important;
-            margin: 0 auto !important;
+            display: none !important;
           }
 
           .ad-content-raw {
