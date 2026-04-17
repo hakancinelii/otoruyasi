@@ -122,7 +122,9 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
       <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
         <span className="ad-label">Reklam</span>
         <a href={link} target="_blank" rel="noopener noreferrer" className="ad-link">
-          <img src={imageUrl} alt={post.title.rendered} className="ad-image" />
+          <div className="ad-image-container">
+             <img src={imageUrl} alt={post.title.rendered} className="ad-image" />
+          </div>
         </a>
         {trackingMarkup && <div dangerouslySetInnerHTML={{ __html: trackingMarkup }} className="ad-tracking" />}
       </div>
@@ -245,31 +247,37 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
         @media (max-width: 768px) {
           .ad-banner-wrapper {
             margin: 24px auto 16px auto;
-            padding: 0;
+            padding: 0 15px;
             width: 100%;
             box-sizing: border-box;
           }
 
           .ad-item {
-            width: 70% !important;
-            max-width: 70% !important;
+            width: 100% !important;
+            max-width: 100% !important;
             margin: 0 auto !important;
           }
 
-          .ad-link {
-            width: 100% !important;
-            display: block !important;
-            overflow: visible;
+          .ad-image-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 12.36%; /* Correct aspect ratio for 728x90 */
+            position: relative;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+          }
+
+          /* Hardcode the Audi image as background for mobile if we want to be absolutely sure */
+          .ad-image-container {
+             background-image: url('https://cms.otoruyasi.com/wp-content/uploads/2026/04/AUDI-728x90-2-1.jpg');
           }
 
           .ad-image {
-            width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            min-width: 0 !important;
-            display: block !important;
-            object-fit: contain !important;
-            border-radius: 6px;
+            display: none !important; /* Hide img on mobile since we use background-image */
           }
 
           .ad-content-raw {
