@@ -251,8 +251,8 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           }
 
           .ad-item {
-            width: 85% !important;
-            max-width: 85% !important;
+            width: 70% !important;
+            max-width: 70% !important;
             margin: 0 auto !important;
           }
 
