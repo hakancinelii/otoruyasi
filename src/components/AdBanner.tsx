@@ -267,8 +267,8 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           }
 
           .ad-item {
-            width: 50% !important;
-            max-width: 50vw !important;
+            width: 35% !important;
+            max-width: 35vw !important;
             margin: 0 auto !important;
             display: block !important;
             padding: 0 !important;
@@ -295,8 +295,8 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           }
 
           .ad-content-raw {
-            width: 50% !important;
-            max-width: 50vw !important;
+            width: 35% !important;
+            max-width: 35vw !important;
             margin: 0 auto !important;
             overflow: visible !important;
           }
