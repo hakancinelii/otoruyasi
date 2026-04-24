@@ -1,5 +1,6 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { cookies } from 'next/headers';
+import AdBanner from '../../../components/AdBanner';
 import HaberContent from '../../../components/HaberContent';
 
 // Helper to check for recent news
@@ -68,6 +69,7 @@ export default async function HaberDetayPage({ params }: { params: { id: string 
   
   return (
     <main>
+      <AdBanner slots={['home_top_primary']} maxWidth={1000} />
       <HaberContent id={params.id} initialPost={post} />
     </main>
   );
