@@ -121,8 +121,7 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
     return (
       <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
         <span className="ad-label">Reklam</span>
-        <a href={link} target="_blank" rel="noopener noreferrer" className="ad-link ad-mobile-fix">
-          <div className="ad-mobile-bg" style={{ backgroundImage: `url(${imageUrl})` }} />
+        <a href={link} target="_blank" rel="noopener noreferrer" className="ad-link">
           <img src={imageUrl} alt={post.title.rendered} className="ad-image" />
         </a>
         {trackingMarkup && <div dangerouslySetInnerHTML={{ __html: trackingMarkup }} className="ad-tracking" />}
@@ -183,6 +182,7 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           overflow: visible;
           box-sizing: border-box;
           padding: 0 20px;
+          contain: layout;
         }
 
         .ad-grid {
@@ -223,17 +223,20 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
         .ad-link {
           display: block;
           width: 100%;
+          line-height: 0;
+          overflow: visible;
         }
 
         .ad-image {
           display: block;
           width: 100%;
+          max-width: 100%;
           height: auto;
-          max-height: 250px;
           object-fit: contain;
           object-position: center;
           border-radius: 8px;
           border: 1px solid var(--border-color);
+          box-sizing: border-box;
         }
 
         .ad-tracking {
@@ -247,47 +250,54 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           .ad-banner-wrapper {
             margin: 20px auto;
             width: 100% !important;
-            padding: 0 10px !important;
+            max-width: 100vw !important;
+            padding: 0 8px !important;
             display: block !important;
-            overflow: hidden !important;
+            overflow: visible !important;
             box-sizing: border-box !important;
+          }
+
+          .ad-stack,
+          .ad-grid {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
           }
 
           .ad-item {
             width: 100% !important;
-            max-width: 100% !important;
+            max-width: calc(100vw - 16px) !important;
             margin: 0 auto !important;
             display: block !important;
             padding: 0 !important;
             box-sizing: border-box !important;
-            overflow: hidden !important;
+            overflow: visible !important;
           }
 
-          .ad-mobile-bg {
+          .ad-link {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: block !important;
+            overflow: visible !important;
+          }
+
+          .ad-image,
+          .ad-content-raw img {
             display: block !important;
             width: 100% !important;
-            height: 0 !important;
-            padding-bottom: 25% !important; /* Fixed height for mobile to ensure visibility */
-            background-size: contain !important;
-            background-repeat: no-repeat !important;
-            background-position: center !important;
-            border-radius: 8px !important;
-          }
-
-          .ad-image {
-            display: none !important;
+            max-width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            object-fit: contain !important;
+            object-position: center !important;
           }
 
           .ad-content-raw {
             width: 100% !important;
-            overflow: hidden !important;
-          }
-
-          .ad-content-raw img {
-            width: 100% !important;
             max-width: 100% !important;
-            height: auto !important;
-            display: block !important;
+            overflow: visible !important;
           }
         }
       `}</style>
