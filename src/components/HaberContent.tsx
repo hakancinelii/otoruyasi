@@ -297,7 +297,7 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
       <h1 className="hero-title" style={{ fontSize: 'clamp(24px, 5vw, 42px)', marginBottom: '20px' }} dangerouslySetInnerHTML={{ __html: translatedTitle }}></h1>
 
       <div style={{ display: 'flex', gap: '20px', color: 'var(--text-muted)', marginBottom: '30px' }}>
-        <span>{new Date(post.date).toLocaleDateString()}</span>
+        <span>{new Date(post.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : language === 'de' ? 'de-DE' : language === 'ru' ? 'ru-RU' : 'en-US')}</span>
         {isTranslating && <span style={{ color: 'var(--accent-color)' }}>{language === 'tr' ? 'Çevriliyor...' : 'AI Translating...'}</span>}
       </div>
 

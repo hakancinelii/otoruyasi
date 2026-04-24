@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cookies, headers } from 'next/headers';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '../context/AuthContext';
@@ -9,6 +10,17 @@ import GoogleAnalytics from '../components/GoogleAnalytics';
 import AutoRefresh from '../components/AutoRefresh';
 
 const inter = Inter({ subsets: ['latin'] });
+const supportedLanguages = ['tr', 'en', 'ru', 'de'] as const;
+type SupportedLanguage = typeof supportedLanguages[number];
+
+function getInitialLanguage(): SupportedLanguage {
+  const pathname = headers().get('x-pathname') || '';
+  const pathLang = pathname.split('/')[1];
+  const cookieLang = cookies().get('NEXT_LOCALE')?.value;
+  const lang = pathLang || cookieLang;
+
+  return supportedLanguages.includes(lang as SupportedLanguage) ? lang as SupportedLanguage : 'tr';
+}
 
 export const metadata: Metadata = {
   title: 'Oto Rüyası | Araç İncelemeleri, Otomobil Test Sürüşleri ve Yapay Zeka ile Araç Karşılaştırmaları',
@@ -53,13 +65,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const initialLanguage = getInitialLanguage();
+
   return (
-    <html lang="tr">
+    <html lang={initialLanguage}>
       <body className={inter.className}>
         <GoogleAnalytics />
         <AutoRefresh />
         <AuthProvider>
-          <LanguageProvider>
+          <LanguageProvider initialLanguage={initialLanguage}>
             <Navbar />
             {children}
             <Footer />

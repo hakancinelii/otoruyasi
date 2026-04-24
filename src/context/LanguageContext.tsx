@@ -14,8 +14,8 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const SUPPORTED_LANGS: Language[] = ['tr', 'en', 'ru', 'de'];
 
-export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
-  const [language, setLanguageState] = useState<Language>('tr');
+export const LanguageProvider = ({ children, initialLanguage = 'tr' }: { children: React.ReactNode; initialLanguage?: Language }) => {
+  const [language, setLanguageState] = useState<Language>(initialLanguage);
 
   useEffect(() => {
     // Priority 1: Detect language from URL path prefix (/en/, /de/, /ru/)
@@ -63,7 +63,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
   };
 
   const t = (key: keyof typeof translations.tr) => {
-    return translations[language][key] || translations.tr[key] || String(key);
+    const currentTranslations = translations[language] as Partial<Record<keyof typeof translations.tr, string>>;
+    return currentTranslations[key] || translations.tr[key] || String(key);
   };
 
   // Helper: generates a localized path for <Link> components
