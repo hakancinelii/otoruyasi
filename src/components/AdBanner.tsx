@@ -249,10 +249,10 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
 
         @media (max-width: 768px) {
           .ad-banner-wrapper {
-            margin: 20px auto;
+            margin: 8px auto 18px auto;
             width: 100% !important;
             max-width: 100vw !important;
-            padding: 0 16px !important;
+            padding: 0 10px !important;
             display: block !important;
             overflow: visible !important;
             box-sizing: border-box !important;
@@ -270,7 +270,7 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
 
           .ad-item {
             width: 100% !important;
-            max-width: min(728px, calc(100vw - 32px)) !important;
+            max-width: min(728px, calc(100vw - 20px)) !important;
             margin-left: auto !important;
             margin-right: auto !important;
             display: block !important;
@@ -299,7 +299,7 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
 
           .ad-content-raw {
             width: 100% !important;
-            max-width: min(728px, calc(100vw - 32px)) !important;
+            max-width: min(728px, calc(100vw - 20px)) !important;
             margin-left: auto !important;
             margin-right: auto !important;
             overflow: visible !important;
