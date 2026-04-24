@@ -252,7 +252,7 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
             margin: 20px auto;
             width: 100% !important;
             max-width: 100vw !important;
-            padding: 0 8px !important;
+            padding: 0 16px !important;
             display: block !important;
             overflow: visible !important;
             box-sizing: border-box !important;
@@ -265,12 +265,14 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
+            justify-content: center !important;
           }
 
           .ad-item {
-            width: calc(100vw - 32px) !important;
-            max-width: 728px !important;
-            margin: 0 auto !important;
+            width: 100% !important;
+            max-width: min(728px, calc(100vw - 32px)) !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
             display: block !important;
             padding: 0 !important;
             box-sizing: border-box !important;
@@ -296,9 +298,10 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
           }
 
           .ad-content-raw {
-            width: calc(100vw - 32px) !important;
-            max-width: 728px !important;
-            margin: 0 auto !important;
+            width: 100% !important;
+            max-width: min(728px, calc(100vw - 32px)) !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
             overflow: visible !important;
           }
         }
