@@ -6,6 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 export default function HaberContent({ id, initialPost }: { id: string, initialPost?: any }) {
   const [post, setPost] = useState<any>(initialPost || null);
+  const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(!initialPost);
   const { language, t } = useLanguage();
   const [translatedTitle, setTranslatedTitle] = useState(initialPost?.title?.rendered || '');
@@ -243,6 +244,26 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
     }
   }, [language, post, isRecent]);
 
+  useEffect(() => {
+    async function fetchRelatedPosts() {
+      try {
+        const res = await fetch('https://cms.otoruyasi.com/wp-json/wp/v2/posts?_embed&per_page=7&categories_exclude=20723');
+        if (!res.ok) return;
+        const data = await res.json();
+        const filtered = Array.isArray(data) ? data.filter((item: any) => item.id !== post?.id).slice(0, 6) : [];
+        setRelatedPosts(filtered);
+      } catch (error) {
+        console.error('Related posts error:', error);
+      }
+    }
+
+    if (post?.id) {
+      fetchRelatedPosts();
+    }
+  }, [post?.id]);
+
+  const getRelatedImageUrl = (item: any) => item._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=800';
+
   const translateContent = async (data: any, lang: string) => {
     setTranslatedTitle('');
     setTranslatedContent('');
@@ -386,6 +407,26 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
 
       <div className="haber-icerik" style={{ fontSize: '18px', lineHeight: '1.8', overflowX: 'auto', clear: 'both' }} dangerouslySetInnerHTML={{ __html: translatedContent }} />
 
+      {relatedPosts.length > 0 && (
+        <section className="related-news-section" aria-labelledby="related-news-title">
+          <div className="related-news-header">
+            <span className="related-news-kicker">{language === 'tr' ? 'Sıradaki Haberler' : 'More News'}</span>
+            <h2 id="related-news-title">{language === 'tr' ? 'Diğer Haberler' : 'Other Stories'}</h2>
+          </div>
+          <div className="related-news-grid">
+            {relatedPosts.map((item) => (
+              <Link key={item.id} href={`/haber/${item.id}`} className="related-news-card">
+                <img src={getRelatedImageUrl(item)} alt={item.title.rendered.replace(/<[^>]+>/g, '')} />
+                <div className="related-news-card-body">
+                  <span>{new Date(item.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : language === 'de' ? 'de-DE' : language === 'ru' ? 'ru-RU' : 'en-US')}</span>
+                  <h3 dangerouslySetInnerHTML={{ __html: item.title.rendered }} />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       <style jsx global>{`
         .haber-icerik { clear: both; }
         .haber-icerik::after { content: ''; display: block; clear: both; }
@@ -428,6 +469,84 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
         }
         .haber-icerik tbody tr:nth-child(even) {
           background: rgba(255, 255, 255, 0.03);
+        }
+        .related-news-section {
+          margin-top: 56px;
+          padding-top: 36px;
+          border-top: 1px solid var(--border-color);
+        }
+        .related-news-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 20px;
+          margin-bottom: 22px;
+        }
+        .related-news-kicker {
+          color: var(--accent-color);
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+        }
+        .related-news-header h2 {
+          margin: 6px 0 0;
+          font-size: clamp(28px, 5vw, 42px);
+          line-height: 1.05;
+        }
+        .related-news-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 18px;
+        }
+        .related-news-card {
+          display: block;
+          overflow: hidden;
+          border: 1px solid var(--border-color);
+          border-radius: 18px;
+          background: var(--card-bg);
+          color: var(--text-color);
+          text-decoration: none;
+        }
+        .related-news-card img {
+          display: block;
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          object-fit: cover;
+        }
+        .related-news-card-body {
+          padding: 16px;
+        }
+        .related-news-card-body span {
+          display: block;
+          margin-bottom: 8px;
+          color: var(--text-muted);
+          font-size: 12px;
+          font-weight: 800;
+        }
+        .related-news-card-body h3 {
+          margin: 0;
+          font-size: 18px;
+          line-height: 1.25;
+        }
+        @media (max-width: 680px) {
+          .related-news-section {
+            margin-top: 42px;
+            padding-top: 28px;
+          }
+          .related-news-header {
+            display: block;
+          }
+          .related-news-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+          .related-news-card {
+            border-radius: 16px;
+          }
+          .related-news-card-body {
+            padding: 14px;
+          }
         }
       `}</style>
     </article>
