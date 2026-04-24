@@ -173,7 +173,7 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
         ))}
       </div>
 
-      <style jsx>{`
+      <style jsx global>{`
         .ad-banner-wrapper {
           text-align: center;
           margin: 40px auto 20px auto;
@@ -229,9 +229,10 @@ export default function AdBanner({ slots = ['home_top_primary'], layout = 'stack
 
         .ad-image {
           display: block;
-          width: 100%;
+          width: auto;
           max-width: 100%;
           height: auto;
+          margin: 0 auto;
           object-fit: contain;
           object-position: center;
           border-radius: 8px;
