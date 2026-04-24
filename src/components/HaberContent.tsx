@@ -191,8 +191,15 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
       : (language === 'tr' ? 'Tarayıcı sesi ile okunuyor.' : 'Browser voice is reading the article.'))
     : audioHelperText;
   const audioStatusColor = audioError ? '#e74c3c' : 'var(--text-muted)';
-  const audioStatusRole = audioError ? 'alert' : 'status';
-  const audioStatusLive = audioError ? 'assertive' : 'polite';
+  const audioStatus = audioError ? (
+    <div className="audio-status" role="alert" aria-live="assertive" style={{ color: audioStatusColor }}>
+      {audioPlayingText}
+    </div>
+  ) : (
+    <div className="audio-status" role="status" aria-live="polite" style={{ color: audioStatusColor }}>
+      {audioPlayingText}
+    </div>
+  );
   const femaleButtonClass = voice === 'female' ? 'audio-chip audio-chip-active' : 'audio-chip';
   const maleButtonClass = voice === 'male' ? 'audio-chip audio-chip-active' : 'audio-chip';
 
@@ -200,7 +207,7 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
 
   useEffect(() => {
     if (!initialPost) {
-      async function fetchRealPost() {
+      const fetchRealPost = async () => {
         try {
           const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts/${id}?_embed`);
           if (!res.ok) throw new Error('API yanıt vermedi.');
@@ -220,7 +227,7 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
         } finally {
           setLoading(false);
         }
-      }
+      };
       fetchRealPost();
     }
   }, [id]);
@@ -242,32 +249,30 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
     setIsTranslating(true);
 
     try {
-      const res = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: `TITLE: ${data.title.rendered} \n\n CONTENT: ${data.content.rendered}`,
-          targetLang: lang,
+      const [titleResponse, contentResponse] = await Promise.all([
+        fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: data.title.rendered, targetLang: lang }),
         }),
-      });
+        fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: data.content.rendered, targetLang: lang }),
+        }),
+      ]);
 
-      const resData = await res.json();
+      const [titleData, contentData] = await Promise.all([
+        titleResponse.json(),
+        contentResponse.json(),
+      ]);
 
-      if (resData.translatedText) {
-        const fullText = resData.translatedText;
-        const titleMatch = fullText.match(/TITLE:([\s\S]*?)CONTENT:/i);
-        const contentMatch = fullText.match(/CONTENT:([\s\S]*)/i);
-
-        if (titleMatch && contentMatch) {
-          setTranslatedTitle(titleMatch[1].trim());
-          setTranslatedContent(contentMatch[1].trim());
-        } else {
-          setTranslatedContent(fullText.replace(/TITLE:.*?\n/i, ''));
-          setTranslatedTitle(data.title.rendered);
-        }
-      } else {
+      if (!titleData.translatedText || !contentData.translatedText) {
         throw new Error('Çeviri başarısız.');
       }
+
+      setTranslatedTitle(titleData.translatedText);
+      setTranslatedContent(contentData.translatedText);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Hata';
       console.error(message);
@@ -300,9 +305,7 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
         <div className="audio-control-row">
           <div>
             <div className="audio-badge">{audioBadgeLabel}</div>
-            <div className="audio-status" role={audioStatusRole} aria-live={audioStatusLive} style={{ color: audioStatusColor }}>
-              {audioPlayingText}
-            </div>
+            {audioStatus}
           </div>
 
           <div className="audio-actions">
