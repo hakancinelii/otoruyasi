@@ -117,7 +117,7 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
   const link = getAdLink(rawContent);
   const trackingMarkup = getTrackingMarkup(rawContent);
 
-    if (imageUrl) {
+  if (imageUrl) {
     return (
       <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
         <span className="ad-label">Reklam</span>
@@ -134,9 +134,9 @@ function AdItem({ post, maxWidth }: { post: AdPost; maxWidth: number }) {
     return (
       <div className="ad-item" style={{ maxWidth: `min(${maxWidth}px, 100%)` }}>
         <span className="ad-label">Reklam</span>
-        <div 
+        <div
           className="ad-content-raw"
-          dangerouslySetInnerHTML={{ __html: rawContent }} 
+          dangerouslySetInnerHTML={{ __html: rawContent }}
           style={{ width: '100%', overflow: 'hidden' }}
         />
       </div>
