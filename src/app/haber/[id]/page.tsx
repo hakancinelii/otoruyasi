@@ -1,29 +1,35 @@
-import { Metadata, ResolvingMetadata } from 'next';
-import { cookies } from 'next/headers';
+import { Metadata } from 'next';
+import { permanentRedirect } from 'next/navigation';
 import AdBanner from '../../../components/AdBanner';
 import HaberContent from '../../../components/HaberContent';
 
-// Helper to check for recent news
-const isRecentNews = (dateStr: string) => {
-  const postDate = new Date(dateStr);
-  const now = new Date();
-  const diffInDays = Math.floor((now.getTime() - postDate.getTime()) / (1000 * 60 * 60 * 24));
-  return diffInDays <= 28;
-};
+function isNumericIdentifier(value: string) {
+  return /^\d+$/.test(value);
+}
 
-async function fetchPost(id: string) {
+async function fetchPost(identifier: string) {
   try {
-    const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts/${id}?_embed`, { next: { revalidate: 3600 } });
+    if (isNumericIdentifier(identifier)) {
+      const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts/${identifier}?_embed`, { next: { revalidate: 3600 } });
+      if (!res.ok) return null;
+      return await res.json();
+    }
+
+    const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts?slug=${encodeURIComponent(identifier)}&_embed`, { next: { revalidate: 3600 } });
     if (!res.ok) return null;
-    return await res.json();
-  } catch (e) {
+    const data = await res.json();
+    return Array.isArray(data) ? data[0] || null : null;
+  } catch {
     return null;
   }
 }
 
+function getPostSlug(post: any, fallback: string) {
+  return typeof post?.slug === 'string' && post.slug ? post.slug : fallback;
+}
+
 export async function generateMetadata(
-  { params }: { params: { id: string } },
-  parent: ResolvingMetadata
+  { params }: { params: { id: string } }
 ): Promise<Metadata> {
   const post = await fetchPost(params.id);
   
@@ -32,23 +38,24 @@ export async function generateMetadata(
   const title = post.title.rendered;
   const description = post.excerpt?.rendered?.replace(/<[^>]+>/g, '').substring(0, 160) || '';
   const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
+  const slug = getPostSlug(post, params.id);
 
   return {
     title: `${title} | Oto Rüyası`,
     description: description,
     alternates: {
-      canonical: `https://otoruyasi.com/haber/${params.id}`,
+      canonical: `https://otoruyasi.com/haber/${slug}`,
       languages: {
-        'tr-TR': `https://otoruyasi.com/haber/${params.id}`,
-        'en-US': `https://otoruyasi.com/en/haber/${params.id}`,
-        'de-DE': `https://otoruyasi.com/de/haber/${params.id}`,
-        'ru-RU': `https://otoruyasi.com/ru/haber/${params.id}`,
+        'tr-TR': `https://otoruyasi.com/haber/${slug}`,
+        'en-US': `https://otoruyasi.com/en/haber/${slug}`,
+        'de-DE': `https://otoruyasi.com/de/haber/${slug}`,
+        'ru-RU': `https://otoruyasi.com/ru/haber/${slug}`,
       },
     },
     openGraph: {
       title: title,
       description: description,
-      url: `https://otoruyasi.com/haber/${params.id}`,
+      url: `https://otoruyasi.com/haber/${slug}`,
       siteName: 'Oto Rüyası',
       images: imageUrl ? [{ url: imageUrl }] : [],
       locale: 'tr_TR',
@@ -66,11 +73,15 @@ export async function generateMetadata(
 
 export default async function HaberDetayPage({ params }: { params: { id: string } }) {
   const post = await fetchPost(params.id);
-  
+
+  if (post && isNumericIdentifier(params.id)) {
+    permanentRedirect(`/haber/${getPostSlug(post, params.id)}`);
+  }
+
   return (
     <main>
       <AdBanner slots={['home_top_primary']} maxWidth={1000} />
-      <HaberContent id={params.id} initialPost={post} />
+      <HaberContent id={post?.id ? String(post.id) : params.id} initialPost={post} />
     </main>
   );
 }

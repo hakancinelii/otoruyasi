@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 interface CategoryPost {
   id: number;
+  slug?: string;
   title: { rendered: string };
   _embedded?: {
     'wp:featuredmedia'?: Array<{ source_url: string }>;
@@ -95,7 +96,7 @@ export default function CategorySection({ categoryId, title, language, t }: Cate
 
       <div className="category-grid">
         {(translatedPosts.slice(0, 4)).map((post) => (
-          <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
+          <Link href={`/haber/${post.slug || post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
             <div className="card-img-wrapper" style={{ height: '160px' }}>
               <img
                 className="card-img"

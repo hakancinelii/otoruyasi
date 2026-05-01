@@ -221,7 +221,7 @@ export default function Home() {
           <section className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
             {gridPosts.slice(0, 6).map((post: any) => {
               return (
-                <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', transition: 'transform 0.3s' }}>
+                <Link href={`/haber/${post.slug || post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', transition: 'transform 0.3s' }}>
                   <div className="card-img-wrapper">
                     <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
                   </div>
@@ -275,7 +275,7 @@ export default function Home() {
         <div className="full-width-news" style={{ marginTop: '30px' }}>
           <section className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
             {gridPosts.slice(6).map((post: any) => (
-              <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', transition: 'transform 0.3s' }}>
+              <Link href={`/haber/${post.slug || post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', transition: 'transform 0.3s' }}>
                 <div className="card-img-wrapper">
                   <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
                 </div>

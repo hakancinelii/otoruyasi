@@ -148,7 +148,7 @@ export default function KategoriPage({ params }: { params: { id: string } }) {
 
       <section className="grid">
         {gridPosts.map((post: any) => (
-          <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
+          <Link href={`/haber/${post.slug || post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
             <div className="card-img-wrapper">
               <img className="card-img" src={post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200'} alt={post.title.rendered} />
             </div>

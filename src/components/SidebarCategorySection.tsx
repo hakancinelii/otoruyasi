@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 interface SidebarPost {
   id: number;
+  slug?: string;
   title: { rendered: string };
   date: string;
   _embedded?: {
@@ -72,7 +73,7 @@ export default function SidebarCategorySection({ categoryId, title, language, t 
       </div>
       
       {/* Big Card - First Post */}
-      <Link href={`/haber/${firstPost.id}`} style={{ display: 'block', position: 'relative', height: '180px', borderRadius: '8px', overflow: 'hidden', marginBottom: '20px' }}>
+      <Link href={`/haber/${firstPost.slug || firstPost.id}`} style={{ display: 'block', position: 'relative', height: '180px', borderRadius: '8px', overflow: 'hidden', marginBottom: '20px' }}>
         <img 
           src={getImageUrl(firstPost)}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -87,7 +88,7 @@ export default function SidebarCategorySection({ categoryId, title, language, t 
       {/* Small Items - Rest of Posts */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         {otherPosts.map(post => (
-          <Link key={post.id} href={`/haber/${post.id}`} className="sidebar-item-link" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+          <Link key={post.id} href={`/haber/${post.slug || post.id}`} className="sidebar-item-link" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
             <div style={{ width: '85px', height: '65px', flexShrink: 0, borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
               <img 
                 src={getImageUrl(post)}

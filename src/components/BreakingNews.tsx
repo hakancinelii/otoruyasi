@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 interface BreakingPost {
   id: number;
+  slug?: string;
   title: { rendered: string };
 }
 
@@ -47,7 +48,7 @@ export default function BreakingNews({ language, t }: { language: string, t: any
       <div className="breaking-content">
         <Link 
           key={posts[currentIndex].id}
-          href={`/haber/${posts[currentIndex].id}`}
+          href={`/haber/${posts[currentIndex].slug || posts[currentIndex].id}`}
           className="breaking-link animate-flip-up"
           dangerouslySetInnerHTML={{ __html: posts[currentIndex].title.rendered }}
         />

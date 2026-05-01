@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 interface MosaicPost {
   id: number;
+  slug?: string;
   title: { rendered: string };
   date: string;
   _embedded?: {
@@ -61,7 +62,7 @@ export default function NewsMosaic({ posts, isTranslating, t }: NewsMosaicProps)
             zIndex: index === currentIndex ? 1 : 0,
             pointerEvents: index === currentIndex ? 'auto' : 'none'
           }}>
-            <Link href={`/haber/${post.id}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+            <Link href={`/haber/${post.slug || post.id}`} style={{ display: 'block', width: '100%', height: '100%' }}>
               <img className="mosaic-img" src={getImageUrl(post)} alt={post.title.rendered} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <div className="mosaic-overlay">
                 <span className="mosaic-badge">HABERLER {isTranslating && '...'}</span>
@@ -97,7 +98,7 @@ export default function NewsMosaic({ posts, isTranslating, t }: NewsMosaicProps)
 
       {/* 2. Medium Item (TOP RIGHT) */}
       {staticItems[0] ? (
-        <Link href={`/haber/${staticItems[0].id}`} className="mosaic-item mosaic-item-medium">
+        <Link href={`/haber/${staticItems[0].slug || staticItems[0].id}`} className="mosaic-item mosaic-item-medium">
           <img className="mosaic-img" src={getImageUrl(staticItems[0])} alt={staticItems[0].title.rendered} />
           <div className="mosaic-overlay">
             <span className="mosaic-badge">HABERLER</span>
@@ -111,7 +112,7 @@ export default function NewsMosaic({ posts, isTranslating, t }: NewsMosaicProps)
       {/* 3 & 4 Small Items Group (BOTTOM RIGHT) */}
       <div className="mosaic-item-small-group">
         {staticItems[1] ? (
-          <Link href={`/haber/${staticItems[1].id}`} className="mosaic-item mosaic-item-small">
+          <Link href={`/haber/${staticItems[1].slug || staticItems[1].id}`} className="mosaic-item mosaic-item-small">
             <img className="mosaic-img" src={getImageUrl(staticItems[1])} alt={staticItems[1].title.rendered} />
             <div className="mosaic-overlay" style={{ padding: '15px' }}>
               <span className="mosaic-badge" style={{ fontSize: '8px', padding: '2px 6px', margin: '0 0 8px 0' }}>HABERLER</span>
@@ -123,7 +124,7 @@ export default function NewsMosaic({ posts, isTranslating, t }: NewsMosaicProps)
         )}
 
         {staticItems[2] ? (
-          <Link href={`/haber/${staticItems[2].id}`} className="mosaic-item mosaic-item-small">
+          <Link href={`/haber/${staticItems[2].slug || staticItems[2].id}`} className="mosaic-item mosaic-item-small">
             <img className="mosaic-img" src={getImageUrl(staticItems[2])} alt={staticItems[2].title.rendered} />
             <div className="mosaic-overlay" style={{ padding: '15px' }}>
               <span className="mosaic-badge" style={{ fontSize: '8px', padding: '2px 6px', margin: '0 0 8px 0' }}>HABERLER</span>

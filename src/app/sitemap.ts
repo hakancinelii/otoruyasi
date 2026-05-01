@@ -9,6 +9,7 @@ const TOTAL_PAGES = Math.ceil(MAX_POSTS / POSTS_PER_PAGE);
 
 type SitemapPost = {
   id: number;
+  slug: string;
   modified: string;
 };
 
@@ -17,7 +18,7 @@ async function fetchLatestPosts(): Promise<SitemapPost[]> {
     const responses = await Promise.all(
       Array.from({ length: TOTAL_PAGES }, (_, index) =>
         fetch(
-          `https://cms.otoruyasi.com/wp-json/wp/v2/posts?per_page=${POSTS_PER_PAGE}&page=${index + 1}&_fields=id,modified`,
+          `https://cms.otoruyasi.com/wp-json/wp/v2/posts?per_page=${POSTS_PER_PAGE}&page=${index + 1}&_fields=id,slug,modified`,
           { next: { revalidate: 3600 } }
         )
       )
@@ -59,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await fetchLatestPosts();
   const postEntries: MetadataRoute.Sitemap = posts.flatMap((post) =>
     LANGS.map((lang) => ({
-      url: `${BASE_URL}${lang}/haber/${post.id}`,
+      url: `${BASE_URL}${lang}/haber/${post.slug || post.id}`,
       lastModified: new Date(post.modified),
       changeFrequency: 'weekly' as const,
       priority: 0.7,

@@ -150,7 +150,7 @@ function SearchResults() {
 
       <section className="grid">
         {displayPosts.map((post: any) => (
-          <Link href={`/haber/${post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
+          <Link href={`/haber/${post.slug || post.id}`} key={post.id} className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
             <div className="card-img-wrapper">
               <img className="card-img" src={getImageUrl(post)} alt={post.title.rendered} />
             </div>

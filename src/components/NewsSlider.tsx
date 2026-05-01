@@ -53,7 +53,7 @@ export default function NewsSlider({ posts, t, title }: { posts: any[], t: any, 
           const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
           
           return (
-            <Link href={`/haber/${post.id}`} key={post.id} className="slider-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`/haber/${post.slug || post.id}`} key={post.id} className="slider-card" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div style={{ height: '160px', width: '100%', overflow: 'hidden' }}>
                 <img 
                   src={imageUrl} 

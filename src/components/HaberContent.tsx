@@ -415,7 +415,7 @@ export default function HaberContent({ id, initialPost }: { id: string, initialP
           </div>
           <div className="related-news-grid">
             {relatedPosts.map((item) => (
-              <Link key={item.id} href={`/haber/${item.id}`} className="related-news-card">
+              <Link key={item.id} href={`/haber/${item.slug || item.id}`} className="related-news-card">
                 <img src={getRelatedImageUrl(item)} alt={item.title.rendered.replace(/<[^>]+>/g, '')} />
                 <div className="related-news-card-body">
                   <span>{new Date(item.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : language === 'de' ? 'de-DE' : language === 'ru' ? 'ru-RU' : 'en-US')}</span>
