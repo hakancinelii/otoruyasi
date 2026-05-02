@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
 
   if (articleId) {
     try {
-      const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts/${articleId}?_fields=slug`, { next: { revalidate: 3600 } });
+      const res = await fetch(`https://cms.otoruyasi.com/wp-json/wp/v2/posts/${articleId}?_fields=slug`);
       if (res.ok) {
         const post = await res.json();
         if (post?.slug) {
